@@ -1,0 +1,5 @@
+* LCDlib, September 2013, Graþvidas Balèius
+
+* -------- Version 0.1 --------
+  + Added sending commands (Command, Character, String)
+  + Added position selection tool
