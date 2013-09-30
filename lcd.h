@@ -27,6 +27,12 @@
 //____________________________________ CHARACTERS ________________________________________________/
 
 #define S_CELSIUS			0xDF
+#define S_BULLET			0xA5
+#define S_BLANK				0x20
+#define S_ARROW_RIGHT		0x7E
+#define S_ARROW_LEFT		0x7F
+#define S_FULL				0xFF
+
 //____________________________________ FUNCTION PROTOTYPES ________________________________________/
 
 void LCD_Initialize(void);

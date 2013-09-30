@@ -34,6 +34,8 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd) {
 		LCD_Interface.DataFlow.ProcessData(cmd & 0x0F);
 		LCD_Interface.Com.ExecuteCMD();
 	} else if (size == 8) {
+		// temporary delay, until "WaitIfBusy" function is completed
+		_delay_ms(2);
 	//	LCD_Interface.Comm.WaitIfBusy();
 		LCD_Interface.DataFlow.ProcessData(cmd >> 4);
 		LCD_Interface.Com.ExecuteCMD();
@@ -79,7 +81,7 @@ void LCD_WaitIfBusy() {
 
 void LCD_SendCharacter(uint8_t character) {
 
-	_delay_us(50);
+	_delay_us(30);
 	//LCD_Interface.Comm.WaitIfBusy();
 	LCD_Interface.Regs.PORT_RS_set();
 	LCD_Interface.DataFlow.SendCommand(8, character);
@@ -136,36 +138,19 @@ void LCD_Initialize() {
 	LCD_Interface.DataFlow.SendCommand(4, 0x8); 	_delay_ms(2);
 
 	// display on
-	LCD_Interface.DataFlow.SendCommand(8, 0x0C);	_delay_ms(2);
+	LCD_Interface.DataFlow.SendCommand(8, 0x0C);
 	//LCD_Interface.Comm.WaitIfBusy();
 
 	// clear display, return position
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);	_delay_ms(2);
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
 	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.DataFlow.SendString("Testing..");	_delay_ms(2);
-	LCD_Interface.DataFlow.SendCommand(8, 0x40);_delay_us(60);
-	LCD_Interface.Regs.PORT_RS_set();_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x0E);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x1B);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x11);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x11);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x11);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x11);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x11);_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x1F);_delay_us(60);
-	LCD_Interface.DataFlow.SendCommand(8, 0x80);_delay_us(60);
-
-	LCD_Interface.Regs.PORT_RS_set();_delay_us(60);
-	LCD_Interface.Regs.PORT_RW_set();_delay_us(60);
-	LCD_Interface.DataFlow.SendCharacter(0x01);_delay_us(60);
-
+	LCD_Interface.DataFlow.SendString("Initialization");_delay_ms(500);
 	//LCD_Interface.Comm.WaitIfBusy();
-	//LCD_Interface.Position(2, 1);
+	LCD_Interface.Position(2, 1);
 	//LCD_Interface.Comm.WaitIfBusy();
-	//LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(2000);
-	//LCD_Interface.DataFlow.SendCommand(8, 0x01);
-
-	//LCD_Interface.Regs.
+	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(1000);
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+	LCD_Interface.Position(1, 1);
 }
 
 void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
