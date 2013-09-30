@@ -6,3 +6,6 @@
  */
 
 
+void BUTTONS_Initialize() {
+
+}

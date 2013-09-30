@@ -13,5 +13,12 @@
 #define BUTTON_SELECT			PD6
 #define BUTTON_RETURN			PD7
 
+void (BUTTONS_Initialize)(void);
+
+typedef struct {
+	void (*Initialize)(void);
+}BUTTONS_Interface_t;
+
+extern BUTTONS_Interface_t BUTTONS_Interface;
 
 #endif /* BUTTONS_H_ */
