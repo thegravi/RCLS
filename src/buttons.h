@@ -8,6 +8,10 @@
 #ifndef BUTTONS_H_
 #define BUTTONS_H_
 
+#include <avr/io.h>
+
+#define BUTTON_DDR				DDRD
+#define BUTTON_PORT				PORTD
 #define BUTTON_NEXT				PD4
 #define BUTTON_PREV				PD5
 #define BUTTON_SELECT			PD6
@@ -17,6 +21,7 @@ void (BUTTONS_Initialize)(void);
 
 typedef struct {
 	void (*Initialize)(void);
+
 }BUTTONS_Interface_t;
 
 extern BUTTONS_Interface_t BUTTONS_Interface;
