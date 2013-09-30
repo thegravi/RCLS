@@ -11,7 +11,7 @@
 #define OPTIONS_QUANTITY		4
 
 void LCD_Menu_Initialize(void);
-void LCD_Menu_enter(void);
+void LCD_Menu_Enter(void);
 void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);

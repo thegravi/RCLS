@@ -11,7 +11,7 @@
 
 LCD_Menu_t LCD_Menu = {
 						LCD_Menu_Initialize,
-						LCD_Menu_enter,
+						LCD_Menu_Enter,
 							// Options obj
 						  {
 								  {
@@ -24,6 +24,7 @@ LCD_Menu_t LCD_Menu = {
 								  LCD_Menu_Preferences,
 								  LCD_Menu_Channels,
 								  LCD_Menu_Profiles,
+								  {"","","",""},
 								  	  	  // LED obj
 									  {
 											  "Etalon LED"
@@ -51,7 +52,7 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.Options.CurrentFunctionName[3] = LCD_Menu.Options.Profs.name;
 }
 
-void LCD_Menu_enter() {
+void LCD_Menu_Enter() {
 
 	char* functionName = "";
 	uint8_t functionQueue = 0;
@@ -67,7 +68,7 @@ void LCD_Menu_enter() {
 	functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
 	LCD_Interface.DataFlow.SendString(functionName);
 
-	uint8_t option = 0;
+/*	uint8_t option = 0;
 
 	switch(option)
 	{
@@ -76,7 +77,7 @@ void LCD_Menu_enter() {
 	default:
 		break;
 
-	}
+	}*/
 
 }
 
