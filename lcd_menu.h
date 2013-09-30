@@ -8,6 +8,9 @@
 #ifndef LCD_MENIU_H_
 #define LCD_MENIU_H_
 
+#define OPTIONS_QUANTITY		4
+
+void LCD_Menu_Initialize(void);
 void LCD_Menu_enter(void);
 void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
@@ -35,19 +38,23 @@ typedef struct {
 }Profiles_t;
 
 typedef struct {
-	void (*Opt_LED_color)(void);
-	void (*Opt_Preferences)(void);
-	void (*Opt_Channels)(void);
-	void (*Opt_Profiles)(void);
+	void (*CurrentFunction[OPTIONS_QUANTITY])(void);
+	void (*LED_color)(void);
+	void (*Preferences)(void);
+	void (*Channels)(void);
+	void (*Profiles)(void);
+
+	char* CurrentFunctionName[OPTIONS_QUANTITY];
 
 	LED_t LED;
 	Settings_t Prefs;
 	Channels_t Ch;
-	Profiles_t Profiles;
+	Profiles_t Profs;
 
 }Options_t;
 
 typedef struct {
+	void (*Initialize)(void);
 	void (*Enter)(void);
 
 	Options_t Options;
