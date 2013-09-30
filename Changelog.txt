@@ -1,5 +1,8 @@
 * LCDlib, September 2013, Graþvidas Balèius
 
-* -------- Version 0.1 --------
+* -------- 24 September, 2013 --------
   + Added sending commands (Command, Character, String)
   + Added position selection tool
+  
+* -------- 29 September, 2013 --------
+  + Added LCD Menu structure skeleton
