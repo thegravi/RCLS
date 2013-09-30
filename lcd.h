@@ -91,7 +91,7 @@ typedef struct {
 
 	Regs_t Regs;
 	DataFlow_t DataFlow;
-	Communication_t Comm;
+	Communication_t Com;
 
 }LCD_Interface_t;
 

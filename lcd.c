@@ -32,13 +32,13 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd) {
 
 	if (size == 4) {
 		LCD_Interface.DataFlow.ProcessData(cmd & 0x0F);
-		LCD_Interface.Comm.ExecuteCMD();
+		LCD_Interface.Com.ExecuteCMD();
 	} else if (size == 8) {
 	//	LCD_Interface.Comm.WaitIfBusy();
 		LCD_Interface.DataFlow.ProcessData(cmd >> 4);
-		LCD_Interface.Comm.ExecuteCMD();
+		LCD_Interface.Com.ExecuteCMD();
 		LCD_Interface.DataFlow.ProcessData(cmd & 0x0F);
-		LCD_Interface.Comm.ExecuteCMD();
+		LCD_Interface.Com.ExecuteCMD();
 	}
 }
 
