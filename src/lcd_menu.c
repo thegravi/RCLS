@@ -78,44 +78,44 @@ void LCD_Menu_Enter() {
 
 		switch(LCD_Menu.functionSelected)
 		{
-		case OPT_NEXT:
-			if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
-				functionQueue++;
-			} else if (functionQueue == OPT_QUANTITY-1) {
-				functionQueue = 0;
-			}
+			case OPT_NEXT:
+				if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
+					functionQueue++;
+				} else if (functionQueue == OPT_QUANTITY-1) {
+					functionQueue = 0;
+				}
 
-			LCD_Interface.Position(2, 1);
-			LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
-			LCD_Interface.DataFlow.SendCharacter(S_BLANK);
-			functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
-			LCD_Interface.DataFlow.SendString(functionName);
-			LCD_Menu.functionSelected = OPT_VOID;
-			break;
-
-		case OPT_PREV:
-			if (functionQueue > 0 && functionQueue < OPT_QUANTITY) {
-				functionQueue--;
-			} else if (functionQueue == 0) {
-				functionQueue = OPT_QUANTITY-1;
-			}
-
-			LCD_Interface.Position(2, 1);
-			LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
-			LCD_Interface.DataFlow.SendCharacter(S_BLANK);
-			functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
-			LCD_Interface.DataFlow.SendString(functionName);
-			LCD_Menu.functionSelected = OPT_VOID;
-			break;
-
-		case OPT_SELECT:
-			break;
-
-		case OPT_RETURN:
-			break;
-
-			default:
+				LCD_Interface.Position(2, 1);
+				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
+				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
+				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				LCD_Interface.DataFlow.SendString(functionName);
+				LCD_Menu.functionSelected = OPT_VOID;
 				break;
+
+			case OPT_PREV:
+				if (functionQueue > 0 && functionQueue < OPT_QUANTITY) {
+					functionQueue--;
+				} else if (functionQueue == 0) {
+					functionQueue = OPT_QUANTITY-1;
+				}
+
+				LCD_Interface.Position(2, 1);
+				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
+				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
+				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				LCD_Interface.DataFlow.SendString(functionName);
+				LCD_Menu.functionSelected = OPT_VOID;
+				break;
+
+			case OPT_SELECT:
+				break;
+
+			case OPT_RETURN:
+				break;
+
+				default:
+					break;
 		}
 
 	}

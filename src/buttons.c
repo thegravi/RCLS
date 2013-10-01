@@ -18,7 +18,7 @@ void BUTTONS_Initialize() {
 	BUTTON_DDR &= ~(1<<BUTTON_NEXT) | ~(1<<BUTTON_PREV) | ~(1<<BUTTON_SELECT) | ~(1<<BUTTON_RETURN);
 	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
 
-	// interrupt on low level
+	// interrupts on low level
 	MCUCR &= ~(1<<ISC11) | ~(1<<ISC01) | ~(1<<ISC00) | ~(1<<ISC10);
 	GICR |= (1<<INT0) | (1<<INT1);
 	__asm__ __volatile__ ("sei" ::);

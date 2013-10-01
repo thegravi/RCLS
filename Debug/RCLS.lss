@@ -3,21 +3,21 @@ RCLS.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         0000045a  00000000  00000000  00000074  2**1
+  0 .text         00000570  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         000000a2  00800060  0000045a  000004ce  2**0
+  1 .data         000000b6  00800060  00000570  000005e4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .stab         000012b4  00000000  00000000  00000570  2**2
+  2 .stab         00001524  00000000  00000000  0000069c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  3 .stabstr      00001583  00000000  00000000  00001824  2**0
+  3 .stabstr      000016c0  00000000  00000000  00001bc0  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
-   2:	24 c0       	rjmp	.+72     	; 0x4c <__bad_interrupt>
-   4:	23 c0       	rjmp	.+70     	; 0x4c <__bad_interrupt>
+   2:	32 c0       	rjmp	.+100    	; 0x68 <__vector_1>
+   4:	45 c0       	rjmp	.+138    	; 0x90 <__vector_2>
    6:	22 c0       	rjmp	.+68     	; 0x4c <__bad_interrupt>
    8:	21 c0       	rjmp	.+66     	; 0x4c <__bad_interrupt>
    a:	20 c0       	rjmp	.+64     	; 0x4c <__bad_interrupt>
@@ -47,8 +47,8 @@ Disassembly of section .text:
   32:	11 e0       	ldi	r17, 0x01	; 1
   34:	a0 e6       	ldi	r26, 0x60	; 96
   36:	b0 e0       	ldi	r27, 0x00	; 0
-  38:	ea e5       	ldi	r30, 0x5A	; 90
-  3a:	f4 e0       	ldi	r31, 0x04	; 4
+  38:	e0 e7       	ldi	r30, 0x70	; 112
+  3a:	f5 e0       	ldi	r31, 0x05	; 5
   3c:	02 c0       	rjmp	.+4      	; 0x42 <.do_copy_data_start>
 
 0000003e <.do_copy_data_loop>:
@@ -56,718 +56,934 @@ Disassembly of section .text:
   40:	0d 92       	st	X+, r0
 
 00000042 <.do_copy_data_start>:
-  42:	a2 30       	cpi	r26, 0x02	; 2
+  42:	a6 31       	cpi	r26, 0x16	; 22
   44:	b1 07       	cpc	r27, r17
   46:	d9 f7       	brne	.-10     	; 0x3e <.do_copy_data_loop>
-  48:	f6 d1       	rcall	.+1004   	; 0x436 <main>
-  4a:	05 c2       	rjmp	.+1034   	; 0x456 <_exit>
+  48:	7c d2       	rcall	.+1272   	; 0x542 <main>
+  4a:	90 c2       	rjmp	.+1312   	; 0x56c <_exit>
 
 0000004c <__bad_interrupt>:
   4c:	d9 cf       	rjmp	.-78     	; 0x0 <__vectors>
 
-0000004e <LCD_SendCommand>:
-  4e:	1f 93       	push	r17
-  50:	16 2f       	mov	r17, r22
-  52:	84 30       	cpi	r24, 0x04	; 4
-  54:	99 f0       	breq	.+38     	; 0x7c <LCD_SendCommand+0x2e>
-  56:	88 30       	cpi	r24, 0x08	; 8
-  58:	e9 f4       	brne	.+58     	; 0x94 <LCD_SendCommand+0x46>
-  5a:	80 e4       	ldi	r24, 0x40	; 64
-  5c:	9f e1       	ldi	r25, 0x1F	; 31
-  5e:	01 97       	sbiw	r24, 0x01	; 1
-  60:	f1 f7       	brne	.-4      	; 0x5e <LCD_SendCommand+0x10>
-  62:	e0 91 9d 00 	lds	r30, 0x009D
-  66:	f0 91 9e 00 	lds	r31, 0x009E
-  6a:	86 2f       	mov	r24, r22
-  6c:	82 95       	swap	r24
-  6e:	8f 70       	andi	r24, 0x0F	; 15
-  70:	09 95       	icall
-  72:	e0 91 9f 00 	lds	r30, 0x009F
-  76:	f0 91 a0 00 	lds	r31, 0x00A0
-  7a:	09 95       	icall
-  7c:	e0 91 9d 00 	lds	r30, 0x009D
-  80:	f0 91 9e 00 	lds	r31, 0x009E
-  84:	81 2f       	mov	r24, r17
-  86:	8f 70       	andi	r24, 0x0F	; 15
-  88:	09 95       	icall
-  8a:	e0 91 9f 00 	lds	r30, 0x009F
-  8e:	f0 91 a0 00 	lds	r31, 0x00A0
-  92:	09 95       	icall
-  94:	1f 91       	pop	r17
-  96:	08 95       	ret
+0000004e <BUTTONS_Initialize>:
+											BUTTONS_Initialize
+									   };
 
-00000098 <LCD_ExecuteCMD>:
-	}
+void BUTTONS_Initialize() {
+
+	DDRC |= 1<<PC5;
+  4e:	a5 9a       	sbi	0x14, 5	; 20
+	BUTTON_DDR &= ~(1<<BUTTON_NEXT) | ~(1<<BUTTON_PREV) | ~(1<<BUTTON_SELECT) | ~(1<<BUTTON_RETURN);
+  50:	81 b3       	in	r24, 0x11	; 17
+  52:	81 bb       	out	0x11, r24	; 17
+	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
+  54:	82 b3       	in	r24, 0x12	; 18
+  56:	8c 6c       	ori	r24, 0xCC	; 204
+  58:	82 bb       	out	0x12, r24	; 18
+
+	// interrupts on low level
+	MCUCR &= ~(1<<ISC11) | ~(1<<ISC01) | ~(1<<ISC00) | ~(1<<ISC10);
+  5a:	85 b7       	in	r24, 0x35	; 53
+  5c:	85 bf       	out	0x35, r24	; 53
+	GICR |= (1<<INT0) | (1<<INT1);
+  5e:	8b b7       	in	r24, 0x3b	; 59
+  60:	80 6c       	ori	r24, 0xC0	; 192
+  62:	8b bf       	out	0x3b, r24	; 59
+	__asm__ __volatile__ ("sei" ::);
+  64:	78 94       	sei
 }
+  66:	08 95       	ret
 
-void LCD_ExecuteCMD() {
+00000068 <__vector_1>:
 
-	LCD_Interface.Regs.PORT_E_set();
-  98:	e0 91 89 00 	lds	r30, 0x0089
-  9c:	f0 91 8a 00 	lds	r31, 0x008A
-  a0:	09 95       	icall
-	asm volatile("nop");
-  a2:	00 00       	nop
-	asm volatile("nop");
-  a4:	00 00       	nop
-	LCD_Interface.Regs.PORT_E_clear();
-  a6:	e0 91 8f 00 	lds	r30, 0x008F
-  aa:	f0 91 90 00 	lds	r31, 0x0090
-  ae:	09 95       	icall
+ISR(INT0_vect) {
+  68:	1f 92       	push	r1
+  6a:	0f 92       	push	r0
+  6c:	0f b6       	in	r0, 0x3f	; 63
+  6e:	0f 92       	push	r0
+  70:	11 24       	eor	r1, r1
+  72:	8f 93       	push	r24
+
+	while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
+  74:	82 9b       	sbis	0x10, 2	; 16
+  76:	fe cf       	rjmp	.-4      	; 0x74 <__vector_1+0xc>
+	LCD_Menu.functionSelected = OPT_NEXT;
+  78:	80 e3       	ldi	r24, 0x30	; 48
+  7a:	80 93 f5 00 	sts	0x00F5, r24
+	GIFR |= (1<<INTF0);
+  7e:	8a b7       	in	r24, 0x3a	; 58
+  80:	80 64       	ori	r24, 0x40	; 64
+  82:	8a bf       	out	0x3a, r24	; 58
 }
-  b0:	08 95       	ret
+  84:	8f 91       	pop	r24
+  86:	0f 90       	pop	r0
+  88:	0f be       	out	0x3f, r0	; 63
+  8a:	0f 90       	pop	r0
+  8c:	1f 90       	pop	r1
+  8e:	18 95       	reti
 
-000000b2 <LCD_WaitIfBusy>:
+00000090 <__vector_2>:
 
-void LCD_WaitIfBusy() {
-  b2:	1f 93       	push	r17
-  b4:	df 93       	push	r29
-  b6:	cf 93       	push	r28
-  b8:	0f 92       	push	r0
-  ba:	cd b7       	in	r28, 0x3d	; 61
-  bc:	de b7       	in	r29, 0x3e	; 62
+ISR(INT1_vect) {
+  90:	1f 92       	push	r1
+  92:	0f 92       	push	r0
+  94:	0f b6       	in	r0, 0x3f	; 63
+  96:	0f 92       	push	r0
+  98:	11 24       	eor	r1, r1
+  9a:	8f 93       	push	r24
 
-	volatile uint8_t data;
-	uint8_t busy_f = 1;
-
-	LCD_Interface.Regs.PORT_RW_set();
-  be:	e0 91 8d 00 	lds	r30, 0x008D
-  c2:	f0 91 8e 00 	lds	r31, 0x008E
-  c6:	09 95       	icall
-	DATA_DIR &= ~(1<<LCD_DATA0) | ~(1<<LCD_DATA1) | ~(1<<LCD_DATA2) | ~(1<<LCD_DATA3);
-  c8:	81 b3       	in	r24, 0x11	; 17
-  ca:	81 bb       	out	0x11, r24	; 17
-    can be achieved.
-*/
-void
-_delay_loop_1(uint8_t __count)
-{
-	__asm__ volatile (
-  cc:	15 e0       	ldi	r17, 0x05	; 5
-
-	while (busy_f) {
-
-		LCD_Interface.Regs.PORT_E_set();
-  ce:	e0 91 89 00 	lds	r30, 0x0089
-  d2:	f0 91 8a 00 	lds	r31, 0x008A
-  d6:	09 95       	icall
-  d8:	81 2f       	mov	r24, r17
-  da:	8a 95       	dec	r24
-  dc:	f1 f7       	brne	.-4      	; 0xda <LCD_WaitIfBusy+0x28>
-		_delay_us(1);
-		data = DATA_PIN  << 4;
-  de:	80 b3       	in	r24, 0x10	; 16
-  e0:	82 95       	swap	r24
-  e2:	80 7f       	andi	r24, 0xF0	; 240
-  e4:	89 83       	std	Y+1, r24	; 0x01
-		LCD_Interface.Regs.PORT_E_clear();
-  e6:	e0 91 8f 00 	lds	r30, 0x008F
-  ea:	f0 91 90 00 	lds	r31, 0x0090
-  ee:	09 95       	icall
-  f0:	81 2f       	mov	r24, r17
-  f2:	8a 95       	dec	r24
-  f4:	f1 f7       	brne	.-4      	; 0xf2 <LCD_WaitIfBusy+0x40>
-		_delay_us(1);
-		LCD_Interface.Regs.PORT_E_set();
-  f6:	e0 91 89 00 	lds	r30, 0x0089
-  fa:	f0 91 8a 00 	lds	r31, 0x008A
-  fe:	09 95       	icall
- 100:	81 2f       	mov	r24, r17
- 102:	8a 95       	dec	r24
- 104:	f1 f7       	brne	.-4      	; 0x102 <LCD_WaitIfBusy+0x50>
-		_delay_us(1);
-		data |= (DATA_PIN & 0x0F);
- 106:	99 81       	ldd	r25, Y+1	; 0x01
- 108:	80 b3       	in	r24, 0x10	; 16
- 10a:	8f 70       	andi	r24, 0x0F	; 15
- 10c:	89 2b       	or	r24, r25
- 10e:	89 83       	std	Y+1, r24	; 0x01
-		LCD_Interface.Regs.PORT_E_clear();
- 110:	e0 91 8f 00 	lds	r30, 0x008F
- 114:	f0 91 90 00 	lds	r31, 0x0090
- 118:	09 95       	icall
- 11a:	81 2f       	mov	r24, r17
- 11c:	8a 95       	dec	r24
- 11e:	f1 f7       	brne	.-4      	; 0x11c <LCD_WaitIfBusy+0x6a>
-		_delay_us(1);
-
-		if (data & 0x80) { } else { busy_f = 0; }
- 120:	89 81       	ldd	r24, Y+1	; 0x01
- 122:	87 fd       	sbrc	r24, 7
- 124:	d4 cf       	rjmp	.-88     	; 0xce <LCD_WaitIfBusy+0x1c>
-	}
-	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
- 126:	81 b3       	in	r24, 0x11	; 17
- 128:	8f 60       	ori	r24, 0x0F	; 15
- 12a:	81 bb       	out	0x11, r24	; 17
-	LCD_Interface.Regs.PORT_RW_clear();
- 12c:	e0 91 93 00 	lds	r30, 0x0093
- 130:	f0 91 94 00 	lds	r31, 0x0094
- 134:	09 95       	icall
+	while(bit_is_clear(BUTTON_PIN, BUTTON_PREV)) { }
+  9c:	83 9b       	sbis	0x10, 3	; 16
+  9e:	fe cf       	rjmp	.-4      	; 0x9c <__vector_2+0xc>
+	LCD_Menu.functionSelected = OPT_PREV;
+  a0:	80 e4       	ldi	r24, 0x40	; 64
+  a2:	80 93 f5 00 	sts	0x00F5, r24
+	GIFR |= (1<<INTF1);
+  a6:	8a b7       	in	r24, 0x3a	; 58
+  a8:	80 68       	ori	r24, 0x80	; 128
+  aa:	8a bf       	out	0x3a, r24	; 58
 }
- 136:	0f 90       	pop	r0
- 138:	cf 91       	pop	r28
- 13a:	df 91       	pop	r29
- 13c:	1f 91       	pop	r17
- 13e:	08 95       	ret
+  ac:	8f 91       	pop	r24
+  ae:	0f 90       	pop	r0
+  b0:	0f be       	out	0x3f, r0	; 63
+  b2:	0f 90       	pop	r0
+  b4:	1f 90       	pop	r1
+  b6:	18 95       	reti
 
-00000140 <LCD_SendCharacter>:
+000000b8 <LCD_SendCommand>:
+								{LCD_SendCommand, LCD_SendCharacter, LCD_SendString, LCD_SendNumber, LCD_ProcessData},
+								{LCD_ExecuteCMD,
+								 LCD_WaitIfBusy}
+								};
 
-void LCD_SendCharacter(uint8_t character) {
- 140:	1f 93       	push	r17
- 142:	18 2f       	mov	r17, r24
- 144:	80 ea       	ldi	r24, 0xA0	; 160
- 146:	8a 95       	dec	r24
- 148:	f1 f7       	brne	.-4      	; 0x146 <LCD_SendCharacter+0x6>
+void LCD_SendCommand(uint8_t size, uint8_t cmd) {
+  b8:	1f 93       	push	r17
+  ba:	16 2f       	mov	r17, r22
 
-	_delay_us(30);
-	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.Regs.PORT_RS_set();
- 14a:	e0 91 8b 00 	lds	r30, 0x008B
- 14e:	f0 91 8c 00 	lds	r31, 0x008C
- 152:	09 95       	icall
-	LCD_Interface.DataFlow.SendCommand(8, character);
- 154:	e0 91 95 00 	lds	r30, 0x0095
- 158:	f0 91 96 00 	lds	r31, 0x0096
- 15c:	88 e0       	ldi	r24, 0x08	; 8
- 15e:	61 2f       	mov	r22, r17
- 160:	09 95       	icall
-	LCD_Interface.Regs.PORT_RS_clear();
- 162:	e0 91 91 00 	lds	r30, 0x0091
- 166:	f0 91 92 00 	lds	r31, 0x0092
- 16a:	09 95       	icall
-}
- 16c:	1f 91       	pop	r17
- 16e:	08 95       	ret
-
-00000170 <LCD_SendString>:
-
-void LCD_SendString(char* charString) {
- 170:	cf 93       	push	r28
- 172:	df 93       	push	r29
- 174:	ec 01       	movw	r28, r24
- 176:	06 c0       	rjmp	.+12     	; 0x184 <LCD_SendString+0x14>
-
-	while(*charString != '\0') {
-		LCD_Interface.DataFlow.SendCharacter(*charString++);
- 178:	21 96       	adiw	r28, 0x01	; 1
- 17a:	e0 91 97 00 	lds	r30, 0x0097
- 17e:	f0 91 98 00 	lds	r31, 0x0098
- 182:	09 95       	icall
-	LCD_Interface.Regs.PORT_RS_clear();
-}
-
-void LCD_SendString(char* charString) {
-
-	while(*charString != '\0') {
- 184:	88 81       	ld	r24, Y
- 186:	88 23       	and	r24, r24
- 188:	b9 f7       	brne	.-18     	; 0x178 <LCD_SendString+0x8>
-		LCD_Interface.DataFlow.SendCharacter(*charString++);
-	}
-}
- 18a:	df 91       	pop	r29
- 18c:	cf 91       	pop	r28
- 18e:	08 95       	ret
-
-00000190 <LCD_SendNumber>:
-
-void LCD_SendNumber(uint16_t number) {
-
-}
- 190:	08 95       	ret
-
-00000192 <LCD_ProcessData>:
-
-void LCD_ProcessData(int8_t data) {
-
-	if (data & 0x01) {
- 192:	99 27       	eor	r25, r25
- 194:	87 fd       	sbrc	r24, 7
- 196:	90 95       	com	r25
- 198:	80 ff       	sbrs	r24, 0
- 19a:	02 c0       	rjmp	.+4      	; 0x1a0 <LCD_ProcessData+0xe>
-		DATA_PORT |=  (1<<LCD_DATA0);
- 19c:	90 9a       	sbi	0x12, 0	; 18
- 19e:	01 c0       	rjmp	.+2      	; 0x1a2 <LCD_ProcessData+0x10>
-	} else { DATA_PORT &= ~(1<<LCD_DATA0); }
- 1a0:	90 98       	cbi	0x12, 0	; 18
-
-	if (data & 0x02) {
- 1a2:	81 ff       	sbrs	r24, 1
- 1a4:	02 c0       	rjmp	.+4      	; 0x1aa <LCD_ProcessData+0x18>
-		DATA_PORT |=  (1<<LCD_DATA1);
- 1a6:	91 9a       	sbi	0x12, 1	; 18
- 1a8:	01 c0       	rjmp	.+2      	; 0x1ac <LCD_ProcessData+0x1a>
-	} else { DATA_PORT &= ~(1<<LCD_DATA1); }
- 1aa:	91 98       	cbi	0x12, 1	; 18
-
-	if (data & 0x04) {
- 1ac:	82 ff       	sbrs	r24, 2
- 1ae:	02 c0       	rjmp	.+4      	; 0x1b4 <LCD_ProcessData+0x22>
-		DATA_PORT |=  (1<<LCD_DATA2);
- 1b0:	92 9a       	sbi	0x12, 2	; 18
- 1b2:	01 c0       	rjmp	.+2      	; 0x1b6 <LCD_ProcessData+0x24>
-	} else { DATA_PORT &= ~(1<<LCD_DATA2); }
- 1b4:	92 98       	cbi	0x12, 2	; 18
-
-	if (data & 0x08) {
- 1b6:	83 ff       	sbrs	r24, 3
- 1b8:	02 c0       	rjmp	.+4      	; 0x1be <LCD_ProcessData+0x2c>
-		DATA_PORT |=  (1<<LCD_DATA3);
- 1ba:	93 9a       	sbi	0x12, 3	; 18
- 1bc:	08 95       	ret
-	} else { DATA_PORT &= ~(1<<LCD_DATA3); }
- 1be:	93 98       	cbi	0x12, 3	; 18
- 1c0:	08 95       	ret
-
-000001c2 <LCD_Initialize>:
-}
-
-void LCD_Initialize() {
- 1c2:	0f 93       	push	r16
- 1c4:	1f 93       	push	r17
-
-	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
- 1c6:	81 b3       	in	r24, 0x11	; 17
- 1c8:	8f 60       	ori	r24, 0x0F	; 15
- 1ca:	81 bb       	out	0x11, r24	; 17
-	LCD_Interface.Regs.DDR_E_set();
- 1cc:	e0 91 7d 00 	lds	r30, 0x007D
- 1d0:	f0 91 7e 00 	lds	r31, 0x007E
- 1d4:	09 95       	icall
-	LCD_Interface.Regs.DDR_RS_set();
- 1d6:	e0 91 7f 00 	lds	r30, 0x007F
- 1da:	f0 91 80 00 	lds	r31, 0x0080
- 1de:	09 95       	icall
-	LCD_Interface.Regs.DDR_RW_set();
- 1e0:	e0 91 81 00 	lds	r30, 0x0081
- 1e4:	f0 91 82 00 	lds	r31, 0x0082
- 1e8:	09 95       	icall
-	LCD_Interface.Regs.PORT_E_clear();
- 1ea:	e0 91 8f 00 	lds	r30, 0x008F
- 1ee:	f0 91 90 00 	lds	r31, 0x0090
- 1f2:	09 95       	icall
-	LCD_Interface.Regs.PORT_RS_clear();
- 1f4:	e0 91 91 00 	lds	r30, 0x0091
- 1f8:	f0 91 92 00 	lds	r31, 0x0092
- 1fc:	09 95       	icall
-	LCD_Interface.Regs.PORT_RW_clear();
- 1fe:	e0 91 93 00 	lds	r30, 0x0093
- 202:	f0 91 94 00 	lds	r31, 0x0094
- 206:	09 95       	icall
- 208:	88 ec       	ldi	r24, 0xC8	; 200
- 20a:	90 e0       	ldi	r25, 0x00	; 0
+	if (size == 4) {
+  bc:	84 30       	cpi	r24, 0x04	; 4
+  be:	99 f0       	breq	.+38     	; 0xe6 <LCD_SendCommand+0x2e>
+		LCD_Interface.DataFlow.ProcessData(cmd & 0x0F);
+		LCD_Interface.Com.ExecuteCMD();
+	} else if (size == 8) {
+  c0:	88 30       	cpi	r24, 0x08	; 8
+  c2:	e9 f4       	brne	.+58     	; 0xfe <LCD_SendCommand+0x46>
     milliseconds can be achieved.
  */
 void
 _delay_loop_2(uint16_t __count)
 {
 	__asm__ volatile (
- 20c:	20 e9       	ldi	r18, 0x90	; 144
- 20e:	31 e0       	ldi	r19, 0x01	; 1
- 210:	f9 01       	movw	r30, r18
- 212:	31 97       	sbiw	r30, 0x01	; 1
- 214:	f1 f7       	brne	.-4      	; 0x212 <LCD_Initialize+0x50>
+  c4:	80 e4       	ldi	r24, 0x40	; 64
+  c6:	9f e1       	ldi	r25, 0x1F	; 31
+  c8:	01 97       	sbiw	r24, 0x01	; 1
+  ca:	f1 f7       	brne	.-4      	; 0xc8 <LCD_SendCommand+0x10>
+		// temporary delay, until "WaitIfBusy" function is completed
+		_delay_ms(2);
+	//	LCD_Interface.Comm.WaitIfBusy();
+		LCD_Interface.DataFlow.ProcessData(cmd >> 4);
+  cc:	e0 91 9f 00 	lds	r30, 0x009F
+  d0:	f0 91 a0 00 	lds	r31, 0x00A0
+  d4:	86 2f       	mov	r24, r22
+  d6:	82 95       	swap	r24
+  d8:	8f 70       	andi	r24, 0x0F	; 15
+  da:	09 95       	icall
+		LCD_Interface.Com.ExecuteCMD();
+  dc:	e0 91 a1 00 	lds	r30, 0x00A1
+  e0:	f0 91 a2 00 	lds	r31, 0x00A2
+  e4:	09 95       	icall
+		LCD_Interface.DataFlow.ProcessData(cmd & 0x0F);
+  e6:	e0 91 9f 00 	lds	r30, 0x009F
+  ea:	f0 91 a0 00 	lds	r31, 0x00A0
+  ee:	81 2f       	mov	r24, r17
+  f0:	8f 70       	andi	r24, 0x0F	; 15
+  f2:	09 95       	icall
+		LCD_Interface.Com.ExecuteCMD();
+  f4:	e0 91 a1 00 	lds	r30, 0x00A1
+  f8:	f0 91 a2 00 	lds	r31, 0x00A2
+  fc:	09 95       	icall
+	}
+}
+  fe:	1f 91       	pop	r17
+ 100:	08 95       	ret
+
+00000102 <LCD_ExecuteCMD>:
+
+void LCD_ExecuteCMD() {
+
+	LCD_Interface.Regs.PORT_E_set();
+ 102:	e0 91 8b 00 	lds	r30, 0x008B
+ 106:	f0 91 8c 00 	lds	r31, 0x008C
+ 10a:	09 95       	icall
+	asm volatile("nop");
+ 10c:	00 00       	nop
+	asm volatile("nop");
+ 10e:	00 00       	nop
+	LCD_Interface.Regs.PORT_E_clear();
+ 110:	e0 91 91 00 	lds	r30, 0x0091
+ 114:	f0 91 92 00 	lds	r31, 0x0092
+ 118:	09 95       	icall
+}
+ 11a:	08 95       	ret
+
+0000011c <LCD_WaitIfBusy>:
+
+void LCD_WaitIfBusy() {
+ 11c:	1f 93       	push	r17
+ 11e:	df 93       	push	r29
+ 120:	cf 93       	push	r28
+ 122:	0f 92       	push	r0
+ 124:	cd b7       	in	r28, 0x3d	; 61
+ 126:	de b7       	in	r29, 0x3e	; 62
+
+	volatile uint8_t data;
+	uint8_t busy_f = 1;
+
+	LCD_Interface.Regs.PORT_RW_set();
+ 128:	e0 91 8f 00 	lds	r30, 0x008F
+ 12c:	f0 91 90 00 	lds	r31, 0x0090
+ 130:	09 95       	icall
+	DATA_DIR &= ~(1<<LCD_DATA0) | ~(1<<LCD_DATA1) | ~(1<<LCD_DATA2) | ~(1<<LCD_DATA3);
+ 132:	84 b3       	in	r24, 0x14	; 20
+ 134:	84 bb       	out	0x14, r24	; 20
+    can be achieved.
+*/
+void
+_delay_loop_1(uint8_t __count)
+{
+	__asm__ volatile (
+ 136:	15 e0       	ldi	r17, 0x05	; 5
+
+	while (busy_f) {
+
+		LCD_Interface.Regs.PORT_E_set();
+ 138:	e0 91 8b 00 	lds	r30, 0x008B
+ 13c:	f0 91 8c 00 	lds	r31, 0x008C
+ 140:	09 95       	icall
+ 142:	81 2f       	mov	r24, r17
+ 144:	8a 95       	dec	r24
+ 146:	f1 f7       	brne	.-4      	; 0x144 <LCD_WaitIfBusy+0x28>
+		_delay_us(1);
+		data = DATA_PIN  << 4;
+ 148:	83 b3       	in	r24, 0x13	; 19
+ 14a:	82 95       	swap	r24
+ 14c:	80 7f       	andi	r24, 0xF0	; 240
+ 14e:	89 83       	std	Y+1, r24	; 0x01
+		LCD_Interface.Regs.PORT_E_clear();
+ 150:	e0 91 91 00 	lds	r30, 0x0091
+ 154:	f0 91 92 00 	lds	r31, 0x0092
+ 158:	09 95       	icall
+ 15a:	81 2f       	mov	r24, r17
+ 15c:	8a 95       	dec	r24
+ 15e:	f1 f7       	brne	.-4      	; 0x15c <LCD_WaitIfBusy+0x40>
+		_delay_us(1);
+		LCD_Interface.Regs.PORT_E_set();
+ 160:	e0 91 8b 00 	lds	r30, 0x008B
+ 164:	f0 91 8c 00 	lds	r31, 0x008C
+ 168:	09 95       	icall
+ 16a:	81 2f       	mov	r24, r17
+ 16c:	8a 95       	dec	r24
+ 16e:	f1 f7       	brne	.-4      	; 0x16c <LCD_WaitIfBusy+0x50>
+		_delay_us(1);
+		data |= (DATA_PIN & 0x0F);
+ 170:	99 81       	ldd	r25, Y+1	; 0x01
+ 172:	83 b3       	in	r24, 0x13	; 19
+ 174:	8f 70       	andi	r24, 0x0F	; 15
+ 176:	89 2b       	or	r24, r25
+ 178:	89 83       	std	Y+1, r24	; 0x01
+		LCD_Interface.Regs.PORT_E_clear();
+ 17a:	e0 91 91 00 	lds	r30, 0x0091
+ 17e:	f0 91 92 00 	lds	r31, 0x0092
+ 182:	09 95       	icall
+ 184:	81 2f       	mov	r24, r17
+ 186:	8a 95       	dec	r24
+ 188:	f1 f7       	brne	.-4      	; 0x186 <LCD_WaitIfBusy+0x6a>
+		_delay_us(1);
+
+		if (data & 0x80) { } else { busy_f = 0; }
+ 18a:	89 81       	ldd	r24, Y+1	; 0x01
+ 18c:	87 fd       	sbrc	r24, 7
+ 18e:	d4 cf       	rjmp	.-88     	; 0x138 <LCD_WaitIfBusy+0x1c>
+	}
+	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
+ 190:	84 b3       	in	r24, 0x14	; 20
+ 192:	8f 60       	ori	r24, 0x0F	; 15
+ 194:	84 bb       	out	0x14, r24	; 20
+	LCD_Interface.Regs.PORT_RW_clear();
+ 196:	e0 91 95 00 	lds	r30, 0x0095
+ 19a:	f0 91 96 00 	lds	r31, 0x0096
+ 19e:	09 95       	icall
+}
+ 1a0:	0f 90       	pop	r0
+ 1a2:	cf 91       	pop	r28
+ 1a4:	df 91       	pop	r29
+ 1a6:	1f 91       	pop	r17
+ 1a8:	08 95       	ret
+
+000001aa <LCD_SendCharacter>:
+
+void LCD_SendCharacter(uint8_t character) {
+ 1aa:	1f 93       	push	r17
+ 1ac:	18 2f       	mov	r17, r24
+ 1ae:	80 ea       	ldi	r24, 0xA0	; 160
+ 1b0:	8a 95       	dec	r24
+ 1b2:	f1 f7       	brne	.-4      	; 0x1b0 <LCD_SendCharacter+0x6>
+
+	_delay_us(30);
+	//LCD_Interface.Comm.WaitIfBusy();
+	LCD_Interface.Regs.PORT_RS_set();
+ 1b4:	e0 91 8d 00 	lds	r30, 0x008D
+ 1b8:	f0 91 8e 00 	lds	r31, 0x008E
+ 1bc:	09 95       	icall
+	LCD_Interface.DataFlow.SendCommand(8, character);
+ 1be:	e0 91 97 00 	lds	r30, 0x0097
+ 1c2:	f0 91 98 00 	lds	r31, 0x0098
+ 1c6:	88 e0       	ldi	r24, 0x08	; 8
+ 1c8:	61 2f       	mov	r22, r17
+ 1ca:	09 95       	icall
+	LCD_Interface.Regs.PORT_RS_clear();
+ 1cc:	e0 91 93 00 	lds	r30, 0x0093
+ 1d0:	f0 91 94 00 	lds	r31, 0x0094
+ 1d4:	09 95       	icall
+}
+ 1d6:	1f 91       	pop	r17
+ 1d8:	08 95       	ret
+
+000001da <LCD_SendString>:
+
+void LCD_SendString(char* charString) {
+ 1da:	cf 93       	push	r28
+ 1dc:	df 93       	push	r29
+ 1de:	ec 01       	movw	r28, r24
+ 1e0:	06 c0       	rjmp	.+12     	; 0x1ee <LCD_SendString+0x14>
+
+	while(*charString != '\0') {
+		LCD_Interface.DataFlow.SendCharacter(*charString++);
+ 1e2:	21 96       	adiw	r28, 0x01	; 1
+ 1e4:	e0 91 99 00 	lds	r30, 0x0099
+ 1e8:	f0 91 9a 00 	lds	r31, 0x009A
+ 1ec:	09 95       	icall
+	LCD_Interface.Regs.PORT_RS_clear();
+}
+
+void LCD_SendString(char* charString) {
+
+	while(*charString != '\0') {
+ 1ee:	88 81       	ld	r24, Y
+ 1f0:	88 23       	and	r24, r24
+ 1f2:	b9 f7       	brne	.-18     	; 0x1e2 <LCD_SendString+0x8>
+		LCD_Interface.DataFlow.SendCharacter(*charString++);
+	}
+}
+ 1f4:	df 91       	pop	r29
+ 1f6:	cf 91       	pop	r28
+ 1f8:	08 95       	ret
+
+000001fa <LCD_SendNumber>:
+
+void LCD_SendNumber(uint16_t number) {
+
+}
+ 1fa:	08 95       	ret
+
+000001fc <LCD_ProcessData>:
+
+void LCD_ProcessData(int8_t data) {
+
+	if (data & 0x01) {
+ 1fc:	99 27       	eor	r25, r25
+ 1fe:	87 fd       	sbrc	r24, 7
+ 200:	90 95       	com	r25
+ 202:	80 ff       	sbrs	r24, 0
+ 204:	02 c0       	rjmp	.+4      	; 0x20a <LCD_ProcessData+0xe>
+		DATA_PORT |=  (1<<LCD_DATA0);
+ 206:	a8 9a       	sbi	0x15, 0	; 21
+ 208:	01 c0       	rjmp	.+2      	; 0x20c <LCD_ProcessData+0x10>
+	} else { DATA_PORT &= ~(1<<LCD_DATA0); }
+ 20a:	a8 98       	cbi	0x15, 0	; 21
+
+	if (data & 0x02) {
+ 20c:	81 ff       	sbrs	r24, 1
+ 20e:	02 c0       	rjmp	.+4      	; 0x214 <LCD_ProcessData+0x18>
+		DATA_PORT |=  (1<<LCD_DATA1);
+ 210:	a9 9a       	sbi	0x15, 1	; 21
+ 212:	01 c0       	rjmp	.+2      	; 0x216 <LCD_ProcessData+0x1a>
+	} else { DATA_PORT &= ~(1<<LCD_DATA1); }
+ 214:	a9 98       	cbi	0x15, 1	; 21
+
+	if (data & 0x04) {
+ 216:	82 ff       	sbrs	r24, 2
+ 218:	02 c0       	rjmp	.+4      	; 0x21e <LCD_ProcessData+0x22>
+		DATA_PORT |=  (1<<LCD_DATA2);
+ 21a:	aa 9a       	sbi	0x15, 2	; 21
+ 21c:	01 c0       	rjmp	.+2      	; 0x220 <LCD_ProcessData+0x24>
+	} else { DATA_PORT &= ~(1<<LCD_DATA2); }
+ 21e:	aa 98       	cbi	0x15, 2	; 21
+
+	if (data & 0x08) {
+ 220:	83 ff       	sbrs	r24, 3
+ 222:	02 c0       	rjmp	.+4      	; 0x228 <LCD_ProcessData+0x2c>
+		DATA_PORT |=  (1<<LCD_DATA3);
+ 224:	ab 9a       	sbi	0x15, 3	; 21
+ 226:	08 95       	ret
+	} else { DATA_PORT &= ~(1<<LCD_DATA3); }
+ 228:	ab 98       	cbi	0x15, 3	; 21
+ 22a:	08 95       	ret
+
+0000022c <LCD_Initialize>:
+}
+
+void LCD_Initialize() {
+ 22c:	0f 93       	push	r16
+ 22e:	1f 93       	push	r17
+
+	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
+ 230:	84 b3       	in	r24, 0x14	; 20
+ 232:	8f 60       	ori	r24, 0x0F	; 15
+ 234:	84 bb       	out	0x14, r24	; 20
+	LCD_Interface.Regs.DDR_E_set();
+ 236:	e0 91 7f 00 	lds	r30, 0x007F
+ 23a:	f0 91 80 00 	lds	r31, 0x0080
+ 23e:	09 95       	icall
+	LCD_Interface.Regs.DDR_RS_set();
+ 240:	e0 91 81 00 	lds	r30, 0x0081
+ 244:	f0 91 82 00 	lds	r31, 0x0082
+ 248:	09 95       	icall
+	LCD_Interface.Regs.DDR_RW_set();
+ 24a:	e0 91 83 00 	lds	r30, 0x0083
+ 24e:	f0 91 84 00 	lds	r31, 0x0084
+ 252:	09 95       	icall
+	LCD_Interface.Regs.PORT_E_clear();
+ 254:	e0 91 91 00 	lds	r30, 0x0091
+ 258:	f0 91 92 00 	lds	r31, 0x0092
+ 25c:	09 95       	icall
+	LCD_Interface.Regs.PORT_RS_clear();
+ 25e:	e0 91 93 00 	lds	r30, 0x0093
+ 262:	f0 91 94 00 	lds	r31, 0x0094
+ 266:	09 95       	icall
+	LCD_Interface.Regs.PORT_RW_clear();
+ 268:	e0 91 95 00 	lds	r30, 0x0095
+ 26c:	f0 91 96 00 	lds	r31, 0x0096
+ 270:	09 95       	icall
+ 272:	88 ec       	ldi	r24, 0xC8	; 200
+ 274:	90 e0       	ldi	r25, 0x00	; 0
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+ 276:	20 e9       	ldi	r18, 0x90	; 144
+ 278:	31 e0       	ldi	r19, 0x01	; 1
+ 27a:	f9 01       	movw	r30, r18
+ 27c:	31 97       	sbiw	r30, 0x01	; 1
+ 27e:	f1 f7       	brne	.-4      	; 0x27c <LCD_Initialize+0x50>
 		__ticks = (uint16_t) (__ms * 10.0);
 		while(__ticks)
 		{
 			// wait 1/10 ms
 			_delay_loop_2(((F_CPU) / 4e3) / 10);
 			__ticks --;
- 216:	01 97       	sbiw	r24, 0x01	; 1
+ 280:	01 97       	sbiw	r24, 0x01	; 1
 		__ticks = 1;
 	else if (__tmp > 65535)
 	{
 		//	__ticks = requested delay in 1/10 ms
 		__ticks = (uint16_t) (__ms * 10.0);
 		while(__ticks)
- 218:	d9 f7       	brne	.-10     	; 0x210 <LCD_Initialize+0x4e>
+ 282:	d9 f7       	brne	.-10     	; 0x27a <LCD_Initialize+0x4e>
 
 	_delay_ms(20);
 	LCD_Interface.DataFlow.SendCommand(4, 0x03);	_delay_ms(5);
- 21a:	e0 91 95 00 	lds	r30, 0x0095
- 21e:	f0 91 96 00 	lds	r31, 0x0096
- 222:	84 e0       	ldi	r24, 0x04	; 4
- 224:	63 e0       	ldi	r22, 0x03	; 3
- 226:	09 95       	icall
- 228:	80 e2       	ldi	r24, 0x20	; 32
- 22a:	9e e4       	ldi	r25, 0x4E	; 78
- 22c:	01 97       	sbiw	r24, 0x01	; 1
- 22e:	f1 f7       	brne	.-4      	; 0x22c <LCD_Initialize+0x6a>
+ 284:	e0 91 97 00 	lds	r30, 0x0097
+ 288:	f0 91 98 00 	lds	r31, 0x0098
+ 28c:	84 e0       	ldi	r24, 0x04	; 4
+ 28e:	63 e0       	ldi	r22, 0x03	; 3
+ 290:	09 95       	icall
+ 292:	80 e2       	ldi	r24, 0x20	; 32
+ 294:	9e e4       	ldi	r25, 0x4E	; 78
+ 296:	01 97       	sbiw	r24, 0x01	; 1
+ 298:	f1 f7       	brne	.-4      	; 0x296 <LCD_Initialize+0x6a>
 	LCD_Interface.DataFlow.SendCommand(4, 0x03);	_delay_ms(2);
- 230:	e0 91 95 00 	lds	r30, 0x0095
- 234:	f0 91 96 00 	lds	r31, 0x0096
- 238:	84 e0       	ldi	r24, 0x04	; 4
- 23a:	63 e0       	ldi	r22, 0x03	; 3
- 23c:	09 95       	icall
- 23e:	00 e4       	ldi	r16, 0x40	; 64
- 240:	1f e1       	ldi	r17, 0x1F	; 31
- 242:	c8 01       	movw	r24, r16
- 244:	01 97       	sbiw	r24, 0x01	; 1
- 246:	f1 f7       	brne	.-4      	; 0x244 <LCD_Initialize+0x82>
+ 29a:	e0 91 97 00 	lds	r30, 0x0097
+ 29e:	f0 91 98 00 	lds	r31, 0x0098
+ 2a2:	84 e0       	ldi	r24, 0x04	; 4
+ 2a4:	63 e0       	ldi	r22, 0x03	; 3
+ 2a6:	09 95       	icall
+ 2a8:	00 e4       	ldi	r16, 0x40	; 64
+ 2aa:	1f e1       	ldi	r17, 0x1F	; 31
+ 2ac:	c8 01       	movw	r24, r16
+ 2ae:	01 97       	sbiw	r24, 0x01	; 1
+ 2b0:	f1 f7       	brne	.-4      	; 0x2ae <LCD_Initialize+0x82>
 	LCD_Interface.DataFlow.SendCommand(4, 0x03);	_delay_ms(2);
- 248:	e0 91 95 00 	lds	r30, 0x0095
- 24c:	f0 91 96 00 	lds	r31, 0x0096
- 250:	84 e0       	ldi	r24, 0x04	; 4
- 252:	63 e0       	ldi	r22, 0x03	; 3
- 254:	09 95       	icall
- 256:	c8 01       	movw	r24, r16
- 258:	01 97       	sbiw	r24, 0x01	; 1
- 25a:	f1 f7       	brne	.-4      	; 0x258 <LCD_Initialize+0x96>
+ 2b2:	e0 91 97 00 	lds	r30, 0x0097
+ 2b6:	f0 91 98 00 	lds	r31, 0x0098
+ 2ba:	84 e0       	ldi	r24, 0x04	; 4
+ 2bc:	63 e0       	ldi	r22, 0x03	; 3
+ 2be:	09 95       	icall
+ 2c0:	c8 01       	movw	r24, r16
+ 2c2:	01 97       	sbiw	r24, 0x01	; 1
+ 2c4:	f1 f7       	brne	.-4      	; 0x2c2 <LCD_Initialize+0x96>
 	LCD_Interface.DataFlow.SendCommand(4, 0x02);	_delay_ms(2);
- 25c:	e0 91 95 00 	lds	r30, 0x0095
- 260:	f0 91 96 00 	lds	r31, 0x0096
- 264:	84 e0       	ldi	r24, 0x04	; 4
- 266:	62 e0       	ldi	r22, 0x02	; 2
- 268:	09 95       	icall
- 26a:	c8 01       	movw	r24, r16
- 26c:	01 97       	sbiw	r24, 0x01	; 1
- 26e:	f1 f7       	brne	.-4      	; 0x26c <LCD_Initialize+0xaa>
+ 2c6:	e0 91 97 00 	lds	r30, 0x0097
+ 2ca:	f0 91 98 00 	lds	r31, 0x0098
+ 2ce:	84 e0       	ldi	r24, 0x04	; 4
+ 2d0:	62 e0       	ldi	r22, 0x02	; 2
+ 2d2:	09 95       	icall
+ 2d4:	c8 01       	movw	r24, r16
+ 2d6:	01 97       	sbiw	r24, 0x01	; 1
+ 2d8:	f1 f7       	brne	.-4      	; 0x2d6 <LCD_Initialize+0xaa>
 	// 4-bit mode, 2 lines
 	LCD_Interface.DataFlow.SendCommand(4, 0x2); 	_delay_ms(2);
- 270:	e0 91 95 00 	lds	r30, 0x0095
- 274:	f0 91 96 00 	lds	r31, 0x0096
- 278:	84 e0       	ldi	r24, 0x04	; 4
- 27a:	62 e0       	ldi	r22, 0x02	; 2
- 27c:	09 95       	icall
- 27e:	c8 01       	movw	r24, r16
- 280:	01 97       	sbiw	r24, 0x01	; 1
- 282:	f1 f7       	brne	.-4      	; 0x280 <LCD_Initialize+0xbe>
+ 2da:	e0 91 97 00 	lds	r30, 0x0097
+ 2de:	f0 91 98 00 	lds	r31, 0x0098
+ 2e2:	84 e0       	ldi	r24, 0x04	; 4
+ 2e4:	62 e0       	ldi	r22, 0x02	; 2
+ 2e6:	09 95       	icall
+ 2e8:	c8 01       	movw	r24, r16
+ 2ea:	01 97       	sbiw	r24, 0x01	; 1
+ 2ec:	f1 f7       	brne	.-4      	; 0x2ea <LCD_Initialize+0xbe>
 	LCD_Interface.DataFlow.SendCommand(4, 0x8); 	_delay_ms(2);
- 284:	e0 91 95 00 	lds	r30, 0x0095
- 288:	f0 91 96 00 	lds	r31, 0x0096
- 28c:	84 e0       	ldi	r24, 0x04	; 4
- 28e:	68 e0       	ldi	r22, 0x08	; 8
- 290:	09 95       	icall
- 292:	c8 01       	movw	r24, r16
- 294:	01 97       	sbiw	r24, 0x01	; 1
- 296:	f1 f7       	brne	.-4      	; 0x294 <LCD_Initialize+0xd2>
+ 2ee:	e0 91 97 00 	lds	r30, 0x0097
+ 2f2:	f0 91 98 00 	lds	r31, 0x0098
+ 2f6:	84 e0       	ldi	r24, 0x04	; 4
+ 2f8:	68 e0       	ldi	r22, 0x08	; 8
+ 2fa:	09 95       	icall
+ 2fc:	c8 01       	movw	r24, r16
+ 2fe:	01 97       	sbiw	r24, 0x01	; 1
+ 300:	f1 f7       	brne	.-4      	; 0x2fe <LCD_Initialize+0xd2>
 
 	// display on
 	LCD_Interface.DataFlow.SendCommand(8, 0x0C);
- 298:	e0 91 95 00 	lds	r30, 0x0095
- 29c:	f0 91 96 00 	lds	r31, 0x0096
- 2a0:	88 e0       	ldi	r24, 0x08	; 8
- 2a2:	6c e0       	ldi	r22, 0x0C	; 12
- 2a4:	09 95       	icall
+ 302:	e0 91 97 00 	lds	r30, 0x0097
+ 306:	f0 91 98 00 	lds	r31, 0x0098
+ 30a:	88 e0       	ldi	r24, 0x08	; 8
+ 30c:	6c e0       	ldi	r22, 0x0C	; 12
+ 30e:	09 95       	icall
 	//LCD_Interface.Comm.WaitIfBusy();
 
 	// clear display, return position
 	LCD_Interface.DataFlow.SendCommand(8, 0x01);
- 2a6:	e0 91 95 00 	lds	r30, 0x0095
- 2aa:	f0 91 96 00 	lds	r31, 0x0096
- 2ae:	88 e0       	ldi	r24, 0x08	; 8
- 2b0:	61 e0       	ldi	r22, 0x01	; 1
- 2b2:	09 95       	icall
-	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.DataFlow.SendString("Initialization");_delay_ms(500);
- 2b4:	e0 91 99 00 	lds	r30, 0x0099
- 2b8:	f0 91 9a 00 	lds	r31, 0x009A
- 2bc:	80 e6       	ldi	r24, 0x60	; 96
- 2be:	90 e0       	ldi	r25, 0x00	; 0
- 2c0:	09 95       	icall
- 2c2:	88 e8       	ldi	r24, 0x88	; 136
- 2c4:	93 e1       	ldi	r25, 0x13	; 19
- 2c6:	20 e9       	ldi	r18, 0x90	; 144
- 2c8:	31 e0       	ldi	r19, 0x01	; 1
- 2ca:	f9 01       	movw	r30, r18
- 2cc:	31 97       	sbiw	r30, 0x01	; 1
- 2ce:	f1 f7       	brne	.-4      	; 0x2cc <LCD_Initialize+0x10a>
-		{
-			// wait 1/10 ms
-			_delay_loop_2(((F_CPU) / 4e3) / 10);
-			__ticks --;
- 2d0:	01 97       	sbiw	r24, 0x01	; 1
-		__ticks = 1;
-	else if (__tmp > 65535)
-	{
-		//	__ticks = requested delay in 1/10 ms
-		__ticks = (uint16_t) (__ms * 10.0);
-		while(__ticks)
- 2d2:	d9 f7       	brne	.-10     	; 0x2ca <LCD_Initialize+0x108>
-	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.Position(2, 1);
- 2d4:	e0 91 7b 00 	lds	r30, 0x007B
- 2d8:	f0 91 7c 00 	lds	r31, 0x007C
- 2dc:	82 e0       	ldi	r24, 0x02	; 2
- 2de:	61 e0       	ldi	r22, 0x01	; 1
- 2e0:	09 95       	icall
-	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(1000);
- 2e2:	e0 91 99 00 	lds	r30, 0x0099
- 2e6:	f0 91 9a 00 	lds	r31, 0x009A
- 2ea:	8f e6       	ldi	r24, 0x6F	; 111
- 2ec:	90 e0       	ldi	r25, 0x00	; 0
- 2ee:	09 95       	icall
- 2f0:	80 e1       	ldi	r24, 0x10	; 16
- 2f2:	97 e2       	ldi	r25, 0x27	; 39
- 2f4:	20 e9       	ldi	r18, 0x90	; 144
- 2f6:	31 e0       	ldi	r19, 0x01	; 1
- 2f8:	f9 01       	movw	r30, r18
- 2fa:	31 97       	sbiw	r30, 0x01	; 1
- 2fc:	f1 f7       	brne	.-4      	; 0x2fa <LCD_Initialize+0x138>
-		{
-			// wait 1/10 ms
-			_delay_loop_2(((F_CPU) / 4e3) / 10);
-			__ticks --;
- 2fe:	01 97       	sbiw	r24, 0x01	; 1
-		__ticks = 1;
-	else if (__tmp > 65535)
-	{
-		//	__ticks = requested delay in 1/10 ms
-		__ticks = (uint16_t) (__ms * 10.0);
-		while(__ticks)
- 300:	d9 f7       	brne	.-10     	; 0x2f8 <LCD_Initialize+0x136>
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);
- 302:	e0 91 95 00 	lds	r30, 0x0095
- 306:	f0 91 96 00 	lds	r31, 0x0096
- 30a:	88 e0       	ldi	r24, 0x08	; 8
- 30c:	61 e0       	ldi	r22, 0x01	; 1
- 30e:	09 95       	icall
-	LCD_Interface.Position(1, 1);
- 310:	e0 91 7b 00 	lds	r30, 0x007B
- 314:	f0 91 7c 00 	lds	r31, 0x007C
- 318:	81 e0       	ldi	r24, 0x01	; 1
+ 310:	e0 91 97 00 	lds	r30, 0x0097
+ 314:	f0 91 98 00 	lds	r31, 0x0098
+ 318:	88 e0       	ldi	r24, 0x08	; 8
  31a:	61 e0       	ldi	r22, 0x01	; 1
  31c:	09 95       	icall
+	//LCD_Interface.Comm.WaitIfBusy();
+	LCD_Interface.DataFlow.SendString("Initialization");_delay_ms(500);
+ 31e:	e0 91 9b 00 	lds	r30, 0x009B
+ 322:	f0 91 9c 00 	lds	r31, 0x009C
+ 326:	82 e6       	ldi	r24, 0x62	; 98
+ 328:	90 e0       	ldi	r25, 0x00	; 0
+ 32a:	09 95       	icall
+ 32c:	88 e8       	ldi	r24, 0x88	; 136
+ 32e:	93 e1       	ldi	r25, 0x13	; 19
+ 330:	20 e9       	ldi	r18, 0x90	; 144
+ 332:	31 e0       	ldi	r19, 0x01	; 1
+ 334:	f9 01       	movw	r30, r18
+ 336:	31 97       	sbiw	r30, 0x01	; 1
+ 338:	f1 f7       	brne	.-4      	; 0x336 <LCD_Initialize+0x10a>
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+ 33a:	01 97       	sbiw	r24, 0x01	; 1
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+ 33c:	d9 f7       	brne	.-10     	; 0x334 <LCD_Initialize+0x108>
+	//LCD_Interface.Comm.WaitIfBusy();
+	LCD_Interface.Position(2, 1);
+ 33e:	e0 91 7d 00 	lds	r30, 0x007D
+ 342:	f0 91 7e 00 	lds	r31, 0x007E
+ 346:	82 e0       	ldi	r24, 0x02	; 2
+ 348:	61 e0       	ldi	r22, 0x01	; 1
+ 34a:	09 95       	icall
+	//LCD_Interface.Comm.WaitIfBusy();
+	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(1000);
+ 34c:	e0 91 9b 00 	lds	r30, 0x009B
+ 350:	f0 91 9c 00 	lds	r31, 0x009C
+ 354:	81 e7       	ldi	r24, 0x71	; 113
+ 356:	90 e0       	ldi	r25, 0x00	; 0
+ 358:	09 95       	icall
+ 35a:	80 e1       	ldi	r24, 0x10	; 16
+ 35c:	97 e2       	ldi	r25, 0x27	; 39
+ 35e:	20 e9       	ldi	r18, 0x90	; 144
+ 360:	31 e0       	ldi	r19, 0x01	; 1
+ 362:	f9 01       	movw	r30, r18
+ 364:	31 97       	sbiw	r30, 0x01	; 1
+ 366:	f1 f7       	brne	.-4      	; 0x364 <LCD_Initialize+0x138>
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+ 368:	01 97       	sbiw	r24, 0x01	; 1
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+ 36a:	d9 f7       	brne	.-10     	; 0x362 <LCD_Initialize+0x136>
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+ 36c:	e0 91 97 00 	lds	r30, 0x0097
+ 370:	f0 91 98 00 	lds	r31, 0x0098
+ 374:	88 e0       	ldi	r24, 0x08	; 8
+ 376:	61 e0       	ldi	r22, 0x01	; 1
+ 378:	09 95       	icall
+	LCD_Interface.Position(1, 1);
+ 37a:	e0 91 7d 00 	lds	r30, 0x007D
+ 37e:	f0 91 7e 00 	lds	r31, 0x007E
+ 382:	81 e0       	ldi	r24, 0x01	; 1
+ 384:	61 e0       	ldi	r22, 0x01	; 1
+ 386:	09 95       	icall
 }
- 31e:	1f 91       	pop	r17
- 320:	0f 91       	pop	r16
- 322:	08 95       	ret
+ 388:	1f 91       	pop	r17
+ 38a:	0f 91       	pop	r16
+ 38c:	08 95       	ret
 
-00000324 <LCD_Position>:
+0000038e <LCD_Position>:
 
 void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
- 324:	df 93       	push	r29
- 326:	cf 93       	push	r28
- 328:	00 d0       	rcall	.+0      	; 0x32a <LCD_Position+0x6>
- 32a:	00 d0       	rcall	.+0      	; 0x32c <LCD_Position+0x8>
- 32c:	cd b7       	in	r28, 0x3d	; 61
- 32e:	de b7       	in	r29, 0x3e	; 62
- 330:	26 2f       	mov	r18, r22
+ 38e:	df 93       	push	r29
+ 390:	cf 93       	push	r28
+ 392:	00 d0       	rcall	.+0      	; 0x394 <LCD_Position+0x6>
+ 394:	00 d0       	rcall	.+0      	; 0x396 <LCD_Position+0x8>
+ 396:	cd b7       	in	r28, 0x3d	; 61
+ 398:	de b7       	in	r29, 0x3e	; 62
+ 39a:	26 2f       	mov	r18, r22
 
 	uint8_t pos;
 	uint8_t LCD_Rows[4] = {0, 64, LCD_ROW_LENGTH, LCD_ROW_LENGTH+64};
- 332:	19 82       	std	Y+1, r1	; 0x01
- 334:	90 e4       	ldi	r25, 0x40	; 64
- 336:	9a 83       	std	Y+2, r25	; 0x02
- 338:	90 e1       	ldi	r25, 0x10	; 16
- 33a:	9b 83       	std	Y+3, r25	; 0x03
- 33c:	90 e5       	ldi	r25, 0x50	; 80
- 33e:	9c 83       	std	Y+4, r25	; 0x04
+ 39c:	19 82       	std	Y+1, r1	; 0x01
+ 39e:	90 e4       	ldi	r25, 0x40	; 64
+ 3a0:	9a 83       	std	Y+2, r25	; 0x02
+ 3a2:	90 e1       	ldi	r25, 0x10	; 16
+ 3a4:	9b 83       	std	Y+3, r25	; 0x03
+ 3a6:	90 e5       	ldi	r25, 0x50	; 80
+ 3a8:	9c 83       	std	Y+4, r25	; 0x04
 
 	pos = LCD_SIZE + LCD_Rows[pos_y - 1] + (pos_x - 1);
 	LCD_Interface.DataFlow.SendCommand(8, pos);
- 340:	21 58       	subi	r18, 0x81	; 129
- 342:	fe 01       	movw	r30, r28
- 344:	e8 0f       	add	r30, r24
- 346:	f1 1d       	adc	r31, r1
- 348:	60 81       	ld	r22, Z
- 34a:	62 0f       	add	r22, r18
- 34c:	e0 91 95 00 	lds	r30, 0x0095
- 350:	f0 91 96 00 	lds	r31, 0x0096
- 354:	88 e0       	ldi	r24, 0x08	; 8
- 356:	09 95       	icall
+ 3aa:	21 58       	subi	r18, 0x81	; 129
+ 3ac:	fe 01       	movw	r30, r28
+ 3ae:	e8 0f       	add	r30, r24
+ 3b0:	f1 1d       	adc	r31, r1
+ 3b2:	60 81       	ld	r22, Z
+ 3b4:	62 0f       	add	r22, r18
+ 3b6:	e0 91 97 00 	lds	r30, 0x0097
+ 3ba:	f0 91 98 00 	lds	r31, 0x0098
+ 3be:	88 e0       	ldi	r24, 0x08	; 8
+ 3c0:	09 95       	icall
 }
- 358:	0f 90       	pop	r0
- 35a:	0f 90       	pop	r0
- 35c:	0f 90       	pop	r0
- 35e:	0f 90       	pop	r0
- 360:	cf 91       	pop	r28
- 362:	df 91       	pop	r29
- 364:	08 95       	ret
+ 3c2:	0f 90       	pop	r0
+ 3c4:	0f 90       	pop	r0
+ 3c6:	0f 90       	pop	r0
+ 3c8:	0f 90       	pop	r0
+ 3ca:	cf 91       	pop	r28
+ 3cc:	df 91       	pop	r29
+ 3ce:	08 95       	ret
 
-00000366 <LCD_DDR_E_set>:
+000003d0 <LCD_DDR_E_set>:
 
 void LCD_DDR_E_set() 		{ CMD_DIR |= (1<<LCD_E); }
- 366:	b8 9a       	sbi	0x17, 0	; 23
- 368:	08 95       	ret
+ 3d0:	b8 9a       	sbi	0x17, 0	; 23
+ 3d2:	08 95       	ret
 
-0000036a <LCD_DDR_RS_set>:
+000003d4 <LCD_DDR_RS_set>:
 void LCD_DDR_RS_set() 		{ CMD_DIR |= (1<<LCD_RS); }
- 36a:	b9 9a       	sbi	0x17, 1	; 23
- 36c:	08 95       	ret
+ 3d4:	b9 9a       	sbi	0x17, 1	; 23
+ 3d6:	08 95       	ret
 
-0000036e <LCD_DDR_RW_set>:
+000003d8 <LCD_DDR_RW_set>:
 void LCD_DDR_RW_set() 		{ CMD_DIR |= (1<<LCD_RW); }
- 36e:	ba 9a       	sbi	0x17, 2	; 23
- 370:	08 95       	ret
+ 3d8:	ba 9a       	sbi	0x17, 2	; 23
+ 3da:	08 95       	ret
 
-00000372 <LCD_DDR_E_clear>:
+000003dc <LCD_DDR_E_clear>:
 void LCD_DDR_E_clear() 		{ CMD_DIR &= ~(1<<LCD_E); }
- 372:	b8 98       	cbi	0x17, 0	; 23
- 374:	08 95       	ret
+ 3dc:	b8 98       	cbi	0x17, 0	; 23
+ 3de:	08 95       	ret
 
-00000376 <LCD_DDR_RS_clear>:
+000003e0 <LCD_DDR_RS_clear>:
 void LCD_DDR_RS_clear() 	{ CMD_DIR &= ~(1<<LCD_RS); }
- 376:	b9 98       	cbi	0x17, 1	; 23
- 378:	08 95       	ret
+ 3e0:	b9 98       	cbi	0x17, 1	; 23
+ 3e2:	08 95       	ret
 
-0000037a <LCD_DDR_RW_clear>:
+000003e4 <LCD_DDR_RW_clear>:
 void LCD_DDR_RW_clear()		{ CMD_DIR &= ~(1<<LCD_RW); }
- 37a:	ba 98       	cbi	0x17, 2	; 23
- 37c:	08 95       	ret
+ 3e4:	ba 98       	cbi	0x17, 2	; 23
+ 3e6:	08 95       	ret
 
-0000037e <LCD_PORT_E_set>:
+000003e8 <LCD_PORT_E_set>:
 void LCD_PORT_E_set() 		{ CMD_PORT |= (1<<LCD_E); }
- 37e:	c0 9a       	sbi	0x18, 0	; 24
- 380:	08 95       	ret
+ 3e8:	c0 9a       	sbi	0x18, 0	; 24
+ 3ea:	08 95       	ret
 
-00000382 <LCD_PORT_RS_set>:
+000003ec <LCD_PORT_RS_set>:
 void LCD_PORT_RS_set() 		{ CMD_PORT |= (1<<LCD_RS); }
- 382:	c1 9a       	sbi	0x18, 1	; 24
- 384:	08 95       	ret
+ 3ec:	c1 9a       	sbi	0x18, 1	; 24
+ 3ee:	08 95       	ret
 
-00000386 <LCD_PORT_RW_set>:
+000003f0 <LCD_PORT_RW_set>:
 void LCD_PORT_RW_set()		{ CMD_PORT |= (1<<LCD_RW); }
- 386:	c2 9a       	sbi	0x18, 2	; 24
- 388:	08 95       	ret
+ 3f0:	c2 9a       	sbi	0x18, 2	; 24
+ 3f2:	08 95       	ret
 
-0000038a <LCD_PORT_E_clear>:
+000003f4 <LCD_PORT_E_clear>:
 void LCD_PORT_E_clear() 	{ CMD_PORT &= ~(1<<LCD_E); }
- 38a:	c0 98       	cbi	0x18, 0	; 24
- 38c:	08 95       	ret
+ 3f4:	c0 98       	cbi	0x18, 0	; 24
+ 3f6:	08 95       	ret
 
-0000038e <LCD_PORT_RS_clear>:
+000003f8 <LCD_PORT_RS_clear>:
 void LCD_PORT_RS_clear() 	{ CMD_PORT &= ~(1<<LCD_RS); }
- 38e:	c1 98       	cbi	0x18, 1	; 24
- 390:	08 95       	ret
+ 3f8:	c1 98       	cbi	0x18, 1	; 24
+ 3fa:	08 95       	ret
 
-00000392 <LCD_PORT_RW_clear>:
+000003fc <LCD_PORT_RW_clear>:
 void LCD_PORT_RW_clear() 	{ CMD_PORT &= ~(1<<LCD_RW); }
- 392:	c2 98       	cbi	0x18, 2	; 24
- 394:	08 95       	ret
+ 3fc:	c2 98       	cbi	0x18, 2	; 24
+ 3fe:	08 95       	ret
 
-00000396 <LCD_Menu_Initialize>:
+00000400 <LCD_Menu_Initialize>:
 						  }
 					  };
 
 void LCD_Menu_Initialize() {
 
 	LCD_Menu.Options.CurrentFunctionName[0] = LCD_Menu.Options.LED.name;
- 396:	80 91 fa 00 	lds	r24, 0x00FA
- 39a:	90 91 fb 00 	lds	r25, 0x00FB
- 39e:	90 93 f3 00 	sts	0x00F3, r25
- 3a2:	80 93 f2 00 	sts	0x00F2, r24
+ 400:	80 91 0e 01 	lds	r24, 0x010E
+ 404:	90 91 0f 01 	lds	r25, 0x010F
+ 408:	90 93 07 01 	sts	0x0107, r25
+ 40c:	80 93 06 01 	sts	0x0106, r24
 	LCD_Menu.Options.CurrentFunctionName[1] = LCD_Menu.Options.Prefs.name;
- 3a6:	80 91 fc 00 	lds	r24, 0x00FC
- 3aa:	90 91 fd 00 	lds	r25, 0x00FD
- 3ae:	90 93 f5 00 	sts	0x00F5, r25
- 3b2:	80 93 f4 00 	sts	0x00F4, r24
+ 410:	80 91 10 01 	lds	r24, 0x0110
+ 414:	90 91 11 01 	lds	r25, 0x0111
+ 418:	90 93 09 01 	sts	0x0109, r25
+ 41c:	80 93 08 01 	sts	0x0108, r24
 	LCD_Menu.Options.CurrentFunctionName[2] = LCD_Menu.Options.Ch.name;
- 3b6:	80 91 fe 00 	lds	r24, 0x00FE
- 3ba:	90 91 ff 00 	lds	r25, 0x00FF
- 3be:	90 93 f7 00 	sts	0x00F7, r25
- 3c2:	80 93 f6 00 	sts	0x00F6, r24
+ 420:	80 91 12 01 	lds	r24, 0x0112
+ 424:	90 91 13 01 	lds	r25, 0x0113
+ 428:	90 93 0b 01 	sts	0x010B, r25
+ 42c:	80 93 0a 01 	sts	0x010A, r24
 	LCD_Menu.Options.CurrentFunctionName[3] = LCD_Menu.Options.Profs.name;
- 3c6:	80 91 00 01 	lds	r24, 0x0100
- 3ca:	90 91 01 01 	lds	r25, 0x0101
- 3ce:	90 93 f9 00 	sts	0x00F9, r25
- 3d2:	80 93 f8 00 	sts	0x00F8, r24
+ 430:	80 91 14 01 	lds	r24, 0x0114
+ 434:	90 91 15 01 	lds	r25, 0x0115
+ 438:	90 93 0d 01 	sts	0x010D, r25
+ 43c:	80 93 0c 01 	sts	0x010C, r24
 }
- 3d6:	08 95       	ret
+ 440:	08 95       	ret
 
-000003d8 <LCD_Menu_Enter>:
+00000442 <LCD_Menu_Enter>:
+
+void LCD_Menu_Enter() {
+ 442:	0f 93       	push	r16
+ 444:	1f 93       	push	r17
 	char* functionName = "";
 	uint8_t functionQueue = 0;
 
 //	LCD_Menu.Options.CurrentFunction[functionQueue]();
 
 	LCD_Interface.Position(1, 1);
- 3d8:	e0 91 7b 00 	lds	r30, 0x007B
- 3dc:	f0 91 7c 00 	lds	r31, 0x007C
- 3e0:	81 e0       	ldi	r24, 0x01	; 1
- 3e2:	61 e0       	ldi	r22, 0x01	; 1
- 3e4:	09 95       	icall
+ 446:	e0 91 7d 00 	lds	r30, 0x007D
+ 44a:	f0 91 7e 00 	lds	r31, 0x007E
+ 44e:	81 e0       	ldi	r24, 0x01	; 1
+ 450:	61 e0       	ldi	r22, 0x01	; 1
+ 452:	09 95       	icall
 	LCD_Interface.DataFlow.SendString("----- Menu -----");
- 3e6:	e0 91 99 00 	lds	r30, 0x0099
- 3ea:	f0 91 9a 00 	lds	r31, 0x009A
- 3ee:	83 ea       	ldi	r24, 0xA3	; 163
- 3f0:	90 e0       	ldi	r25, 0x00	; 0
- 3f2:	09 95       	icall
+ 454:	e0 91 9b 00 	lds	r30, 0x009B
+ 458:	f0 91 9c 00 	lds	r31, 0x009C
+ 45c:	85 ea       	ldi	r24, 0xA5	; 165
+ 45e:	90 e0       	ldi	r25, 0x00	; 0
+ 460:	09 95       	icall
 	LCD_Interface.Position(2, 1);
- 3f4:	e0 91 7b 00 	lds	r30, 0x007B
- 3f8:	f0 91 7c 00 	lds	r31, 0x007C
- 3fc:	82 e0       	ldi	r24, 0x02	; 2
- 3fe:	61 e0       	ldi	r22, 0x01	; 1
- 400:	09 95       	icall
+ 462:	e0 91 7d 00 	lds	r30, 0x007D
+ 466:	f0 91 7e 00 	lds	r31, 0x007E
+ 46a:	82 e0       	ldi	r24, 0x02	; 2
+ 46c:	61 e0       	ldi	r22, 0x01	; 1
+ 46e:	09 95       	icall
 	LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
- 402:	e0 91 97 00 	lds	r30, 0x0097
- 406:	f0 91 98 00 	lds	r31, 0x0098
- 40a:	8e e7       	ldi	r24, 0x7E	; 126
- 40c:	09 95       	icall
+ 470:	e0 91 99 00 	lds	r30, 0x0099
+ 474:	f0 91 9a 00 	lds	r31, 0x009A
+ 478:	8e e7       	ldi	r24, 0x7E	; 126
+ 47a:	09 95       	icall
 	LCD_Interface.DataFlow.SendCharacter(S_BLANK);
- 40e:	e0 91 97 00 	lds	r30, 0x0097
- 412:	f0 91 98 00 	lds	r31, 0x0098
- 416:	80 e2       	ldi	r24, 0x20	; 32
- 418:	09 95       	icall
+ 47c:	e0 91 99 00 	lds	r30, 0x0099
+ 480:	f0 91 9a 00 	lds	r31, 0x009A
+ 484:	80 e2       	ldi	r24, 0x20	; 32
+ 486:	09 95       	icall
 
 	functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
 	LCD_Interface.DataFlow.SendString(functionName);
- 41a:	e0 91 99 00 	lds	r30, 0x0099
- 41e:	f0 91 9a 00 	lds	r31, 0x009A
- 422:	80 91 f2 00 	lds	r24, 0x00F2
- 426:	90 91 f3 00 	lds	r25, 0x00F3
- 42a:	09 95       	icall
-	default:
-		break;
+ 488:	e0 91 9b 00 	lds	r30, 0x009B
+ 48c:	f0 91 9c 00 	lds	r31, 0x009C
+ 490:	80 91 06 01 	lds	r24, 0x0106
+ 494:	90 91 07 01 	lds	r25, 0x0107
+ 498:	09 95       	icall
+ 49a:	10 e0       	ldi	r17, 0x00	; 0
+				LCD_Interface.Position(2, 1);
+				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
+				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
+				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				LCD_Interface.DataFlow.SendString(functionName);
+				LCD_Menu.functionSelected = OPT_VOID;
+ 49c:	00 e5       	ldi	r16, 0x50	; 80
+	functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+	LCD_Interface.DataFlow.SendString(functionName);
 
-	}*/
+	while(1) {
+
+		while(LCD_Menu.functionSelected == OPT_VOID) { if (LCD_Menu.functionSelected != OPT_VOID) { break;} }
+ 49e:	80 91 f5 00 	lds	r24, 0x00F5
+ 4a2:	80 35       	cpi	r24, 0x50	; 80
+ 4a4:	e1 f3       	breq	.-8      	; 0x49e <__stack+0x3f>
+
+		LCD_Interface.Position(2, 1);
+ 4a6:	e0 91 7d 00 	lds	r30, 0x007D
+ 4aa:	f0 91 7e 00 	lds	r31, 0x007E
+ 4ae:	82 e0       	ldi	r24, 0x02	; 2
+ 4b0:	61 e0       	ldi	r22, 0x01	; 1
+ 4b2:	09 95       	icall
+		LCD_Interface.DataFlow.SendString("                ");
+ 4b4:	e0 91 9b 00 	lds	r30, 0x009B
+ 4b8:	f0 91 9c 00 	lds	r31, 0x009C
+ 4bc:	86 eb       	ldi	r24, 0xB6	; 182
+ 4be:	90 e0       	ldi	r25, 0x00	; 0
+ 4c0:	09 95       	icall
+
+		switch(LCD_Menu.functionSelected)
+ 4c2:	80 91 f5 00 	lds	r24, 0x00F5
+ 4c6:	80 33       	cpi	r24, 0x30	; 48
+ 4c8:	19 f0       	breq	.+6      	; 0x4d0 <__stack+0x71>
+ 4ca:	80 34       	cpi	r24, 0x40	; 64
+ 4cc:	41 f7       	brne	.-48     	; 0x49e <__stack+0x3f>
+ 4ce:	08 c0       	rjmp	.+16     	; 0x4e0 <__stack+0x81>
+		{
+			case OPT_NEXT:
+				if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
+ 4d0:	13 30       	cpi	r17, 0x03	; 3
+ 4d2:	10 f4       	brcc	.+4      	; 0x4d8 <__stack+0x79>
+					functionQueue++;
+ 4d4:	1f 5f       	subi	r17, 0xFF	; 255
+ 4d6:	0d c0       	rjmp	.+26     	; 0x4f2 <__stack+0x93>
+				} else if (functionQueue == OPT_QUANTITY-1) {
+ 4d8:	13 30       	cpi	r17, 0x03	; 3
+ 4da:	59 f4       	brne	.+22     	; 0x4f2 <__stack+0x93>
+ 4dc:	10 e0       	ldi	r17, 0x00	; 0
+ 4de:	09 c0       	rjmp	.+18     	; 0x4f2 <__stack+0x93>
+				LCD_Interface.DataFlow.SendString(functionName);
+				LCD_Menu.functionSelected = OPT_VOID;
+				break;
+
+			case OPT_PREV:
+				if (functionQueue > 0 && functionQueue < OPT_QUANTITY) {
+ 4e0:	81 2f       	mov	r24, r17
+ 4e2:	81 50       	subi	r24, 0x01	; 1
+ 4e4:	83 30       	cpi	r24, 0x03	; 3
+ 4e6:	10 f4       	brcc	.+4      	; 0x4ec <__stack+0x8d>
+ 4e8:	18 2f       	mov	r17, r24
+ 4ea:	03 c0       	rjmp	.+6      	; 0x4f2 <__stack+0x93>
+					functionQueue--;
+				} else if (functionQueue == 0) {
+ 4ec:	11 23       	and	r17, r17
+ 4ee:	09 f4       	brne	.+2      	; 0x4f2 <__stack+0x93>
+ 4f0:	13 e0       	ldi	r17, 0x03	; 3
+					functionQueue = OPT_QUANTITY-1;
+				}
+
+				LCD_Interface.Position(2, 1);
+ 4f2:	e0 91 7d 00 	lds	r30, 0x007D
+ 4f6:	f0 91 7e 00 	lds	r31, 0x007E
+ 4fa:	82 e0       	ldi	r24, 0x02	; 2
+ 4fc:	61 e0       	ldi	r22, 0x01	; 1
+ 4fe:	09 95       	icall
+				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
+ 500:	e0 91 99 00 	lds	r30, 0x0099
+ 504:	f0 91 9a 00 	lds	r31, 0x009A
+ 508:	8e e7       	ldi	r24, 0x7E	; 126
+ 50a:	09 95       	icall
+				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
+ 50c:	e0 91 99 00 	lds	r30, 0x0099
+ 510:	f0 91 9a 00 	lds	r31, 0x009A
+ 514:	80 e2       	ldi	r24, 0x20	; 32
+ 516:	09 95       	icall
+				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				LCD_Interface.DataFlow.SendString(functionName);
+ 518:	e1 2f       	mov	r30, r17
+ 51a:	f0 e0       	ldi	r31, 0x00	; 0
+ 51c:	ee 0f       	add	r30, r30
+ 51e:	ff 1f       	adc	r31, r31
+ 520:	ef 5f       	subi	r30, 0xFF	; 255
+ 522:	fe 4f       	sbci	r31, 0xFE	; 254
+ 524:	20 91 9b 00 	lds	r18, 0x009B
+ 528:	30 91 9c 00 	lds	r19, 0x009C
+ 52c:	85 81       	ldd	r24, Z+5	; 0x05
+ 52e:	96 81       	ldd	r25, Z+6	; 0x06
+ 530:	f9 01       	movw	r30, r18
+ 532:	09 95       	icall
+				LCD_Menu.functionSelected = OPT_VOID;
+ 534:	00 93 f5 00 	sts	0x00F5, r16
+ 538:	b2 cf       	rjmp	.-156    	; 0x49e <__stack+0x3f>
+
+0000053a <LCD_Menu_LED_color>:
 
 }
- 42c:	08 95       	ret
-
-0000042e <LCD_Menu_LED_color>:
 
 void LCD_Menu_LED_color() {
 
 }
- 42e:	08 95       	ret
+ 53a:	08 95       	ret
 
-00000430 <LCD_Menu_Preferences>:
+0000053c <LCD_Menu_Preferences>:
 
 void LCD_Menu_Preferences() {
 
 }
- 430:	08 95       	ret
+ 53c:	08 95       	ret
 
-00000432 <LCD_Menu_Channels>:
+0000053e <LCD_Menu_Channels>:
 
 void LCD_Menu_Channels() {
 
 }
- 432:	08 95       	ret
+ 53e:	08 95       	ret
 
-00000434 <LCD_Menu_Profiles>:
+00000540 <LCD_Menu_Profiles>:
 
 void LCD_Menu_Profiles() {
 
 }
- 434:	08 95       	ret
+ 540:	08 95       	ret
 
-00000436 <main>:
+00000542 <main>:
 
 #define F_CPU 16000000UL
 
 int main() {
 
 	LCD_Interface.Initialize();
- 436:	e0 91 79 00 	lds	r30, 0x0079
- 43a:	f0 91 7a 00 	lds	r31, 0x007A
- 43e:	09 95       	icall
+ 542:	e0 91 7b 00 	lds	r30, 0x007B
+ 546:	f0 91 7c 00 	lds	r31, 0x007C
+ 54a:	09 95       	icall
+	BUTTONS_Interface.Initialize();
+ 54c:	e0 91 60 00 	lds	r30, 0x0060
+ 550:	f0 91 61 00 	lds	r31, 0x0061
+ 554:	09 95       	icall
 	LCD_Menu.Initialize();
- 440:	e0 91 de 00 	lds	r30, 0x00DE
- 444:	f0 91 df 00 	lds	r31, 0x00DF
- 448:	09 95       	icall
+ 556:	e0 91 f1 00 	lds	r30, 0x00F1
+ 55a:	f0 91 f2 00 	lds	r31, 0x00F2
+ 55e:	09 95       	icall
 	LCD_Menu.Enter();
- 44a:	e0 91 e0 00 	lds	r30, 0x00E0
- 44e:	f0 91 e1 00 	lds	r31, 0x00E1
- 452:	09 95       	icall
- 454:	ff cf       	rjmp	.-2      	; 0x454 <main+0x1e>
+ 560:	e0 91 f3 00 	lds	r30, 0x00F3
+ 564:	f0 91 f4 00 	lds	r31, 0x00F4
+ 568:	09 95       	icall
+ 56a:	ff cf       	rjmp	.-2      	; 0x56a <main+0x28>
 
-00000456 <_exit>:
- 456:	f8 94       	cli
+0000056c <_exit>:
+ 56c:	f8 94       	cli
 
-00000458 <__stop_program>:
- 458:	ff cf       	rjmp	.-2      	; 0x458 <__stop_program>
+0000056e <__stop_program>:
+ 56e:	ff cf       	rjmp	.-2      	; 0x56e <__stop_program>

@@ -24,6 +24,7 @@ void LCD_Menu_Profiles(void);
 #define OPT_VOID			0x50
 #define OPT_EXIT			0xF0
 
+// minus 1, starting with index of 0
 #define OPT_QUANTITY		4
 
 typedef struct {
