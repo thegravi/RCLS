@@ -9,10 +9,13 @@
 #define BUTTONS_H_
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
 
 #define BUTTON_DDR				DDRD
 #define BUTTON_PORT				PORTD
-#define BUTTON_NEXT				PD4
+#define BUTTON_PIN				PIND
+#define BUTTON_NEXT				PD2
 #define BUTTON_PREV				PD5
 #define BUTTON_SELECT			PD6
 #define BUTTON_RETURN			PD7
