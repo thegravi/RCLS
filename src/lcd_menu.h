@@ -8,7 +8,7 @@
 #ifndef LCD_MENIU_H_
 #define LCD_MENIU_H_
 
-#define OPTIONS_QUANTITY		4
+#include <avr/io.h>
 
 void LCD_Menu_Initialize(void);
 void LCD_Menu_Enter(void);
@@ -16,6 +16,15 @@ void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);
 void LCD_Menu_Profiles(void);
+
+#define OPT_SELECT			0x10
+#define OPT_RETURN			0x20
+#define OPT_NEXT			0x30
+#define OPT_PREV			0x40
+#define OPT_VOID			0x50
+#define OPT_EXIT			0xF0
+
+#define OPT_QUANTITY		4
 
 typedef struct {
 	char* name;
@@ -38,13 +47,13 @@ typedef struct {
 }Profiles_t;
 
 typedef struct {
-	void (*CurrentFunction[OPTIONS_QUANTITY])(void);
+	void (*CurrentFunction[OPT_QUANTITY])(void);
 	void (*LED_color)(void);
 	void (*Preferences)(void);
 	void (*Channels)(void);
 	void (*Profiles)(void);
 
-	char* CurrentFunctionName[OPTIONS_QUANTITY];
+	char* CurrentFunctionName[OPT_QUANTITY];
 
 	LED_t LED;
 	Settings_t Prefs;
@@ -56,6 +65,8 @@ typedef struct {
 typedef struct {
 	void (*Initialize)(void);
 	void (*Enter)(void);
+
+	uint8_t functionSelected;
 
 	Options_t Options;
 }LCD_Menu_t;

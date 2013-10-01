@@ -16,7 +16,7 @@
 #define BUTTON_PORT				PORTD
 #define BUTTON_PIN				PIND
 #define BUTTON_NEXT				PD2
-#define BUTTON_PREV				PD5
+#define BUTTON_PREV				PD3
 #define BUTTON_SELECT			PD6
 #define BUTTON_RETURN			PD7
 
