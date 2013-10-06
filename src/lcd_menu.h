@@ -30,6 +30,11 @@ void LCD_Menu_Profiles(void);
 typedef struct {
 	char* name;
 
+	void (*Preset_colors)(void);
+	void (*Custom_color)(void);
+
+	char* CurrentFunctionName[2];
+
 }LED_t;
 
 typedef struct {
@@ -48,13 +53,13 @@ typedef struct {
 }Profiles_t;
 
 typedef struct {
-	void (*CurrentFunction[OPT_QUANTITY])(void);
+	void (*CurrentFunction[4])(void);
 	void (*LED_color)(void);
 	void (*Preferences)(void);
 	void (*Channels)(void);
 	void (*Profiles)(void);
 
-	char* CurrentFunctionName[OPT_QUANTITY];
+	char* CurrentFunctionName[4];
 
 	LED_t LED;
 	Settings_t Prefs;
