@@ -53,6 +53,9 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.Options.CurrentFunctionName[1] = LCD_Menu.Options.Prefs.name;
 	LCD_Menu.Options.CurrentFunctionName[2] = LCD_Menu.Options.Ch.name;
 	LCD_Menu.Options.CurrentFunctionName[3] = LCD_Menu.Options.Profs.name;
+
+	LCD_Menu.Options.LED.CurrentSubFunctionName[0] = "Preset colors";
+	LCD_Menu.Options.LED.CurrentSubFunctionName[1] = "Custom color";
 }
 
 void LCD_Menu_Enter() {
@@ -71,15 +74,15 @@ void LCD_Menu_Enter() {
 
 	while(1) {
 
-		while(LCD_Menu.functionSelected == OPT_VOID) { if (LCD_Menu.functionSelected != OPT_VOID) { break;} }
+		while(LCD_Menu.optionSelected == OPT_VOID) { if (LCD_Menu.optionSelected != OPT_VOID) { break;} }
 
 		LCD_Interface.Position(2, 1);
 		LCD_Interface.DataFlow.SendString("                ");
 
-		switch(LCD_Menu.functionSelected)
+		switch(LCD_Menu.optionSelected)
 		{
 			case OPT_NEXT:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
 					functionQueue++;
 				} else if (functionQueue == OPT_QUANTITY-1) {
@@ -94,7 +97,7 @@ void LCD_Menu_Enter() {
 				break;
 
 			case OPT_PREV:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				if (functionQueue > 0 && functionQueue < OPT_QUANTITY) {
 					functionQueue--;
 				} else if (functionQueue == 0) {
@@ -109,7 +112,7 @@ void LCD_Menu_Enter() {
 				break;
 
 			case OPT_SELECT:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				LCD_Menu.Options.CurrentFunction[functionQueue]();
 				break;
 
@@ -128,51 +131,51 @@ void LCD_Menu_LED_color() {
 
 	char* functionName = "";
 	uint8_t functionQueue = 0;
-	DDRC |= 1<<PC5;
-
+DDRC |= 1<<PC5;
 	LCD_Interface.Position(1, 1);
 	LCD_Interface.DataFlow.SendString("-- Etalon LED --");
 	LCD_Interface.Position(2, 1);
 	LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
 	LCD_Interface.DataFlow.SendCharacter(S_BLANK);
 
-	functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+	functionName = LCD_Menu.Options.LED.CurrentSubFunctionName[functionQueue];
 	LCD_Interface.DataFlow.SendString(functionName);
 
 	while(1) {
 
-		while(LCD_Menu.functionSelected == OPT_VOID) { if (LCD_Menu.functionSelected != OPT_VOID) { break;} }
+		while(LCD_Menu.optionSelected == OPT_VOID) { if (LCD_Menu.optionSelected != OPT_VOID) { break;} }
 
 		LCD_Interface.Position(2, 1);
 		LCD_Interface.DataFlow.SendString("                ");
 
-		switch(LCD_Menu.functionSelected)
+		switch(LCD_Menu.optionSelected)
 		{
 			case OPT_NEXT:
-				LCD_Menu.functionSelected = OPT_VOID;
-				if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
+				LCD_Menu.optionSelected = OPT_VOID;
+				if (functionQueue >= 0 && functionQueue < 1) {
 					functionQueue++;
-				} else if (functionQueue == OPT_QUANTITY-1) {
+				} else if (functionQueue == 1) {
 					functionQueue = 0;
 				}
 
 				LCD_Interface.Position(2, 1);
 				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
 				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
-				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				functionName = LCD_Menu.Options.LED.CurrentSubFunctionName[functionQueue];
 				LCD_Interface.DataFlow.SendString(functionName);
+				PORTC |= 1<<PC5;
 				break;
 
 			case OPT_PREV:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				break;
 
 			case OPT_SELECT:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				break;
 
 			case OPT_RETURN:
-				LCD_Menu.functionSelected = OPT_VOID;
+				LCD_Menu.optionSelected = OPT_VOID;
 				break;
 
 			default:

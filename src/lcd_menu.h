@@ -35,7 +35,7 @@ typedef struct {
 	void (*Preset_colors)(void);
 	void (*Custom_color)(void);
 
-	char* CurrentFunctionName[2];
+	char* CurrentSubFunctionName[2];
 
 }LED_t;
 
@@ -74,7 +74,7 @@ typedef struct {
 	void (*Initialize)(void);
 	void (*Enter)(void);
 
-	uint8_t functionSelected;
+	uint8_t optionSelected;
 
 	Options_t Options;
 }LCD_Menu_t;
