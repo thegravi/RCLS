@@ -16,6 +16,8 @@ void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);
 void LCD_Menu_Profiles(void);
+void LCD_Menu_Preset_colors(void);
+void LCD_Menu_Custom_color(void);
 
 #define OPT_SELECT			0x10
 #define OPT_RETURN			0x20

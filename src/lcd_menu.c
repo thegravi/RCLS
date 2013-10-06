@@ -28,7 +28,9 @@ LCD_Menu_t LCD_Menu = {
 								  {"","","",""},
 								  	  	  // LED obj
 									  {
-											  "Etalon LED"
+											  "Etalon LED",
+											  LCD_Menu_Preset_colors,
+											  LCD_Menu_Custom_color,
 									  },
 										  // Settings obj
 									  {
@@ -148,7 +150,17 @@ void LCD_Menu_LED_color() {
 		{
 			case OPT_NEXT:
 				LCD_Menu.functionSelected = OPT_VOID;
-				PORTC ^= 1<<PC5;
+				if (functionQueue >= 0 && functionQueue < OPT_QUANTITY-1) {
+					functionQueue++;
+				} else if (functionQueue == OPT_QUANTITY-1) {
+					functionQueue = 0;
+				}
+
+				LCD_Interface.Position(2, 1);
+				LCD_Interface.DataFlow.SendCharacter(S_ARROW_RIGHT);
+				LCD_Interface.DataFlow.SendCharacter(S_BLANK);
+				functionName = LCD_Menu.Options.CurrentFunctionName[functionQueue];
+				LCD_Interface.DataFlow.SendString(functionName);
 				break;
 
 			case OPT_PREV:
@@ -167,6 +179,14 @@ void LCD_Menu_LED_color() {
 				break;
 		}
 	}
+
+}
+
+void LCD_Menu_Preset_colors() {
+
+}
+
+void LCD_Menu_Custom_color() {
 
 }
 
