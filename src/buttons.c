@@ -7,6 +7,7 @@
 
 #include "buttons.h"
 #include "lcd_menu.h"
+#include <util/delay.h>
 
 BUTTONS_Interface_t BUTTONS_Interface = {
 											BUTTONS_Initialize
@@ -24,16 +25,20 @@ void BUTTONS_Initialize() {
 	__asm__ __volatile__ ("sei" ::);
 }
 
-ISR(INT0_vect) {
+ISR(INT0_vect, ISR_NAKED) {
 
 	while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
-	LCD_Menu.functionSelected = OPT_NEXT;
+	LCD_Menu.optionSelected = OPT_NEXT;
+	_delay_ms(300);
 	GIFR |= (1<<INTF0);
+	reti();
 }
 
-ISR(INT1_vect) {
+ISR(INT1_vect, ISR_NAKED) {
 
 	while(bit_is_clear(BUTTON_PIN, BUTTON_PREV)) { }
-	LCD_Menu.functionSelected = OPT_PREV;
+	LCD_Menu.optionSelected = OPT_SELECT;//OPT_PREV;
+	_delay_ms(300);
 	GIFR |= (1<<INTF1);
+	reti();
 }
