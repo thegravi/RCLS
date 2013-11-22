@@ -20,25 +20,79 @@ void BUTTONS_Initialize() {
 	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
 
 	// interrupts on low level
-	MCUCR &= ~(1<<ISC11) | ~(1<<ISC01) | ~(1<<ISC00) | ~(1<<ISC10);
-	GICR |= (1<<INT0) | (1<<INT1);
+	PCICR |= 1<<PCIE0;
+	PCMSK0 |= 1<<PCINT3 | 1<<PCINT4 | 1<<PCINT6 | 1<<PCINT7;
 	__asm__ __volatile__ ("sei" ::);
 }
 
-ISR(INT0_vect, ISR_NAKED) {
+ISR(PCINT0_vect, ISR_NAKED) {
 
-	while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
-	LCD_Menu.optionSelected = OPT_NEXT;
+		if (!(BUTTON_PIN & BUTTON_NEXT))
+		{
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_NEXT;
+			while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
+		}
+		else if (!(BUTTON_PIN & BUTTON_PREV))
+		{
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_PREV;
+			while(bit_is_clear(BUTTON_PIN, BUTTON_PREV)) { }
+		}
+		else if (!(BUTTON_PIN & BUTTON_SELECT))
+		{
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_SELECT;
+			while(bit_is_clear(BUTTON_PIN, BUTTON_SELECT)) { }
+		}
+		else if (!(BUTTON_PIN & BUTTON_RETURN))
+		{
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_RETURN;
+			while(bit_is_clear(BUTTON_PIN, BUTTON_RETURN)) { }
+		}
+		else
+		{
+			PORTC &= ~(1<<PC5);
+			LCD_Menu.optionSelected = OPT_VOID;
+		}
+
+
+	/*switch()
+	{
+		case BUTTON_NEXT:
+
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_NEXT;
+			break;
+
+		case BUTTON_PREV:
+
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_PREV;
+			break;
+
+		case BUTTON_SELECT:
+
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_SELECT;
+			break;
+
+		case BUTTON_RETURN:
+
+			PORTC ^= 1<<PC5;
+			LCD_Menu.optionSelected = OPT_RETURN;
+			break;
+
+		default:
+			break;
+
+	}*/
+
+
+//	while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
+//	LCD_Menu.optionSelected = OPT_NEXT;
 	_delay_ms(300);
-	GIFR |= (1<<INTF0);
-	reti();
-}
-
-ISR(INT1_vect, ISR_NAKED) {
-
-	while(bit_is_clear(BUTTON_PIN, BUTTON_PREV)) { }
-	LCD_Menu.optionSelected = OPT_SELECT;//OPT_PREV;
-	_delay_ms(300);
-	GIFR |= (1<<INTF1);
+	PCIFR |= (1<<PCIF0);
 	reti();
 }

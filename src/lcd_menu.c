@@ -51,29 +51,30 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.Options.Profiles 		= LCD_Menu_Profiles;
 
 	LCD_Menu.Options.CurrentFunctionName[0][0] = LCD_Menu.Options.LED.name;
-	LCD_Menu.Options.CurrentFunctionName[0][1] = LCD_Menu.Options.LED.CurrentSubFunctionName[0];
-	LCD_Menu.Options.CurrentFunctionName[0][2] = LCD_Menu.Options.LED.CurrentSubFunctionName[1];
-	LCD_Menu.Options.CurrentFunctionName[0][3] = "";
-	LCD_Menu.Options.CurrentFunctionName[1][0] = LCD_Menu.Options.Prefs.name;
-	LCD_Menu.Options.CurrentFunctionName[1][1] = "";
+	LCD_Menu.Options.CurrentFunctionName[0][1] = LCD_Menu.Options.Prefs.name;
+	LCD_Menu.Options.CurrentFunctionName[0][2] = LCD_Menu.Options.Ch.name;
+	LCD_Menu.Options.CurrentFunctionName[0][3] = LCD_Menu.Options.Profs.name;
+	LCD_Menu.Options.CurrentFunctionName[1][0] = LCD_Menu.Options.LED.CurrentSubFunctionName[0];
+	LCD_Menu.Options.CurrentFunctionName[1][1] = LCD_Menu.Options.LED.CurrentSubFunctionName[1];
 	LCD_Menu.Options.CurrentFunctionName[1][2] = "";
 	LCD_Menu.Options.CurrentFunctionName[1][3] = "";
-	LCD_Menu.Options.CurrentFunctionName[2][0] = LCD_Menu.Options.Ch.name;
+	LCD_Menu.Options.CurrentFunctionName[2][0] = "";
 	LCD_Menu.Options.CurrentFunctionName[2][1] = "";
 	LCD_Menu.Options.CurrentFunctionName[2][2] = "";
 	LCD_Menu.Options.CurrentFunctionName[2][3] = "";
-	LCD_Menu.Options.CurrentFunctionName[3][0] = LCD_Menu.Options.Profs.name;
+	LCD_Menu.Options.CurrentFunctionName[3][0] = "";
 	LCD_Menu.Options.CurrentFunctionName[3][1] = "";
 	LCD_Menu.Options.CurrentFunctionName[3][2] = "";
 	LCD_Menu.Options.CurrentFunctionName[3][3] = "";
 
+
 	LCD_Menu.Options.CurrentFunction[0][0] = LCD_Menu.Options.LED_color;
-	LCD_Menu.Options.CurrentFunction[0][1] = LCD_Menu.Options.LED.Preset_colors;
-	LCD_Menu.Options.CurrentFunction[0][2] = LCD_Menu.Options.LED.Custom_color;
-	LCD_Menu.Options.CurrentFunction[0][3] = 0;
-/*	LCD_Menu.Options.CurrentFunction[1][0] = LCD_Menu.Options.Preferences;
-	LCD_Menu.Options.CurrentFunction[1][1] =
-	LCD_Menu.Options.CurrentFunction[1][2] =
+	LCD_Menu.Options.CurrentFunction[0][1] = LCD_Menu.Options.Preferences;
+	LCD_Menu.Options.CurrentFunction[0][2] = LCD_Menu.Options.Channels;
+	LCD_Menu.Options.CurrentFunction[0][3] = LCD_Menu.Options.Profiles;
+	LCD_Menu.Options.CurrentFunction[1][0] = LCD_Menu.Options.LED.Preset_colors;
+	LCD_Menu.Options.CurrentFunction[1][1] = LCD_Menu.Options.LED.Custom_color;
+/*	LCD_Menu.Options.CurrentFunction[1][2] =
 	LCD_Menu.Options.CurrentFunction[1][3] =
 	LCD_Menu.Options.CurrentFunction[2][0] =
 	LCD_Menu.Options.CurrentFunction[2][1] =
@@ -125,6 +126,7 @@ void LCD_Menu_LED_color() {
 
 	LCD_Menu.bottomThreshold 	= 0;
 	LCD_Menu.topThreshold		= 2;
+	LCD_Menu.fQueue 			= 1;
 }
 
 void LCD_Menu_Preset_colors() {
@@ -153,7 +155,7 @@ void LCD_Menu_Profiles() {
 void LCD_Menu_Option_Selection() {
 
 	char* functionName;
-	uint8_t fLevelPrev;
+	//uint8_t fLevelPrev;
 
 	/*	if ( (LCD_Menu.subfQueue - 1) < OPT_LEVEL_GROUND )
 			fLevelPrev = OPT_LEVEL_SURFACE;
@@ -169,10 +171,10 @@ void LCD_Menu_Option_Selection() {
 			switch(LCD_Menu.optionSelected)
 			{
 				case OPT_NEXT:
-					if ((LCD_Menu.fQueue >= LCD_Menu.bottomThreshold) && (LCD_Menu.fQueue < LCD_Menu.topThreshold)) {
-						LCD_Menu.fQueue++;
-					} else if (LCD_Menu.fQueue == LCD_Menu.topThreshold) {
-						LCD_Menu.fQueue = LCD_Menu.bottomThreshold;
+					if ((LCD_Menu.subfQueue >= LCD_Menu.bottomThreshold) && (LCD_Menu.fQueue < LCD_Menu.topThreshold)) {
+						LCD_Menu.subfQueue = LCD_Menu.subfQueue + 1;
+					} else if (LCD_Menu.subfQueue == LCD_Menu.topThreshold) {
+						LCD_Menu.subfQueue = LCD_Menu.bottomThreshold;
 					}
 
 					LCD_Interface.Position(2, 1);
@@ -187,10 +189,10 @@ void LCD_Menu_Option_Selection() {
 					break;
 
 				case OPT_PREV:
-					if ((LCD_Menu.fQueue > LCD_Menu.bottomThreshold) && (LCD_Menu.fQueue <= LCD_Menu.topThreshold)) {
-						LCD_Menu.fQueue--;
-					} else if (LCD_Menu.fQueue == LCD_Menu.bottomThreshold) {
-						LCD_Menu.fQueue = LCD_Menu.topThreshold;
+					if ((LCD_Menu.subfQueue > LCD_Menu.bottomThreshold) && (LCD_Menu.subfQueue <= LCD_Menu.topThreshold)) {
+						LCD_Menu.subfQueue--;
+					} else if (LCD_Menu.subfQueue == LCD_Menu.bottomThreshold) {
+						LCD_Menu.subfQueue = LCD_Menu.topThreshold;
 					}
 
 					LCD_Interface.Position(2, 1);
@@ -205,7 +207,7 @@ void LCD_Menu_Option_Selection() {
 					break;
 
 				case OPT_SELECT:
-					LCD_Menu.Options.CurrentFunction[LCD_Menu.fQueue][LCD_Menu.subfQueue];
+					LCD_Menu.Options.CurrentFunction[LCD_Menu.fQueue][LCD_Menu.subfQueue]();
 					break;
 
 				case OPT_RETURN:

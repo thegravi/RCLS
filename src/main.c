@@ -11,7 +11,7 @@
 #include "lcd_menu.h"
 #include "buttons.h"
 
-#define F_CPU 16000000UL
+#define F_CPU 8000000UL
 
 int main() {
 

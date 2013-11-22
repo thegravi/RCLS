@@ -12,13 +12,16 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#define BUTTON_DDR				DDRD
-#define BUTTON_PORT				PORTD
-#define BUTTON_PIN				PIND
-#define BUTTON_NEXT				PD2
-#define BUTTON_PREV				PD3
-#define BUTTON_SELECT			PD6
-#define BUTTON_RETURN			PD7
+#define BUTTON_DDR				DDRB
+#define BUTTON_PORT				PORTB
+#define BUTTON_PIN				PINB
+#define BUTTON_NEXT				PB6
+#define BUTTON_PREV				PB7
+#define BUTTON_SELECT			PB4
+#define BUTTON_RETURN			PB3
+								// 1101 1000
+
+#define B_RECEIVED				0x01
 
 void (BUTTONS_Initialize)(void);
 
