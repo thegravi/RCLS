@@ -27,71 +27,56 @@ void BUTTONS_Initialize() {
 
 ISR(PCINT0_vect, ISR_NAKED) {
 
-		if (!(BUTTON_PIN & BUTTON_NEXT))
-		{
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_NEXT;
-			while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
+	uint8_t receivedButton;
+
+		if (!(BUTTON_PIN & BUTTON_NEXT)) {
+			receivedButton = BUTTON_NEXT;
 		}
-		else if (!(BUTTON_PIN & BUTTON_PREV))
-		{
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_PREV;
-			while(bit_is_clear(BUTTON_PIN, BUTTON_PREV)) { }
+		else if (!(BUTTON_PIN & BUTTON_PREV)) {
+			receivedButton = BUTTON_PREV;
 		}
-		else if (!(BUTTON_PIN & BUTTON_SELECT))
-		{
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_SELECT;
-			while(bit_is_clear(BUTTON_PIN, BUTTON_SELECT)) { }
+		else if (!(BUTTON_PIN & BUTTON_SELECT))	{
+			receivedButton = BUTTON_SELECT;
 		}
-		else if (!(BUTTON_PIN & BUTTON_RETURN))
-		{
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_RETURN;
-			while(bit_is_clear(BUTTON_PIN, BUTTON_RETURN)) { }
-		}
-		else
-		{
-			PORTC &= ~(1<<PC5);
-			LCD_Menu.optionSelected = OPT_VOID;
+		else if (!(BUTTON_PIN & BUTTON_RETURN)) {
+			receivedButton = BUTTON_RETURN;
 		}
 
+		while(bit_is_clear(BUTTON_PIN, receivedButton)) { }
 
-	/*switch()
-	{
-		case BUTTON_NEXT:
+		switch(receivedButton)
+		{
+			case BUTTON_NEXT:
 
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_NEXT;
-			break;
+				PORTC ^= 1<<PC5;
+				LCD_Menu.optionSelected = OPT_NEXT;
+				break;
 
-		case BUTTON_PREV:
+			case BUTTON_PREV:
 
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_PREV;
-			break;
+				PORTC ^= 1<<PC5;
+				LCD_Menu.optionSelected = OPT_PREV;
+				break;
 
-		case BUTTON_SELECT:
+			case BUTTON_SELECT:
 
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_SELECT;
-			break;
+				PORTC ^= 1<<PC5;
+				LCD_Menu.optionSelected = OPT_SELECT;
+				break;
 
-		case BUTTON_RETURN:
+			case BUTTON_RETURN:
 
-			PORTC ^= 1<<PC5;
-			LCD_Menu.optionSelected = OPT_RETURN;
-			break;
+				PORTC ^= 1<<PC5;
+				LCD_Menu.optionSelected = OPT_RETURN;
+				break;
 
-		default:
-			break;
+			default:
+				PORTC &= ~(1<<PC5);
+				LCD_Menu.optionSelected = OPT_VOID;
+				break;
 
-	}*/
+		}
 
-
-//	while(bit_is_clear(BUTTON_PIN, BUTTON_NEXT)) { }
-//	LCD_Menu.optionSelected = OPT_NEXT;
 	_delay_ms(300);
 	PCIFR |= (1<<PCIF0);
 	reti();
