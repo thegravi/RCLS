@@ -9,6 +9,7 @@
 #define LCD_MENIU_H_
 
 #include <avr/io.h>
+#include "uart.h"
 
 void LCD_Menu_Initialize(void);
 void LCD_Menu_Enter(void);
@@ -16,8 +17,14 @@ void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);
 void LCD_Menu_Profiles(void);
-void LCD_Menu_Preset_colors(void);
-void LCD_Menu_Custom_color(void);
+void LCD_Menu_Preset_colors(uint8_t random);
+void LCD_Menu_Custom_color(uint8_t preview);
+void LCD_Menu_ChooseChannel(uint8_t io);
+void LCD_setSubFuncLevelDepth(int8_t pos);
+void LCD_setFuncLevelDepth(int8_t pos);
+uint8_t LCD_getSubFuncLevelDepth(void);
+uint8_t LCD_getFuncLevelDepth(void);
+
 /*
  * optLevel - has e.g. 3 sub levels, ground 0,..,3 surface
  */
@@ -35,50 +42,47 @@ void LCD_Menu_Option_Selection();
 #define OPT_QUANTITY		4
 
 typedef struct LED_t {
-	void (*CurrentFunction[2])(void);
-	void (*Preset_colors)(void);
-	void (*Custom_color)(void);
+	void (*CurrentFunction[3])(uint8_t);
 
-	char* CurrentSubFunctionName[2];
-	char* name;
+	void (*PresetColors)(uint8_t random);	// 8 different colors
+	void (*CustomColor)(uint8_t preview); 	// setting-up RGB and brightness
+	void (*ChooseChannel)(uint8_t io);	// select a channel
+
+	// sub functions of main ones
+	void (*ChannelDetails)(void);
+
+	char* CurrentFunctionName[3];
+	char* CurrentSubFunctionName[1];
+	uint8_t funcQuantity;
+	char* objName;
 }LED_t;
 
 typedef struct Settings_t {
 	void (*CurrentFunction[2])(void);
 
 	char* CurrentSubFunctionName[2];
-	char* name;
+	char* objName;
 
 }Settings_t;
-
-typedef struct Channels_t {
-	void (*CurrentFunction[1])(void);
-
-	char* CurrentSubFunctionName[1];
-	char* name;
-
-}Channels_t;
 
 typedef struct Profiles_t {
 	void (*CurrentFunction[1])(void);
 
 	char* CurrentSubFunctionName[1];
-	char* name;
+	char* objName;
 
 }Profiles_t;
 
 typedef struct Options_t {
 	void (*LED_color)(void);
 	void (*Preferences)(void);
-	void (*Channels)(void);
 	void (*Profiles)(void);
-	void (*CurrentFunction[4][4])(void);
+	void (*CurrentFunction[3])(void);
 
-	char* CurrentFunctionName[4][4];
+	char* CurrentFunctionName[3];
 
 	LED_t LED;
 	Settings_t Prefs;
-	Channels_t Ch;
 	Profiles_t Profs;
 
 }Options_t;
@@ -86,10 +90,14 @@ typedef struct Options_t {
 typedef struct {
 	void (*Initialize)(void);
 	void (*Enter)(void);
+	void (*setSubFuncLevelDepth)(int8_t posDirection);
+	void (*setFuncLevelDepth)(int8_t posDirection);
+	uint8_t (*getSubFuncLevelDepth)(void);
+	uint8_t (*getFuncLevelDepth)(void);
 
 	uint8_t optionSelected;
-	uint8_t fQueue;
-	uint8_t subfQueue;
+	uint8_t funcPos;
+	uint8_t subFuncPos;
 	uint8_t bottomThreshold;
 	uint8_t topThreshold;
 
