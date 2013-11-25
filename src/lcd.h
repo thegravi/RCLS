@@ -6,6 +6,7 @@
  */
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 #ifndef LCD_H_
 #define LCD_H_

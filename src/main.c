@@ -10,14 +10,17 @@
 #include "lcd.h"
 #include "lcd_menu.h"
 #include "buttons.h"
+#include "uart.h"
 
 #define F_CPU 8000000UL
 
 int main() {
 
+	UART.Init();
+
 	LCD_Interface.Initialize();
-	BUTTONS_Interface.Initialize();
 	LCD_Menu.Initialize();
+	BUTTONS_Interface.Initialize();
 	LCD_Menu.Enter();
 
 	while(1) {	}

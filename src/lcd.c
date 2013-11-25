@@ -81,11 +81,21 @@ void LCD_WaitIfBusy() {
 
 void LCD_SendCharacter(uint8_t character) {
 
-	_delay_us(30);
+	_delay_us(50);
 	//LCD_Interface.Comm.WaitIfBusy();
 	LCD_Interface.Regs.PORT_RS_set();
 	LCD_Interface.DataFlow.SendCommand(8, character);
 	LCD_Interface.Regs.PORT_RS_clear();
+}
+
+void LCD_SendNumber(uint16_t number) {
+
+	char* convNumber = NULL;
+
+	itoa(number, convNumber, 10);
+
+	LCD_Interface.DataFlow.SendString(convNumber);
+
 }
 
 void LCD_SendString(char* charString) {
@@ -93,10 +103,6 @@ void LCD_SendString(char* charString) {
 	while(*charString != '\0') {
 		LCD_Interface.DataFlow.SendCharacter(*charString++);
 	}
-}
-
-void LCD_SendNumber(uint16_t number) {
-
 }
 
 void LCD_ProcessData(int8_t data) {

@@ -15,13 +15,10 @@
 #define BUTTON_DDR				DDRB
 #define BUTTON_PORT				PORTB
 #define BUTTON_PIN				PINB
-#define BUTTON_NEXT				PB6
 #define BUTTON_PREV				PB7
+#define BUTTON_NEXT				PB6
+#define BUTTON_RETURN			PB5
 #define BUTTON_SELECT			PB4
-#define BUTTON_RETURN			PB3
-								// 1101 1000
-
-#define B_RECEIVED				0x01
 
 void (BUTTONS_Initialize)(void);
 
