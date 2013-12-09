@@ -23,12 +23,12 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.Options.LED.CurrentFunctionName[1] = "Custom color";
 	LCD_Menu.Options.LED.CurrentFunctionName[2] = "Select channel";
 
-	LCD_Menu.Options.LED.PresetColors 	 = LCD_Menu_Preset_colors;
-	LCD_Menu.Options.LED.CustomColor	 = LCD_Menu_Custom_color;
-	LCD_Menu.Options.LED.ChooseChannel	 = LCD_Menu_ChooseChannel;
+	LCD_Menu.Options.LED.PresetColors 		= LCD_Menu_Preset_colors;
+	LCD_Menu.Options.LED.CustomColor 		= LCD_Menu_Custom_color;
+	LCD_Menu.Options.LED.ChooseChannel 		= LCD_Menu_ChooseChannel;
 
 //	LCD_Menu.Options.LED.cur
-	LCD_Menu.Options.LED.CurrentSubFunctionName[0] 	= "ChannelDetails";
+	LCD_Menu.Options.LED.CurrentSubFunctionName[0] = "ChannelDetails";
 	LCD_Menu.Options.LED.objName = "LED";
 
 	// Settings Object
@@ -46,7 +46,7 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.optionSelected 		= OPT_VOID;
 	LCD_Menu.subFuncPos 			= 0;
 	LCD_Menu.funcPos 				= 0;
-	LCD_Menu.selectedBranch			= 0;
+	LCD_Menu.selectedBranch 		= 0;
 
 	// Options Object
 	LCD_Menu.Options.LED_color 		= LCD_Menu_LED_color;
@@ -160,88 +160,87 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 		subFuncQuantity = LCD_Menu.MAP[LCD_Menu.selectedBranch].funcQuantity-1;
 	}
 
-			switch(LCD_Menu.optionSelected)
+	switch(LCD_Menu.optionSelected)
+	{
+		case OPT_NEXT:
+
+			if ((LCD_Menu.getSubFuncLevelDepth() >= 0) && (LCD_Menu.getSubFuncLevelDepth() < subFuncQuantity))
 			{
-				case OPT_NEXT:
-
-					if ((LCD_Menu.getSubFuncLevelDepth() >= 0) && (LCD_Menu.getSubFuncLevelDepth() < subFuncQuantity))
-					{
-						LCD_Menu.setSubFuncLevelDepth(1);
-					}
-					else if (LCD_Menu.getSubFuncLevelDepth() == subFuncQuantity)
-					{
-						LCD_Menu.setSubFuncLevelDepth(0-subFuncQuantity);
-
-					}
-
-					LCD_Menu_BottomLineDeclaration();
-					if (LCD_Menu.getFuncLevelDepth() == 0)
-					{
-						functionName = LCD_Menu.Options.CurrentFunctionName[LCD_Menu.getSubFuncLevelDepth()];
-					}
-					else if (LCD_Menu.getFuncLevelDepth() == 1)
-					{
-						functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[LCD_Menu.getSubFuncLevelDepth()];
-					}
-
-					break;
-
-				case OPT_PREV:
-
-					if ((LCD_Menu.getSubFuncLevelDepth() > 0) && (LCD_Menu.getSubFuncLevelDepth() <= subFuncQuantity))
-					{
-						LCD_Menu.setSubFuncLevelDepth(-1);
-					}
-					else if (LCD_Menu.getSubFuncLevelDepth() == 0)
-					{
-						LCD_Menu.setSubFuncLevelDepth(subFuncQuantity);
-					}
-
-					LCD_Menu_BottomLineDeclaration();
-
-					if (LCD_Menu.getFuncLevelDepth() == 0)
-					{
-						functionName = LCD_Menu.Options.CurrentFunctionName[LCD_Menu.getSubFuncLevelDepth()];
-					}
-					else if (LCD_Menu.getFuncLevelDepth() == 1)
-					{
-						functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[LCD_Menu.getSubFuncLevelDepth()];
-					}
-
-					break;
-
-				case OPT_SELECT:
-
-					if (LCD_Menu.getFuncLevelDepth() == 0)
-					{
-						LCD_Menu.setFuncLevelDepth(1);
-						LCD_Menu.selectedBranch = LCD_Menu.getSubFuncLevelDepth();
-
-						LCD_Menu_BottomLineDeclaration();
-						functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[0];
-					}
-					else if (LCD_Menu.getFuncLevelDepth() == 1)
-					{
-						// go to particular function
-						LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objFunc[LCD_Menu.getSubFuncLevelDepth()](1);
-					}
-
-					break;
-
-				case OPT_RETURN:
-					LCD_Menu.setFuncLevelDepth(0-LCD_Menu.getFuncLevelDepth());
-					LCD_Menu.setSubFuncLevelDepth(0-LCD_Menu.getSubFuncLevelDepth());
-
-					LCD_Menu_BottomLineDeclaration();
-					functionName = LCD_Menu.Options.CurrentFunctionName[0];
-					break;
-
-				case OPT_VOID:
-					functionName = "";
-					break;
-				default:
-					break;
+				LCD_Menu.setSubFuncLevelDepth(1);
 			}
+			else if (LCD_Menu.getSubFuncLevelDepth() == subFuncQuantity)
+			{
+				LCD_Menu.setSubFuncLevelDepth(0-subFuncQuantity);
+
+			}
+
+			LCD_Menu_BottomLineDeclaration();
+			if (LCD_Menu.getFuncLevelDepth() == 0)
+			{
+				functionName = LCD_Menu.Options.CurrentFunctionName[LCD_Menu.getSubFuncLevelDepth()];
+			}
+			else if (LCD_Menu.getFuncLevelDepth() == 1)
+			{
+				functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[LCD_Menu.getSubFuncLevelDepth()];
+			}
+
+			break;
+
+		case OPT_PREV:
+
+			if ((LCD_Menu.getSubFuncLevelDepth() > 0) && (LCD_Menu.getSubFuncLevelDepth() <= subFuncQuantity))
+			{
+				LCD_Menu.setSubFuncLevelDepth(-1);
+			}
+			else if (LCD_Menu.getSubFuncLevelDepth() == 0)
+			{
+				LCD_Menu.setSubFuncLevelDepth(subFuncQuantity);
+			}
+
+			LCD_Menu_BottomLineDeclaration();
+
+			if (LCD_Menu.getFuncLevelDepth() == 0)
+			{
+				functionName = LCD_Menu.Options.CurrentFunctionName[LCD_Menu.getSubFuncLevelDepth()];
+			}
+			else if (LCD_Menu.getFuncLevelDepth() == 1)
+			{
+				functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[LCD_Menu.getSubFuncLevelDepth()];
+			}
+
+			break;
+
+		case OPT_SELECT:
+
+			if (LCD_Menu.getFuncLevelDepth() == 0)
+			{
+				LCD_Menu.setFuncLevelDepth(1);
+				LCD_Menu.selectedBranch = LCD_Menu.getSubFuncLevelDepth();
+				LCD_Menu_BottomLineDeclaration();
+				functionName = LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objName[0];
+			}
+			else if (LCD_Menu.getFuncLevelDepth() == 1)
+			{
+				LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objFunc[LCD_Menu.getSubFuncLevelDepth()](1);
+			}
+
+			break;
+
+		case OPT_RETURN:
+
+			LCD_Menu.setFuncLevelDepth(0-LCD_Menu.getFuncLevelDepth());
+			LCD_Menu.setSubFuncLevelDepth(0-LCD_Menu.getSubFuncLevelDepth());
+
+			LCD_Menu_BottomLineDeclaration();
+			functionName = LCD_Menu.Options.CurrentFunctionName[0];
+			break;
+
+		case OPT_VOID:
+			functionName = "";
+			break;
+		default:
+			break;
+	}
 
 			UART.sendString("\r");
 			UART.sendByte(subFuncQuantity);

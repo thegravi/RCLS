@@ -53,42 +53,34 @@ ISR(PCINT0_vect, ISR_NAKED) {
 			UART.sendString("\rReturn->\n\r");
 		}
 
-		while(bit_is_clear(BUTTON_PIN, receivedButton)) { PORTC |= 1<<PC5; } PORTC &= ~(1<<PC5);
+		PORTC |= 1<<PC5;
+		while(bit_is_clear(BUTTON_PIN, receivedButton)) { asm("nop"); }
+		PORTC &= ~(1<<PC5);
 
 		switch(receivedButton)
 		{
 			case BUTTON_NEXT:
 
 				LCD_Menu.optionSelected = OPT_NEXT;
-				//LCD_Interface.Position(2, 1);
-				//LCD_Interface.DataFlow.SendString("Next");
 				break;
 
 			case BUTTON_PREV:
 
 				LCD_Menu.optionSelected = OPT_PREV;
-				//LCD_Interface.Position(2, 1);
-				//LCD_Interface.DataFlow.SendString("Previous");
 				break;
 
 			case BUTTON_SELECT:
 
 				LCD_Menu.optionSelected = OPT_SELECT;
-				//LCD_Interface.Position(2, 1);
-				//LCD_Interface.DataFlow.SendString("Select");
 				break;
 
 			case BUTTON_RETURN:
 
 				LCD_Menu.optionSelected = OPT_RETURN;
-				//LCD_Interface.Position(2, 1);
-				//LCD_Interface.DataFlow.SendString("Return");
 				break;
 
 			default:
 				LCD_Menu.optionSelected = OPT_VOID;
-				//LCD_Interface.Position(2, 1);
-				//LCD_Interface.DataFlow.SendString("Void");
 				break;
 
 		}

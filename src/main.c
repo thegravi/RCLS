@@ -27,3 +27,5 @@ int main() {
 
 	return 0;
 }
+
+// TODO: redeclare many functions with 'static' keyword
