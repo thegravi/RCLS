@@ -26,6 +26,7 @@ void LCD_setFuncLevelDepth(int8_t pos);
 uint8_t LCD_getSubFuncLevelDepth(void);
 uint8_t LCD_getFuncLevelDepth(void);
 void LCD_Menu_Option_Selection(uint8_t subFuncQuantity);
+void LCD_Menu_BottomLineDeclaration(void);
 
 #define OPT_LEVEL_GROUND	0x00
 #define OPT_LEVEL_SURFACE	0x02
@@ -40,6 +41,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity);
 #define OPT_QUANTITY		4
 
 typedef struct MAP_t {
+	void (*level1objFunc[3])(uint8_t);
 	uint8_t funcQuantity;
 	char* level1objName[3];
 
