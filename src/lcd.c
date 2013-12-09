@@ -8,26 +8,6 @@
 #include "lcd.h"
 #include <avr/io.h>
 
-
-LCD_Interface_t LCD_Interface = {LCD_Initialize,
-								 LCD_Position,
-								{LCD_DDR_E_set,
-								 LCD_DDR_RS_set,
-								 LCD_DDR_RW_set,
-								 LCD_DDR_E_clear,
-								 LCD_DDR_RS_clear,
-								 LCD_DDR_RW_clear,
-								 LCD_PORT_E_set,
-								 LCD_PORT_RS_set,
-								 LCD_PORT_RW_set,
-								 LCD_PORT_E_clear,
-								 LCD_PORT_RS_clear,
-								 LCD_PORT_RW_clear},
-								{LCD_SendCommand, LCD_SendCharacter, LCD_SendString, LCD_SendNumber, LCD_ProcessData},
-								{LCD_ExecuteCMD,
-								 LCD_WaitIfBusy}
-								};
-
 void LCD_SendCommand(uint8_t size, uint8_t cmd) {
 
 	if (size == 4) {
@@ -44,7 +24,7 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd) {
 	}
 }
 
-void LCD_ExecuteCMD() {
+static void LCD_ExecuteCMD() {
 
 	LCD_Interface.Regs.PORT_E_set();
 	asm volatile("nop");
@@ -52,7 +32,7 @@ void LCD_ExecuteCMD() {
 	LCD_Interface.Regs.PORT_E_clear();
 }
 
-void LCD_WaitIfBusy() {
+static void LCD_WaitIfBusy() {
 
 	volatile uint8_t data;
 	uint8_t busy_f = 1;
@@ -105,7 +85,7 @@ void LCD_SendString(char* charString) {
 	}
 }
 
-void LCD_ProcessData(int8_t data) {
+static void LCD_ProcessData(int8_t data) {
 
 	if (data & 0x01) {
 		DATA_PORT |=  (1<<LCD_DATA0);
@@ -168,15 +148,34 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 	LCD_Interface.DataFlow.SendCommand(8, pos);
 }
 
-void LCD_DDR_E_set() 		{ CMD_DIR |= (1<<LCD_E); }
-void LCD_DDR_RS_set() 		{ CMD_DIR |= (1<<LCD_RS); }
-void LCD_DDR_RW_set() 		{ CMD_DIR |= (1<<LCD_RW); }
-void LCD_DDR_E_clear() 		{ CMD_DIR &= ~(1<<LCD_E); }
-void LCD_DDR_RS_clear() 	{ CMD_DIR &= ~(1<<LCD_RS); }
-void LCD_DDR_RW_clear()		{ CMD_DIR &= ~(1<<LCD_RW); }
-void LCD_PORT_E_set() 		{ CMD_PORT |= (1<<LCD_E); }
-void LCD_PORT_RS_set() 		{ CMD_PORT |= (1<<LCD_RS); }
-void LCD_PORT_RW_set()		{ CMD_PORT |= (1<<LCD_RW); }
-void LCD_PORT_E_clear() 	{ CMD_PORT &= ~(1<<LCD_E); }
-void LCD_PORT_RS_clear() 	{ CMD_PORT &= ~(1<<LCD_RS); }
-void LCD_PORT_RW_clear() 	{ CMD_PORT &= ~(1<<LCD_RW); }
+static void LCD_DDR_E_set() 		{ CMD_DIR |= (1<<LCD_E); }
+static void LCD_DDR_RS_set() 		{ CMD_DIR |= (1<<LCD_RS); }
+static void LCD_DDR_RW_set() 		{ CMD_DIR |= (1<<LCD_RW); }
+static void LCD_DDR_E_clear() 		{ CMD_DIR &= ~(1<<LCD_E); }
+static void LCD_DDR_RS_clear() 	{ CMD_DIR &= ~(1<<LCD_RS); }
+static void LCD_DDR_RW_clear()		{ CMD_DIR &= ~(1<<LCD_RW); }
+static void LCD_PORT_E_set() 		{ CMD_PORT |= (1<<LCD_E); }
+static void LCD_PORT_RS_set() 		{ CMD_PORT |= (1<<LCD_RS); }
+static void LCD_PORT_RW_set()		{ CMD_PORT |= (1<<LCD_RW); }
+static void LCD_PORT_E_clear() 	{ CMD_PORT &= ~(1<<LCD_E); }
+static void LCD_PORT_RS_clear() 	{ CMD_PORT &= ~(1<<LCD_RS); }
+static void LCD_PORT_RW_clear() 	{ CMD_PORT &= ~(1<<LCD_RW); }
+
+LCD_Interface_t LCD_Interface = {LCD_Initialize,
+								 LCD_Position,
+								{LCD_DDR_E_set,
+								 LCD_DDR_RS_set,
+								 LCD_DDR_RW_set,
+								 LCD_DDR_E_clear,
+								 LCD_DDR_RS_clear,
+								 LCD_DDR_RW_clear,
+								 LCD_PORT_E_set,
+								 LCD_PORT_RS_set,
+								 LCD_PORT_RW_set,
+								 LCD_PORT_E_clear,
+								 LCD_PORT_RS_clear,
+								 LCD_PORT_RW_clear},
+								{LCD_SendCommand, LCD_SendCharacter, LCD_SendString, LCD_SendNumber, LCD_ProcessData},
+								{LCD_ExecuteCMD,
+								 LCD_WaitIfBusy}
+								};
