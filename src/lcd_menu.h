@@ -9,6 +9,7 @@
 #define LCD_MENIU_H_
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "uart.h"
 
 void LCD_Menu_Initialize(void);
@@ -24,11 +25,8 @@ void LCD_setSubFuncLevelDepth(int8_t pos);
 void LCD_setFuncLevelDepth(int8_t pos);
 uint8_t LCD_getSubFuncLevelDepth(void);
 uint8_t LCD_getFuncLevelDepth(void);
+void LCD_Menu_Option_Selection(uint8_t subFuncQuantity);
 
-/*
- * optLevel - has e.g. 3 sub levels, ground 0,..,3 surface
- */
-void LCD_Menu_Option_Selection();
 #define OPT_LEVEL_GROUND	0x00
 #define OPT_LEVEL_SURFACE	0x02
 
@@ -40,6 +38,12 @@ void LCD_Menu_Option_Selection();
 
 // minus 1, starting with index of 0
 #define OPT_QUANTITY		4
+
+typedef struct MAP_t {
+	uint8_t funcQuantity;
+	char* level1objName[3];
+
+}MAP_t;
 
 typedef struct LED_t {
 	void (*CurrentFunction[3])(uint8_t);
@@ -87,7 +91,7 @@ typedef struct Options_t {
 
 }Options_t;
 
-typedef struct {
+typedef struct LCD_Menu_t{
 	void (*Initialize)(void);
 	void (*Enter)(void);
 	void (*setSubFuncLevelDepth)(int8_t posDirection);
@@ -98,10 +102,10 @@ typedef struct {
 	uint8_t optionSelected;
 	uint8_t funcPos;
 	uint8_t subFuncPos;
-	uint8_t bottomThreshold;
-	uint8_t topThreshold;
+	uint8_t selectedBranch;
 
 	Options_t Options;
+	MAP_t MAP[3];
 }LCD_Menu_t;
 
 extern LCD_Menu_t LCD_Menu;
