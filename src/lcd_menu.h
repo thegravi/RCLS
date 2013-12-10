@@ -40,6 +40,21 @@ void LCD_Menu_BottomLineDeclaration(void);
 // minus 1, starting with index of 0
 #define OPT_QUANTITY		4
 
+typedef enum ColorTable_t {
+	Red=0,
+	Orange,
+	Yellow,
+	Green,
+	Blue,
+	Indigo,
+	Violet,
+	White,
+
+	NumOfColors
+}ColorTable_t;
+
+extern ColorTable_t ColorTable;
+
 typedef struct MAP_t {
 	void (*level1objFunc[3])(uint8_t);
 	uint8_t funcQuantity;
