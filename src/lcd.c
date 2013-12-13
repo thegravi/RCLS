@@ -130,11 +130,11 @@ void LCD_Initialize() {
 	// clear display, return position
 	LCD_Interface.DataFlow.SendCommand(8, 0x01);
 	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.DataFlow.SendString("Initialization");_delay_ms(500);
+	LCD_Interface.DataFlow.SendString("LCD init");_delay_ms(400);
 	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.Position(2, 1);
+	//LCD_Interface.Position(2, 1);
 	//LCD_Interface.Comm.WaitIfBusy();
-	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(1000);
+	//LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(500);
 	LCD_Interface.DataFlow.SendCommand(8, 0x01);
 	LCD_Interface.Position(1, 1);
 }
