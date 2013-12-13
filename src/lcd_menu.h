@@ -41,16 +41,16 @@ void LCD_Menu_BottomLineDeclaration(void);
 #define OPT_QUANTITY		4
 
 typedef enum ColorTable_t {
-	Red=0,
-	Orange,
-	Yellow,
-	Green,
-	Blue,
-	Indigo,
-	Violet,
-	White,
+	RED=0,
+	ORANGE,
+	YELLOW,
+	GREEN,
+	BLUE,
+	INDIGO,
+	VIOLET,
+	WHITE,
 
-	NumOfColors
+	NUM_OF_COLORS
 }ColorTable_t;
 
 extern ColorTable_t ColorTable;

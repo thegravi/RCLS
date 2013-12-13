@@ -11,7 +11,7 @@
 #include <util/delay.h>
 
 LCD_Menu_t LCD_Menu = {LCD_Menu_Initialize};
-ColorTable_t ColorTable = Red;
+ColorTable_t ColorTable = RED;
 
 void LCD_Menu_Initialize() {
 
@@ -74,6 +74,9 @@ void LCD_Menu_Initialize() {
 
 	LCD_Menu.MAP[1].funcQuantity = 0;
 	LCD_Menu.MAP[2].funcQuantity = 0;
+
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+	LCD_Interface.DataFlow.SendString("LCD Menu init");_delay_ms(400);
 }
 
 
@@ -122,73 +125,99 @@ void LCD_Menu_ChannelDetails() {
 
 void LCD_Menu_Preset_colors(uint8_t random) {
 
-//	uint8_t color = White;
+	sei();
 	while(1)
 	{
 		LCD_Menu_BottomLineDeclaration();
 
-
-
-/*		if (random == 1 )
+		switch(ColorTable)
 		{
-			LCD_Interface.DataFlow.SendString("preset viduje!");
-		}
-		else if (random == 0)
-		{
+			case RED:
+				UART.sendString("\nRed\r");
+				LCD_Interface.DataFlow.SendString("Red");
+				break;
 
-		}*/
+			case ORANGE:
+				UART.sendString("\nOrange\r");
+				LCD_Interface.DataFlow.SendString("Orange");
+				break;
 
-		switch(ColorTable) {
+			case YELLOW:
+				UART.sendString("\nYellow\r");
+				LCD_Interface.DataFlow.SendString("Yellow");
+				break;
 
-		case Red:
-			UART.sendString("\nRed\r");
-			break;
+			case GREEN:
+				UART.sendString("\nGreen\r");
+				LCD_Interface.DataFlow.SendString("Green");
+				break;
 
-		case Orange:
-			UART.sendString("\nOrange\r");
-			break;
+			case BLUE:
+				UART.sendString("\nBlue\r");
+				LCD_Interface.DataFlow.SendString("Blue");
+				break;
 
-		case Yellow:
-			UART.sendString("\nYellow\r");
-			break;
+			case INDIGO:
+				UART.sendString("\nIndigo\r");
+				LCD_Interface.DataFlow.SendString("Indigo");
+				break;
 
-		case Green:
-			UART.sendString("\nGreen\r");
-			break;
+			case VIOLET:
+				UART.sendString("\nViolet\r");
+				LCD_Interface.DataFlow.SendString("Violet");
+				break;
 
-		case Blue:
-			UART.sendString("\nBlue\r");
-			break;
+			case WHITE:
+				UART.sendString("\nWhite\r");
+				LCD_Interface.DataFlow.SendString("White");
+				break;
 
-		case Indigo:
-			UART.sendString("\nIndigo\r");
-			break;
-
-		case Violet:
-			UART.sendString("\nViolet\r");
-			break;
-
-		case White:
-			UART.sendString("\nWhite\r");
-			break;
-
-		default:
-			// should never happen
-			UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
-			break;
+			default:
+				// should never happen
+				UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
+				LCD_Interface.DataFlow.SendString("Error");
+				break;
 		}
 
-		while(LCD_Menu.optionSelected == OPT_VOID) { }
+		LCD_Menu.optionSelected = OPT_VOID;
+		while(LCD_Menu.optionSelected == OPT_VOID)
+		{
+			UART.sendByte(LCD_Menu.optionSelected);
+			if (LCD_Menu.optionSelected != OPT_VOID) { break; }
+		}
 
-		// TODO: add ColorTable check for boundaries
-		if (LCD_Menu.optionSelected == OPT_NEXT)
+		switch(LCD_Menu.optionSelected)
 		{
-			ColorTable++;
+			case OPT_NEXT:
+				ColorTable++;
+				if (ColorTable == NUM_OF_COLORS) {
+					ColorTable = 0;
+				}
+				break;
+
+			case OPT_PREV:
+				if (ColorTable > 0) {
+					ColorTable--;
+				} else {
+					ColorTable = NUM_OF_COLORS - 1;
+				}
+				break;
+
+			case OPT_SELECT:
+				// TODO: add command selection
+				//LCD_Menu.optionSelected = OPT_VOID;
+				//return;
+				break;
+
+			case OPT_RETURN:
+				LCD_Menu.optionSelected = OPT_VOID;
+				return;
+				break;
+
+			default:
+				break;
 		}
-		else if (LCD_Menu.optionSelected == OPT_PREV)
-		{
-			ColorTable--;
-		}
+
 
 	}
 }
@@ -282,6 +311,10 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 			else if (LCD_Menu.getFuncLevelDepth() == 1)
 			{
 				LCD_Menu.MAP[LCD_Menu.selectedBranch].level1objFunc[LCD_Menu.getSubFuncLevelDepth()](1);
+				LCD_Menu_BottomLineDeclaration();
+				LCD_Menu.setFuncLevelDepth(0-LCD_Menu.getFuncLevelDepth());
+				LCD_Menu.setSubFuncLevelDepth(0-LCD_Menu.getSubFuncLevelDepth());
+				functionName = LCD_Menu.Options.CurrentFunctionName[0];
 			}
 
 			break;
@@ -317,7 +350,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 	sei();
 }
 
-void LCD_Menu_BottomLineDeclaration(/*char* title*/) {
+void LCD_Menu_BottomLineDeclaration() {
 
 	LCD_Interface.DataFlow.SendCommand(8, 0x01);
 	LCD_Interface.Position(1, 1);
