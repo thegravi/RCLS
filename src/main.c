@@ -21,11 +21,14 @@ int main() {
 	LCD_Interface.Initialize();
 	LCD_Menu.Initialize();
 	BUTTONS_Interface.Initialize();
-	LCD_Menu.Enter();
 
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+	LCD_Interface.Position(2, 1);
+	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(500);
+	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+
+	LCD_Menu.Enter();
 	while(1) {	}
 
 	return 0;
 }
-
-// TODO: redeclare many functions with 'static' keyword
