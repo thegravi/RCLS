@@ -15,7 +15,6 @@ BUTTONS_Interface_t BUTTONS_Interface = { BUTTONS_Initialize };
 
 void BUTTONS_Initialize() {
 
-	DDRC |= 1<<PC5;
 	BUTTON_DDR &= ~(1<<BUTTON_NEXT);
 	BUTTON_DDR &= ~(1<<BUTTON_PREV);
 	BUTTON_DDR &= ~(1<<BUTTON_SELECT);
@@ -24,17 +23,20 @@ void BUTTONS_Initialize() {
 	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
 
 	// interrupts on low level
-	PCICR |= 1<<PCIE0;
-	PCMSK0 |= 1<<PCINT4 | 1<<PCINT5 | 1<<PCINT6 | 1<<PCINT7;
+	_delay_ms(5);
+	PCMSK0 |= (1<<PCINT4) | (1<<PCINT5) | (1<<PCINT6) | (1<<PCINT7);
+	_delay_ms(5);
+	PCICR |= (1<<PCIE0);
+//	_delay_ms(5);
+//	_delay_ms(100);
 	sei();
 }
 
+volatile uint8_t receivedButton;
+
 ISR(PCINT0_vect, ISR_NAKED) {
-
 	cli();
-	_delay_ms(10);
-
-	volatile uint8_t receivedButton;
+	//_delay_ms(10);
 
 		if (!(BUTTON_PIN & 0x40)) {
 			receivedButton = BUTTON_NEXT;
@@ -51,41 +53,36 @@ ISR(PCINT0_vect, ISR_NAKED) {
 		else if (!(BUTTON_PIN & 0x20)) {
 			receivedButton = BUTTON_RETURN;
 			UART.sendString("\rReturn->\n\r");
-		}
+		} else { UART.sendString("\rError->INT vector\n\r"); }
 
 		PORTC |= 1<<PC5;
-		while(bit_is_clear(BUTTON_PIN, receivedButton)) { asm("nop"); }
+		while(bit_is_clear(BUTTON_PIN, receivedButton)) { }
 		PORTC &= ~(1<<PC5);
 
 		switch(receivedButton)
 		{
 			case BUTTON_NEXT:
-
 				LCD_Menu.optionSelected = OPT_NEXT;
 				break;
 
 			case BUTTON_PREV:
-
 				LCD_Menu.optionSelected = OPT_PREV;
 				break;
 
 			case BUTTON_SELECT:
-
 				LCD_Menu.optionSelected = OPT_SELECT;
 				break;
 
 			case BUTTON_RETURN:
-
 				LCD_Menu.optionSelected = OPT_RETURN;
 				break;
 
 			default:
 				LCD_Menu.optionSelected = OPT_VOID;
 				break;
-
 		}
 
-	_delay_ms(500);
+	_delay_ms(5);
 	PCIFR |= (1<<PCIF0);
 	sei();
 	reti();
