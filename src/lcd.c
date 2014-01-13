@@ -161,21 +161,32 @@ static void LCD_PORT_E_clear() 	{ CMD_PORT &= ~(1<<LCD_E); }
 static void LCD_PORT_RS_clear() 	{ CMD_PORT &= ~(1<<LCD_RS); }
 static void LCD_PORT_RW_clear() 	{ CMD_PORT &= ~(1<<LCD_RW); }
 
-LCD_Interface_t LCD_Interface = {LCD_Initialize,
-								 LCD_Position,
-								{LCD_DDR_E_set,
-								 LCD_DDR_RS_set,
-								 LCD_DDR_RW_set,
-								 LCD_DDR_E_clear,
-								 LCD_DDR_RS_clear,
-								 LCD_DDR_RW_clear,
-								 LCD_PORT_E_set,
-								 LCD_PORT_RS_set,
-								 LCD_PORT_RW_set,
-								 LCD_PORT_E_clear,
-								 LCD_PORT_RS_clear,
-								 LCD_PORT_RW_clear},
-								{LCD_SendCommand, LCD_SendCharacter, LCD_SendString, LCD_SendNumber, LCD_ProcessData},
-								{LCD_ExecuteCMD,
-								 LCD_WaitIfBusy}
-								};
+LCD_Interface_t LCD_Interface = {
+		LCD_Initialize,
+		 LCD_Position,
+		{
+			LCD_DDR_E_set,
+			LCD_DDR_RS_set,
+			LCD_DDR_RW_set,
+			LCD_DDR_E_clear,
+			LCD_DDR_RS_clear,
+			LCD_DDR_RW_clear,
+			LCD_PORT_E_set,
+			LCD_PORT_RS_set,
+			LCD_PORT_RW_set,
+			LCD_PORT_E_clear,
+			LCD_PORT_RS_clear,
+			LCD_PORT_RW_clear
+		},
+		{
+			LCD_SendCommand,
+			LCD_SendCharacter,
+			LCD_SendString,
+			LCD_SendNumber,
+			LCD_ProcessData
+		},
+		{
+			LCD_ExecuteCMD,
+			LCD_WaitIfBusy
+		}
+};

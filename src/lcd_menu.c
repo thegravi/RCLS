@@ -24,9 +24,9 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.Options.LED.CurrentFunctionName[1] = "Custom color";
 	LCD_Menu.Options.LED.CurrentFunctionName[2] = "Select channel";
 
-	LCD_Menu.Options.LED.PresetColors 		= LCD_Menu_Preset_colors;
-	LCD_Menu.Options.LED.CustomColor 		= LCD_Menu_Custom_color;
-	LCD_Menu.Options.LED.ChooseChannel 		= LCD_Menu_ChooseChannel;
+	LCD_Menu.Options.LED.PresetColors = LCD_Menu_Preset_colors;
+	LCD_Menu.Options.LED.CustomColor = LCD_Menu_Custom_color;
+	LCD_Menu.Options.LED.ChooseChannel = LCD_Menu_ChooseChannel;
 
 //	LCD_Menu.Options.LED.cur
 	LCD_Menu.Options.LED.CurrentSubFunctionName[0] = "ChannelDetails";
@@ -44,7 +44,7 @@ void LCD_Menu_Initialize() {
 	LCD_Menu.setSubFuncLevelDepth 	= LCD_setSubFuncLevelDepth;
 	LCD_Menu.getFuncLevelDepth 		= LCD_getFuncLevelDepth;
 	LCD_Menu.getSubFuncLevelDepth 	= LCD_getSubFuncLevelDepth;
-	LCD_Menu.optionSelected 		= OPT_VOID;
+	LCD_Menu.optionSelected 		= B_VOID;
 	LCD_Menu.subFuncPos 			= 0;
 	LCD_Menu.funcPos 				= 0;
 	LCD_Menu.selectedBranch 		= 0;
@@ -93,7 +93,7 @@ uint8_t LCD_getFuncLevelDepth(void) { return LCD_Menu.funcPos; }
 
 void LCD_Menu_Enter() {
 
-	char* functionName = NULL;
+	char* functionName = 0;
 
 	DDRC |= 1<<PC5;
 
@@ -104,11 +104,15 @@ void LCD_Menu_Enter() {
 	while(1) {
 
 		LCD_Menu_Option_Selection(2);
+		LCD_Menu.optionSelected = B_VOID;
 
 			while(1)
 			{
+				UART.sendString("i");
 				asm("nop");
-				if (LCD_Menu.optionSelected != OPT_VOID) { break;}
+//				PORTC |= 1<<PC5;
+//				_delay_ms(50);
+				if (LCD_Menu.optionSelected != B_VOID) { break;}
 			}
 
 	}
@@ -125,77 +129,80 @@ void LCD_Menu_ChannelDetails() {
 
 void LCD_Menu_Preset_colors(uint8_t random) {
 
-	sei();
 	while(1)
 	{
 		LCD_Menu_BottomLineDeclaration();
-
+		UART.sendByte(ColorTable);
 		switch(ColorTable)
 		{
 			case RED:
-				UART.sendString("\nRed\r");
+//				UART.sendString("\nRed\r");
 				LCD_Interface.DataFlow.SendString("Red");
 				break;
 
 			case ORANGE:
-				UART.sendString("\nOrange\r");
+//				UART.sendString("\nOrange\r");
 				LCD_Interface.DataFlow.SendString("Orange");
 				break;
 
 			case YELLOW:
-				UART.sendString("\nYellow\r");
+//				UART.sendString("\nYellow\r");
 				LCD_Interface.DataFlow.SendString("Yellow");
 				break;
 
 			case GREEN:
-				UART.sendString("\nGreen\r");
+//				UART.sendString("\nGreen\r");
 				LCD_Interface.DataFlow.SendString("Green");
 				break;
 
 			case BLUE:
-				UART.sendString("\nBlue\r");
+//				UART.sendString("\nBlue\r");
 				LCD_Interface.DataFlow.SendString("Blue");
 				break;
 
 			case INDIGO:
-				UART.sendString("\nIndigo\r");
+//				UART.sendString("\nIndigo\r");
 				LCD_Interface.DataFlow.SendString("Indigo");
 				break;
 
 			case VIOLET:
-				UART.sendString("\nViolet\r");
+//				UART.sendString("\nViolet\r");
 				LCD_Interface.DataFlow.SendString("Violet");
 				break;
 
 			case WHITE:
-				UART.sendString("\nWhite\r");
+//				UART.sendString("\nWhite\r");
 				LCD_Interface.DataFlow.SendString("White");
 				break;
 
 			default:
 				// should never happen
 				UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
-				LCD_Interface.DataFlow.SendString("Error");
+
 				break;
 		}
 
-		LCD_Menu.optionSelected = OPT_VOID;
-		while(LCD_Menu.optionSelected == OPT_VOID)
+		LCD_Menu.optionSelected = B_VOID;
+		PORTC |= 1<<PC5;
+		sei();
+		while(1)
 		{
-			UART.sendByte(LCD_Menu.optionSelected);
-			if (LCD_Menu.optionSelected != OPT_VOID) { break; }
+			asm("nop");
+			UART.sendData(&LCD_Menu.optionSelected, 1);UART.sendString(" ");
+			if (LCD_Menu.optionSelected != B_VOID) { break; cli(); }
 		}
+		PORTC &= ~(1<<PC5);
 
 		switch(LCD_Menu.optionSelected)
 		{
-			case OPT_NEXT:
+			case B_NEXT:
 				ColorTable++;
 				if (ColorTable == NUM_OF_COLORS) {
 					ColorTable = 0;
 				}
 				break;
 
-			case OPT_PREV:
+			case B_PREV:
 				if (ColorTable > 0) {
 					ColorTable--;
 				} else {
@@ -203,14 +210,14 @@ void LCD_Menu_Preset_colors(uint8_t random) {
 				}
 				break;
 
-			case OPT_SELECT:
+			case B_SELECT:
 				// TODO: add command selection
 				//LCD_Menu.optionSelected = OPT_VOID;
 				//return;
 				break;
 
-			case OPT_RETURN:
-				LCD_Menu.optionSelected = OPT_VOID;
+			case B_RETURN:
+				LCD_Menu.optionSelected = B_VOID;
 				return;
 				break;
 
@@ -242,7 +249,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 	cli();
 
-	char* functionName = NULL;
+	char* functionName = 0;
 
 	if (LCD_Menu.getFuncLevelDepth() == 1)
 	{
@@ -251,7 +258,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 	switch(LCD_Menu.optionSelected)
 	{
-		case OPT_NEXT:
+		case B_NEXT:
 
 			if ((LCD_Menu.getSubFuncLevelDepth() >= 0) && (LCD_Menu.getSubFuncLevelDepth() < subFuncQuantity))
 			{
@@ -275,7 +282,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 			break;
 
-		case OPT_PREV:
+		case B_PREV:
 
 			if ((LCD_Menu.getSubFuncLevelDepth() > 0) && (LCD_Menu.getSubFuncLevelDepth() <= subFuncQuantity))
 			{
@@ -299,7 +306,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 			break;
 
-		case OPT_SELECT:
+		case B_SELECT:
 
 			if (LCD_Menu.getFuncLevelDepth() == 0)
 			{
@@ -319,7 +326,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 			break;
 
-		case OPT_RETURN:
+		case B_RETURN:
 
 			LCD_Menu.setFuncLevelDepth(0-LCD_Menu.getFuncLevelDepth());
 			LCD_Menu.setSubFuncLevelDepth(0-LCD_Menu.getSubFuncLevelDepth());
@@ -328,7 +335,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 			functionName = LCD_Menu.Options.CurrentFunctionName[0];
 			break;
 
-		case OPT_VOID:
+		case B_VOID:
 			functionName = "";
 			break;
 		default:
@@ -345,7 +352,7 @@ void LCD_Menu_Option_Selection(uint8_t subFuncQuantity) {
 
 
 	LCD_Interface.DataFlow.SendString(functionName);
-	LCD_Menu.optionSelected = OPT_VOID;
+	LCD_Menu.optionSelected = B_VOID;
 
 	sei();
 }

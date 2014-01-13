@@ -42,21 +42,7 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd);
 void LCD_SendCharacter(uint8_t character);
 void LCD_SendString(char* charString);
 void LCD_SendNumber(uint16_t number);
-//void LCD_ProcessData(int8_t data);
-//void LCD_ExecuteCMD(void);
-//void LCD_WaitIfBusy(void);
-/*void LCD_DDR_E_set(void);
-void LCD_DDR_RS_set(void);
-void LCD_DDR_RW_set(void);
-void LCD_DDR_E_clear(void);
-void LCD_DDR_RS_clear(void);
-void LCD_DDR_RW_clear(void);
-void LCD_PORT_E_set(void);
-void LCD_PORT_RS_set(void);
-void LCD_PORT_RW_set(void);
-void LCD_PORT_E_clear(void);
-void LCD_PORT_RS_clear(void);
-void LCD_PORT_RW_clear(void);*/
+
 //_____________________________________________________________________________________________________/
 
 typedef struct {

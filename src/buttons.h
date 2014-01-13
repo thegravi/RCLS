@@ -25,8 +25,12 @@ void (BUTTONS_Initialize)(void);
 typedef struct {
 	void (*Initialize)(void);
 
+	uint8_t readStates;
+	uint8_t buttonPressed;
 }BUTTONS_Interface_t;
 
 extern BUTTONS_Interface_t BUTTONS_Interface;
+
+//extern volatile uint8_t receivedButtonsStates;
 
 #endif /* BUTTONS_H_ */

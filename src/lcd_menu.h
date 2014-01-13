@@ -28,17 +28,11 @@ uint8_t LCD_getFuncLevelDepth(void);
 void LCD_Menu_Option_Selection(uint8_t subFuncQuantity);
 void LCD_Menu_BottomLineDeclaration(void);
 
-#define OPT_LEVEL_GROUND	0x00
-#define OPT_LEVEL_SURFACE	0x02
-
-#define OPT_SELECT			0x10
-#define OPT_RETURN			0x20
-#define OPT_NEXT			0x30
-#define OPT_PREV			0x40
-#define OPT_VOID			0x50
-
-// minus 1, starting with index of 0
-#define OPT_QUANTITY		4
+#define B_VOID		0x00
+#define B_SELECT	0x10
+#define B_RETURN	0x20
+#define B_NEXT		0x30
+#define B_PREV		0x40
 
 typedef enum ColorTable_t {
 	RED=0,
