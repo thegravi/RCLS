@@ -105,7 +105,7 @@ ISR (TIMER0_OVF_vect)
 		{
 			//UART.sendString("\rError->INT vector\n\r");
 			//UART.sendByte(BUTTONS_Interface.readStates);
-			LCD_Menu.optionSelected = B_VOID;
+			Menu.optSelected = B_VOID;
 		}
 
 //		PORTC |= 1<<PC5;
@@ -115,23 +115,23 @@ ISR (TIMER0_OVF_vect)
 		switch(BUTTONS_Interface.buttonPressed)
 		{
 			case BUTTON_NEXT:
-				LCD_Menu.optionSelected = B_NEXT;
+				Menu.optSelected = B_NEXT;
 				break;
 
 			case BUTTON_PREV:
-				LCD_Menu.optionSelected = B_PREV;
+				Menu.optSelected = B_PREV;
 				break;
 
 			case BUTTON_SELECT:
-				LCD_Menu.optionSelected = B_SELECT;
+				Menu.optSelected = B_SELECT;
 				break;
 
 			case BUTTON_RETURN:
-				LCD_Menu.optionSelected = B_RETURN;
+				Menu.optSelected = B_RETURN;
 				break;
 
 			default:
-				LCD_Menu.optionSelected = B_VOID;
+				Menu.optSelected = B_VOID;
 				break;
 		}
 //

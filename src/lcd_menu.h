@@ -14,18 +14,17 @@
 
 void LCD_Menu_Initialize(void);
 void LCD_Menu_Enter(void);
-void LCD_Menu_LED_color(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);
 void LCD_Menu_Profiles(void);
-void LCD_Menu_Preset_colors(uint8_t random);
-void LCD_Menu_Custom_color(uint8_t preview);
-void LCD_Menu_ChooseChannel(uint8_t io);
+void LCD_Menu_PresetColors(uint8_t random);
+void LCD_Menu_CustomColor(uint8_t preview);
+void LCD_Menu_SelectCh(uint8_t io);
 void LCD_setSubFuncLevelDepth(int8_t pos);
 void LCD_setFuncLevelDepth(int8_t pos);
 uint8_t LCD_getSubFuncLevelDepth(void);
 uint8_t LCD_getFuncLevelDepth(void);
-void LCD_Menu_Option_Selection(uint8_t subFuncQuantity);
+void LCD_Menu_OptionSelection(void);
 void LCD_Menu_BottomLineDeclaration(void);
 
 #define B_VOID		0x00
@@ -56,37 +55,33 @@ typedef struct MAP_t {
 
 }MAP_t;
 
-typedef struct LED_t {
-	void (*CurrentFunction[3])(uint8_t);
+typedef struct Channels_t {
+	uint8_t (*getData)(uint8_t* data, uint8_t* ok);
+	uint8_t (*setData)(uint8_t* data, uint8_t* ok);
+	uint8_t (*selectCh)(uint8_t ch, uint8_t io, uint8_t* ok);
 
-	void (*PresetColors)(uint8_t random);	// 8 different colors
-	void (*CustomColor)(uint8_t preview); 	// setting-up RGB and brightness
-	void (*ChooseChannel)(uint8_t io);	// select a channel
+}Channels_t;
 
-	// sub functions of main ones
-	void (*ChannelDetails)(void);
+typedef struct LEDs_t {
+	uint8_t (*color_custom)(uint8_t io);
+	uint8_t (*color_present)(uint8_t io);
 
-	char* CurrentFunctionName[3];
-	char* CurrentSubFunctionName[1];
-	uint8_t funcQuantity;
-	char* objName;
-}LED_t;
+	Channels_t* ch;
+}LEDs_t;
+
+extern LEDs_t LEDs;
 
 typedef struct Settings_t {
-	void (*CurrentFunction[2])(void);
-
-	char* CurrentSubFunctionName[2];
-	char* objName;
 
 }Settings_t;
 
-typedef struct Profiles_t {
-	void (*CurrentFunction[1])(void);
+extern Settings_t Set;
 
-	char* CurrentSubFunctionName[1];
-	char* objName;
+typedef struct Profiles_t {
 
 }Profiles_t;
+
+extern Profiles_t Prof;
 
 typedef struct Options_t {
 	void (*LED_color)(void);
@@ -96,29 +91,34 @@ typedef struct Options_t {
 
 	char* CurrentFunctionName[3];
 
-	LED_t LED;
-	Settings_t Prefs;
-	Profiles_t Profs;
+//	LED_t LED;
+//	Settings_t Prefs;
+//	Profiles_t Profs;
 
 }Options_t;
 
 typedef struct LCD_Menu_t{
 	void (*Initialize)(void);
+	LEDs_t* leds;
+	Settings_t* set;
+	Profiles_t* prof;
+
 	void (*Enter)(void);
 	void (*setSubFuncLevelDepth)(int8_t posDirection);
 	void (*setFuncLevelDepth)(int8_t posDirection);
 	uint8_t (*getSubFuncLevelDepth)(void);
 	uint8_t (*getFuncLevelDepth)(void);
 
-	uint8_t optionSelected;
+	uint8_t optSelected;
 	uint8_t funcPos;
 	uint8_t subFuncPos;
 	uint8_t selectedBranch;
+
 
 	Options_t Options;
 	MAP_t MAP[3];
 }LCD_Menu_t;
 
-extern LCD_Menu_t LCD_Menu;
+extern LCD_Menu_t Menu;
 
 #endif /* LCD_MENIU_H_ */

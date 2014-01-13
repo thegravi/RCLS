@@ -21,30 +21,30 @@ int main()
 
 	Init();
 
-//	LCD_Menu.Enter();
-	char* functionName = 0;
-	DDRC |= 1<<PC5;
-
-	LCD_Menu_BottomLineDeclaration();
-	functionName = LCD_Menu.Options.CurrentFunctionName[0];
-	LCD_Interface.DataFlow.SendString(functionName);
-
-	while(1)
-	{
-
-		LCD_Menu_Option_Selection(2);
-		LCD_Menu.optionSelected = B_VOID;
-
-		while(LCD_Menu.optionSelected)
-		{
-//					UART.sendString("i");
-//					asm("nop");
-//		//				PORTC |= 1<<PC5;
-//		//				_delay_ms(50);
-			//if (LCD_Menu.optionSelected != OPT_VOID) { break;}
-		}
-
-	}
+////	LCD_Menu.Enter();
+//	char* functionName = 0;
+//	DDRC |= 1<<PC5;
+//
+//	//LCD_Menu_BottomLineDeclaration();
+//	functionName = Menu.Options.CurrentFunctionName[0];
+//	LCD_Interface.DataFlow.SendString(functionName);
+//
+//	while(1)
+//	{
+//
+//	//	LCD_Menu_OptionSelection();
+//		Menu.optSelected = B_VOID;
+//
+//		while(Menu.optSelected)
+//		{
+////					UART.sendString("i");
+////					asm("nop");
+////		//				PORTC |= 1<<PC5;
+////		//				_delay_ms(50);
+//			//if (LCD_Menu.optionSelected != OPT_VOID) { break;}
+//		}
+//
+//	}
 
 	return 0;
 }
@@ -56,7 +56,7 @@ void Init()
 	TIMSK0 |= (1<<TOIE0);
 
 	LCD_Interface.Initialize();
-	LCD_Menu.Initialize();
+	Menu.Initialize();
 	BUTTONS_Interface.Initialize();
 
 	LCD_Interface.DataFlow.SendCommand(8, 0x01);
