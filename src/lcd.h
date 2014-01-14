@@ -11,6 +11,8 @@
 #ifndef LCD_H_
 #define LCD_H_
 
+#define SET					1
+#define RESET				0
 #define CMD_DIR				DDRB
 #define CMD_PORT			PORTB
 #define LCD_E				PB0
@@ -44,19 +46,12 @@ void LCD_SendNumber(int16_t number);
 //_____________________________________________________________________________________________________/
 
 typedef struct {
-	void (*DDR_E_set)(void);
-	void (*DDR_RS_set)(void);
-	void (*DDR_RW_set)(void);
-	void (*DDR_E_clear)(void);
-	void (*DDR_RS_clear)(void);
-	void (*DDR_RW_clear)(void);
-
-	void (*PORT_E_set)(void);
-	void (*PORT_RS_set)(void);
-	void (*PORT_RW_set)(void);
-	void (*PORT_E_clear)(void);
-	void (*PORT_RS_clear)(void);
-	void (*PORT_RW_clear)(void);
+	void (*DDR_E)(uint8_t sc);
+	void (*DDR_RS)(uint8_t sc);
+	void (*DDR_RW)(uint8_t sc);
+	void (*PORT_E)(uint8_t sc);
+	void (*PORT_RS)(uint8_t sc);
+	void (*PORT_RW)(uint8_t sc);
 
 }Regs_t;
 

@@ -25,10 +25,10 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd) {
 
 static void LCD_ExecuteCMD() {
 
-	LCD.Regs->PORT_E_set();
+	LCD.Regs->PORT_E(SET);
 	asm("nop");
 	asm("nop");
-	LCD.Regs->PORT_E_clear();
+	LCD.Regs->PORT_E(RESET);
 }
 
 static void LCD_WaitIfBusy() {
@@ -36,35 +36,35 @@ static void LCD_WaitIfBusy() {
 	volatile uint8_t data;
 	uint8_t busy_f = 1;
 
-	LCD.Regs->PORT_RW_set();
+	LCD.Regs->PORT_RW(SET);
 	DATA_DIR &= ~(1<<LCD_DATA0) | ~(1<<LCD_DATA1) | ~(1<<LCD_DATA2) | ~(1<<LCD_DATA3);
 
 	while (busy_f) {
 
-		LCD.Regs->PORT_E_set();
+		LCD.Regs->PORT_E(SET);
 		_delay_us(1);
 		data = DATA_PIN  << 4;
-		LCD.Regs->PORT_E_clear();
+		LCD.Regs->PORT_E(RESET);
 		_delay_us(1);
-		LCD.Regs->PORT_E_set();
+		LCD.Regs->PORT_E(SET);
 		_delay_us(1);
 		data |= (DATA_PIN & 0x0F);
-		LCD.Regs->PORT_E_clear();
+		LCD.Regs->PORT_E(RESET);
 		_delay_us(1);
 
 		if (data & 0x80) { } else { busy_f = 0; }
 	}
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
-	LCD.Regs->PORT_RW_clear();
+	LCD.Regs->PORT_RW(RESET);
 }
 
 void LCD_SendCharacter(uint8_t character) {
 
 	_delay_us(50);
 	//LCD_Interface.Comm.WaitIfBusy();
-	LCD.Regs->PORT_RS_set();
+	LCD.Regs->PORT_RS(SET);
 	LCD.DataFlow->SendCommand(8, character);
-	LCD.Regs->PORT_RS_clear();
+	LCD.Regs->PORT_RS(RESET);
 }
 
 void LCD_SendNumber(int16_t number) {
@@ -106,12 +106,20 @@ static void LCD_ProcessData(int8_t data) {
 void LCD_Init() {
 
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
-	LCD.Regs->DDR_E_set();
-	LCD.Regs->DDR_RS_set();
-	LCD.Regs->DDR_RW_set();
-	LCD.Regs->PORT_E_clear();
-	LCD.Regs->PORT_RS_clear();
-	LCD.Regs->PORT_RW_clear();
+	CMD_DIR |= (1<<LCD_E);
+	CMD_DIR |= (1<<LCD_RS);
+	CMD_DIR |= (1<<LCD_RW);
+	CMD_PORT &= ~(1<<LCD_E);
+	CMD_PORT &= ~(1<<LCD_RS);
+	CMD_PORT &= ~(1<<LCD_RW);
+
+	LCD.Regs->DDR_E(SET);
+	LCD.Regs->DDR_RS(SET);
+	LCD.Regs->DDR_RW(SET);
+	LCD.Regs->PORT_E(RESET);
+	LCD.Regs->PORT_RS(RESET);
+	LCD.Regs->PORT_RW(RESET);
+
 
 	_delay_ms(20);
 	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(5);
@@ -144,18 +152,52 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 	LCD.DataFlow->SendCommand(8, pos);
 }
 
-static void LCD_DDR_E_set() 		{ CMD_DIR |= (1<<LCD_E); }
-static void LCD_DDR_RS_set() 		{ CMD_DIR |= (1<<LCD_RS); }
-static void LCD_DDR_RW_set() 		{ CMD_DIR |= (1<<LCD_RW); }
-static void LCD_DDR_E_clear() 		{ CMD_DIR &= ~(1<<LCD_E); }
-static void LCD_DDR_RS_clear() 	{ CMD_DIR &= ~(1<<LCD_RS); }
-static void LCD_DDR_RW_clear()		{ CMD_DIR &= ~(1<<LCD_RW); }
-static void LCD_PORT_E_set() 		{ CMD_PORT |= (1<<LCD_E); }
-static void LCD_PORT_RS_set() 		{ CMD_PORT |= (1<<LCD_RS); }
-static void LCD_PORT_RW_set()		{ CMD_PORT |= (1<<LCD_RW); }
-static void LCD_PORT_E_clear() 	{ CMD_PORT &= ~(1<<LCD_E); }
-static void LCD_PORT_RS_clear() 	{ CMD_PORT &= ~(1<<LCD_RS); }
-static void LCD_PORT_RW_clear() 	{ CMD_PORT &= ~(1<<LCD_RW); }
+static void LCD_DDR_E(uint8_t sc)
+{
+	if (sc)
+		CMD_DIR |= (1<<LCD_E);
+	else
+		CMD_DIR &= ~(1<<LCD_E);
+}
+
+static void LCD_DDR_RS(uint8_t sc)
+{
+	if (sc)
+		CMD_DIR |= (1<<LCD_RS);
+	else
+		CMD_DIR &= ~(1<<LCD_RS);
+}
+static void LCD_DDR_RW(uint8_t sc)
+{
+	if (sc)
+		CMD_DIR |= (1<<LCD_RW);
+	else
+		CMD_DIR &= ~(1<<LCD_RW);
+}
+
+static void LCD_PORT_E(uint8_t sc)
+{
+	if (sc)
+		CMD_PORT |= (1<<LCD_E);
+	else
+		CMD_PORT &= ~(1<<LCD_E);
+}
+
+static void LCD_PORT_RS(uint8_t sc)
+{
+	if (sc)
+		CMD_PORT |= (1<<LCD_RS);
+	else
+		CMD_PORT &= ~(1<<LCD_RS);
+}
+
+static void LCD_PORT_RW(uint8_t sc)
+{
+	if (sc)
+		CMD_PORT |= (1<<LCD_RW);
+	else
+		CMD_PORT &= ~(1<<LCD_RW);
+}
 
 LCD_Interface_t LCD = {
 		LCD_Init,
@@ -179,16 +221,10 @@ DataFlow_t DataFlow = {
 };
 
 Regs_t Regs = {
-		LCD_DDR_E_set,
-		LCD_DDR_RS_set,
-		LCD_DDR_RW_set,
-		LCD_DDR_E_clear,
-		LCD_DDR_RS_clear,
-		LCD_DDR_RW_clear,
-		LCD_PORT_E_set,
-		LCD_PORT_RS_set,
-		LCD_PORT_RW_set,
-		LCD_PORT_E_clear,
-		LCD_PORT_RS_clear,
-		LCD_PORT_RW_clear
+		LCD_DDR_E,
+		LCD_DDR_RS,
+		LCD_DDR_RW,
+		LCD_PORT_E,
+		LCD_PORT_RS,
+		LCD_PORT_RW,
 };
