@@ -12,15 +12,11 @@
 #include <util/delay.h>
 #include "uart.h"
 
-BUTTONS_Interface_t BUTTONS_Interface = { BUTTONS_Initialize };
+BUTTONS_Interface_t Buttons = { BUTTONS_Init };
 
-void BUTTONS_Initialize() {
+void BUTTONS_Init() {
 
-	BUTTON_DDR &= ~(1<<BUTTON_NEXT);
-	BUTTON_DDR &= ~(1<<BUTTON_PREV);
-	BUTTON_DDR &= ~(1<<BUTTON_SELECT);
-	BUTTON_DDR &= ~(1<<BUTTON_RETURN);
-
+	BUTTON_DDR &= ~(1<<BUTTON_NEXT) & ~(1<<BUTTON_PREV) & ~(1<<BUTTON_SELECT) & ~(1<<BUTTON_RETURN);
 	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
 
 	// interrupts on pin change
@@ -30,9 +26,6 @@ void BUTTONS_Initialize() {
 //	PCICR |= (1<<PCIE0);
 	sei();
 }
-
-//volatile uint8_t receivedButtonsStates;
-//uint8_t receivedButton_prev;
 
 #define BIT_IS_HIGH(port, bit) ((port & 1<<bit) && 1<<bit)
 volatile uint8_t startUpTime_wait = 0x30;
@@ -53,51 +46,37 @@ ISR (TIMER0_OVF_vect)
 	}
 
 	_delay_ms(20);
-	BUTTONS_Interface.readStates = BUTTON_PIN & 0xF0;
-	//receivedButton_prev &= 0xF0;
-	//receivedButton_prev >>= 4;
+	Buttons.readStates = BUTTON_PIN & 0xF0;
 
-//	UART.sendByte(BIT_IS_HIGH(BUTTONS_Interface.readStates, BUTTON_NEXT));
-//	UART.sendString(" ");
-//	UART.sendByte((BUTTONS_Interface.readStates & 1<<BUTTON_PREV) && 1<<BUTTON_PREV);
-//	UART.sendString(" ");
-//	UART.sendByte((BUTTONS_Interface.readStates & 1<<BUTTON_SELECT) && 1<<BUTTON_SELECT);
-//	UART.sendString(" ");
-//	UART.sendByte((BUTTONS_Interface.readStates & 1<<BUTTON_RETURN) && 1<<BUTTON_RETURN);
-//	UART.sendString("\n\r");
-
-//	_delay_ms(50);
-//	receivedButton = BUTTON_PIN & 0xF0;
-//
 //	if (receivedButton != receivedButton_prev)
 //	{
 //		return;
 //	}
 		//if (!(receivedButton & 0x40))
-		if (!BIT_IS_HIGH(BUTTONS_Interface.readStates, BUTTON_NEXT))
+		if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_NEXT))
 		{
-			BUTTONS_Interface.buttonPressed = BUTTON_NEXT;
+			Buttons.pressed = BUTTON_NEXT;
 			UART.sendString("\rNext->\n\r");
 //			LCD_Menu.optionSelected = OPT_NEXT;
 		}
 		//else if (!(receivedButton & 0x80))
-		else if (!BIT_IS_HIGH(BUTTONS_Interface.readStates, BUTTON_PREV))
+		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_PREV))
 		{
-			BUTTONS_Interface.buttonPressed = BUTTON_PREV;
+			Buttons.pressed = BUTTON_PREV;
 			UART.sendString("\rPrevious->\n\r");
 //			LCD_Menu.optionSelected = OPT_PREV;
 		}
 		//else if (!(receivedButton & 0x10))
-		else if (!BIT_IS_HIGH(BUTTONS_Interface.readStates, BUTTON_SELECT))
+		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_SELECT))
 		{
-			BUTTONS_Interface.buttonPressed = BUTTON_SELECT;
+			Buttons.pressed = BUTTON_SELECT;
 			UART.sendString("\rSelect->\n\r");
 //			LCD_Menu.optionSelected = OPT_SELECT;
 		}
 		//else if (!(receivedButton & 0x20))
-		else if (!BIT_IS_HIGH(BUTTONS_Interface.readStates, BUTTON_RETURN))
+		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_RETURN))
 		{
-			BUTTONS_Interface.buttonPressed = BUTTON_RETURN;
+			Buttons.pressed = BUTTON_RETURN;
 			UART.sendString("\rReturn->\n\r");
 //			LCD_Menu.optionSelected = OPT_RETURN;
 		}
@@ -112,7 +91,7 @@ ISR (TIMER0_OVF_vect)
 		//while(bit_is_clear(BUTTONS_Interface.readStates, BUTTONS_Interface.buttonPressed)) { }
 //		PORTC &= ~(1<<PC5);
 
-		switch(BUTTONS_Interface.buttonPressed)
+		switch(Buttons.pressed)
 		{
 			case BUTTON_NEXT:
 				Menu.optSelected = B_NEXT;
