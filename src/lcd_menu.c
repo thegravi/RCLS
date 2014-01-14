@@ -10,14 +10,29 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-LEDs_t LEDs = {};
-Settings_t Set = {};
-Profiles_t Prof = {};
+LEDs_t LEDs = {
 
-LCD_Menu_t Menu = {LCD_Menu_Initialize, &LEDs, &Set, &Prof};
+};
+
+Settings_t Set = {
+
+};
+
+Profiles_t Prof = {
+
+};
+
+LCD_Menu_t Menu = {
+		LCD_Menu_Init,
+		&LEDs,
+		&Set,
+		&Prof,
+		B_VOID
+};
+
 ColorTable_t ColorTable = RED;
 
-void LCD_Menu_Initialize() {
+void LCD_Menu_Init() {
 
 	// LED Object
 //	LCD_Menu.Options.LED.CurrentFunction[0] = LCD_Menu_Preset_colors;
@@ -79,8 +94,8 @@ void LCD_Menu_Initialize() {
 //	LCD_Menu.MAP[1].funcQuantity = 0;
 //	LCD_Menu.MAP[2].funcQuantity = 0;
 
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);
-	LCD_Interface.DataFlow.SendString("LCD Menu init");_delay_ms(400);
+	LCD.DataFlow->SendCommand(8, 0x01);
+	LCD.DataFlow->SendString("LCD Menu init");_delay_ms(400);
 }
 
 
@@ -133,48 +148,46 @@ void LCD_Menu_PresetColors(uint8_t random) {
 		{
 			case RED:
 //				UART.sendString("\nRed\r");
-				LCD_Interface.DataFlow.SendString("Red");
+				LCD.DataFlow->SendString("Red");
 				break;
 
 			case ORANGE:
 //				UART.sendString("\nOrange\r");
-				LCD_Interface.DataFlow.SendString("Orange");
+				LCD.DataFlow->SendString("Orange");
 				break;
 
 			case YELLOW:
 //				UART.sendString("\nYellow\r");
-				LCD_Interface.DataFlow.SendString("Yellow");
+				LCD.DataFlow->SendString("Yellow");
 				break;
 
 			case GREEN:
 //				UART.sendString("\nGreen\r");
-				LCD_Interface.DataFlow.SendString("Green");
+				LCD.DataFlow->SendString("Green");
 				break;
 
 			case BLUE:
 //				UART.sendString("\nBlue\r");
-				LCD_Interface.DataFlow.SendString("Blue");
+				LCD.DataFlow->SendString("Blue");
 				break;
 
 			case INDIGO:
 //				UART.sendString("\nIndigo\r");
-				LCD_Interface.DataFlow.SendString("Indigo");
+				LCD.DataFlow->SendString("Indigo");
 				break;
 
 			case VIOLET:
 //				UART.sendString("\nViolet\r");
-				LCD_Interface.DataFlow.SendString("Violet");
+				LCD.DataFlow->SendString("Violet");
 				break;
 
 			case WHITE:
 //				UART.sendString("\nWhite\r");
-				LCD_Interface.DataFlow.SendString("White");
+				LCD.DataFlow->SendString("White");
 				break;
 
 			default:
-				// should never happen
-				UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
-
+//				UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
 				break;
 		}
 
@@ -337,7 +350,7 @@ void LCD_Menu_OptionSelection() {
 			UART.sendString("\n\r");
 
 
-	LCD_Interface.DataFlow.SendString(functionName);
+			LCD.DataFlow->SendString(functionName);
 	Menu.optSelected = B_VOID;
 
 	sei();
@@ -345,13 +358,13 @@ void LCD_Menu_OptionSelection() {
 
 void LCD_Menu_BottomLineDeclaration() {
 
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);
-	LCD_Interface.Position(1, 1);
-	LCD_Interface.DataFlow.SendString("Menu");
-	LCD_Interface.Position(2, 1);
-	LCD_Interface.DataFlow.SendCharacter(S_BULLET);
-	LCD_Interface.DataFlow.SendCharacter(S_BLANK);
-	LCD_Interface.Position(2, 3);
-	LCD_Interface.DataFlow.SendString("              ");
-	LCD_Interface.Position(2, 3);
+	LCD.DataFlow->SendCommand(8, 0x01);
+	LCD.Position(1, 1);
+	LCD.DataFlow->SendString("Menu");
+	LCD.Position(2, 1);
+	LCD.DataFlow->SendCharacter(S_BULLET);
+	LCD.DataFlow->SendCharacter(S_BLANK);
+	LCD.Position(2, 3);
+	LCD.DataFlow->SendString("              ");
+	LCD.Position(2, 3);
 }

@@ -12,7 +12,7 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 
-void LCD_Menu_Initialize(void);
+void LCD_Menu_Init(void);
 void LCD_Menu_Enter(void);
 void LCD_Menu_Preferences(void);
 void LCD_Menu_Channels(void);
@@ -98,10 +98,11 @@ typedef struct Options_t {
 }Options_t;
 
 typedef struct LCD_Menu_t{
-	void (*Initialize)(void);
+	void (*Init)(void);
 	LEDs_t* leds;
 	Settings_t* set;
 	Profiles_t* prof;
+	uint8_t optSelected;
 
 	void (*Enter)(void);
 	void (*setSubFuncLevelDepth)(int8_t posDirection);
@@ -109,7 +110,7 @@ typedef struct LCD_Menu_t{
 	uint8_t (*getSubFuncLevelDepth)(void);
 	uint8_t (*getFuncLevelDepth)(void);
 
-	uint8_t optSelected;
+
 	uint8_t funcPos;
 	uint8_t subFuncPos;
 	uint8_t selectedBranch;
