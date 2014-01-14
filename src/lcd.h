@@ -23,8 +23,6 @@
 #define LCD_DATA1			PC1
 #define LCD_DATA2			PC2
 #define LCD_DATA3			PC3
-#define LCD_SIZE			128
-#define LCD_ROW_LENGTH		16
 //____________________________________ CHARACTERS ________________________________________________/
 
 #define S_CELSIUS			0xDF
@@ -36,12 +34,12 @@
 
 //____________________________________ FUNCTION PROTOTYPES ________________________________________/
 
-void LCD_Initialize(void);
+void LCD_Init(void);
 void LCD_Position(uint8_t pos_x, uint8_t pos_y);
 void LCD_SendCommand(uint8_t size, uint8_t cmd);
 void LCD_SendCharacter(uint8_t character);
 void LCD_SendString(char* charString);
-void LCD_SendNumber(uint16_t number);
+void LCD_SendNumber(int16_t number);
 
 //_____________________________________________________________________________________________________/
 
@@ -62,14 +60,18 @@ typedef struct {
 
 }Regs_t;
 
+Regs_t Regs;
+
 typedef struct {
 	void (*SendCommand)(uint8_t size, uint8_t cmd);
 	void (*SendCharacter)(uint8_t character);
 	void (*SendString)(char* charString);
-	void (*SendNumber)(uint16_t number);
+	void (*SendNumber)(int16_t number);
 	void (*ProcessData)(int8_t data);
 
 }DataFlow_t;
+
+DataFlow_t DataFlow;
 
 typedef struct {
 	void (*ExecuteCMD)(void);
@@ -77,16 +79,18 @@ typedef struct {
 
 }Communication_t;
 
+Communication_t Com;
+
 typedef struct {
-	void (*Initialize)(void);
+	void (*Init)(void);
 	void (*Position)(uint8_t pos_x, uint8_t pos_y);
 
-	Regs_t Regs;
-	DataFlow_t DataFlow;
-	Communication_t Com;
+	Regs_t* Regs;
+	DataFlow_t* DataFlow;
+	Communication_t* Com;
 
 }LCD_Interface_t;
 
-extern LCD_Interface_t LCD_Interface;
+extern LCD_Interface_t LCD;
 
 #endif /* LCD_H_ */
