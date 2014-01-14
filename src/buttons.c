@@ -5,116 +5,66 @@
  *      Author: Graþvidas
  */
 
-#include <avr/io.h>
 #include "buttons.h"
-#include "lcd_menu.h"
-#include "lcd.h"
-#include <util/delay.h>
-#include "uart.h"
 
 BUTTONS_Interface_t Buttons = { BUTTONS_Init };
 
 void BUTTONS_Init() {
 
-	BUTTON_DDR &= ~(1<<BUTTON_NEXT) & ~(1<<BUTTON_PREV) & ~(1<<BUTTON_SELECT) & ~(1<<BUTTON_RETURN);
+	BUTTON_DDR &= ~(1<<BUTTON_NEXT);
+	BUTTON_DDR &= ~(1<<BUTTON_PREV);
+	BUTTON_DDR &= ~(1<<BUTTON_SELECT);
+	BUTTON_DDR &= ~(1<<BUTTON_RETURN);
+
 	BUTTON_PORT |= (1<<BUTTON_NEXT) | (1<<BUTTON_PREV) | (1<<BUTTON_SELECT) | (1<<BUTTON_RETURN);
 
 	// interrupts on pin change
-//	_delay_ms(5);
-//	PCMSK0 |= (1<<PCINT4) | (1<<PCINT5) | (1<<PCINT6) | (1<<PCINT7);
-//	_delay_ms(5);
-//	PCICR |= (1<<PCIE0);
-	sei();
+	_delay_ms(5);
+	PCMSK0 |= (1<<PCINT4) | (1<<PCINT5) | (1<<PCINT6) | (1<<PCINT7);
+	_delay_ms(5);
+	PCICR |= (1<<PCIE0);
 }
 
-#define BIT_IS_HIGH(port, bit) ((port & 1<<bit) && 1<<bit)
-volatile uint8_t startUpTime_wait = 0x30;
-volatile uint8_t checkStatesTime = 0x05;
-
-ISR (TIMER0_OVF_vect)
+ISR (PCINT0_vect)
 {
-	if (startUpTime_wait > 0 ) {
-		startUpTime_wait--;
-		return;
-	}
+	volatile uint8_t temp = 0;
+	_delay_ms(110);
 
-	if (checkStatesTime > 0) {
-		checkStatesTime--;
-		return;
-	} else {
-		checkStatesTime = 0x05;
-	}
-
-	_delay_ms(20);
 	Buttons.readStates = BUTTON_PIN & 0xF0;
+	Buttons.pressed = 0;
 
-//	if (receivedButton != receivedButton_prev)
-//	{
-//		return;
-//	}
-		//if (!(receivedButton & 0x40))
-		if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_NEXT))
-		{
+	if (!(Buttons.readStates & 0x40)) {
+			temp = 0x40;
 			Buttons.pressed = BUTTON_NEXT;
-			UART.sendString("\rNext->\n\r");
-//			LCD_Menu.optionSelected = OPT_NEXT;
-		}
-		//else if (!(receivedButton & 0x80))
-		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_PREV))
-		{
+			UART.sendString("\rNext->\n");
+			Menu.optSelected = B_NEXT;
+	}
+	else if (!(Buttons.readStates & 0x80)){
+			temp = 0x80;
 			Buttons.pressed = BUTTON_PREV;
-			UART.sendString("\rPrevious->\n\r");
-//			LCD_Menu.optionSelected = OPT_PREV;
-		}
-		//else if (!(receivedButton & 0x10))
-		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_SELECT))
-		{
+			UART.sendString("\rPrevious->\n");
+			Menu.optSelected = B_PREV;
+	}
+	else if (!(Buttons.readStates & 0x10)) {
+			temp = 0x10;
 			Buttons.pressed = BUTTON_SELECT;
-			UART.sendString("\rSelect->\n\r");
-//			LCD_Menu.optionSelected = OPT_SELECT;
-		}
-		//else if (!(receivedButton & 0x20))
-		else if (!BIT_IS_HIGH(Buttons.readStates, BUTTON_RETURN))
-		{
+			UART.sendString("\rSelect->\n");
+			Menu.optSelected = B_SELECT;
+	}
+	else if (!(Buttons.readStates & 0x20)) {
+			temp = 0x20;
 			Buttons.pressed = BUTTON_RETURN;
-			UART.sendString("\rReturn->\n\r");
-//			LCD_Menu.optionSelected = OPT_RETURN;
-		}
-		else
-		{
-			//UART.sendString("\rError->INT vector\n\r");
-			//UART.sendByte(BUTTONS_Interface.readStates);
-			Menu.optSelected = B_VOID;
-		}
+			UART.sendString("\rReturn->\n");
+			Menu.optSelected = B_RETURN;
+	}
+	else {
+			temp = 0;
+	}
 
-//		PORTC |= 1<<PC5;
-		//while(bit_is_clear(BUTTONS_Interface.readStates, BUTTONS_Interface.buttonPressed)) { }
-//		PORTC &= ~(1<<PC5);
+	if (temp)
+		while(!(BUTTON_PIN & temp));
 
-		switch(Buttons.pressed)
-		{
-			case BUTTON_NEXT:
-				Menu.optSelected = B_NEXT;
-				break;
+	_delay_ms(110);
+	PCIFR |= (1<<PCIF0);
 
-			case BUTTON_PREV:
-				Menu.optSelected = B_PREV;
-				break;
-
-			case BUTTON_SELECT:
-				Menu.optSelected = B_SELECT;
-				break;
-
-			case BUTTON_RETURN:
-				Menu.optSelected = B_RETURN;
-				break;
-
-			default:
-				Menu.optSelected = B_VOID;
-				break;
-		}
-//
-//		TIFR0 |= (1<<TOV0);
-//	_delay_ms(200);
-//	PCIFR |= (1<<PCIF0);
 }

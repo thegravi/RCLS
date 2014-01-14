@@ -12,6 +12,10 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "lcd_menu.h"
+#include "lcd.h"
+#include "uart.h"
+
 #define BUTTON_DDR				DDRB
 #define BUTTON_PORT				PORTB
 #define BUTTON_PIN				PINB
