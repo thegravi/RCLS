@@ -26,12 +26,24 @@ int main()
 
 	while(1)
 	{
-		LCD.DataFlow->SendCommand(8, 0x01);
-		funcName = Menu.funcNames[Menu.pos_1L];
+//		LCD.DataFlow->SendCommand(8, 0x01);
+
+		LCD.Position(Menu.pos+2, 1);
+		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
+
 		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("------- Menu -------");
+		funcName = Menu.funcNames[0];
+		LCD.Position(2, 3);
 		LCD.DataFlow->SendString(funcName);
-		LCD.Position(4, 1);
-		LCD.DataFlow->SendNumber(Menu.pos_1L);
+		funcName = Menu.funcNames[1];
+		LCD.Position(3, 3);
+		LCD.DataFlow->SendString(funcName);
+		funcName = Menu.funcNames[2];
+		LCD.Position(4, 3);
+		LCD.DataFlow->SendString(funcName);
+
+
 
 		LED_ON();
 
@@ -44,26 +56,30 @@ int main()
 		}
 
 		LED_OFF();
-//		cli();
+
 		switch(Menu.getOpt())
 		{
 			case B_NEXT:
-				if (Menu.pos_1L < MAX_1L-1)
-					Menu.pos_1L++;
+				LCD.Position(Menu.pos+2, 1);
+				LCD.DataFlow->SendCharacter(S_BLANK);
+				if (Menu.pos < MAX_1L-1)
+					Menu.pos++;
 				else
-					Menu.pos_1L = 0;
+					Menu.pos = 0;
 			break;
 
 			case B_PREV:
-				if (Menu.pos_1L > 0)
-					Menu.pos_1L--;
+				LCD.Position(Menu.pos+2, 1);
+				LCD.DataFlow->SendCharacter(S_BLANK);
+				if (Menu.pos > 0)
+					Menu.pos--;
 				else
-					Menu.pos_1L = MAX_1L-1;
+					Menu.pos = MAX_1L-1;
 			break;
 
 			case B_SELECT:
 				Menu.setOpt(B_VOID);
-				Menu.branch[Menu.pos_1L]();
+				Menu.branch[Menu.pos]();
 			break;
 
 			case B_RETURN:
@@ -74,7 +90,6 @@ int main()
 
 		Menu.setOpt(B_VOID);
 		_delay_ms(50);
-//		sei();
 	}
 
 	return 0;
