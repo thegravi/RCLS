@@ -11,6 +11,13 @@
 #include <util/delay.h>
 
 LEDs_t LEDs = {
+		LCD_Menu_CustomColor,
+		LCD_Menu_PresetColors,
+		&Ch,
+		{
+				"Channels",
+				"Colors"
+		}
 
 };
 
@@ -47,14 +54,47 @@ ColorTable_t ColorTable = RED;
 
 void LCD_Menu_branch_LEDs(void)
 {
+	char* funcName = NULL;
+
+	LCD.DataFlow->SendCommand(8, 0x01);
+	funcName = Menu.funcNames[Menu.pos];
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("leds menu");
+	LCD.DataFlow->SendString(funcName);
+	LCD.Position(4, 1);
+	LCD.DataFlow->SendNumber(Menu.pos);
 	while (1)
 	{
 		_delay_ms(10);
 
 		if (Menu.getOpt() == B_RETURN)
 			break;
+	}
+
+	switch (Menu.getOpt())
+	{
+		case B_NEXT:
+			if (Menu.pos < 1)
+				Menu.pos++;
+			else
+				Menu.pos = 0;
+		break;
+
+		case B_PREV:
+			if (Menu.pos > 0)
+				Menu.pos--;
+			else
+				Menu.pos = 1;
+		break;
+
+		case B_SELECT:
+			Menu.setOpt(B_VOID);
+//			Menu.branch[Menu.pos]();
+		break;
+
+		case B_RETURN:
+			LCD.Position(2, 1);
+			LCD.DataFlow->SendString("return");
+		break;
 	}
 }
 void LCD_Menu_branch_Set(void)
@@ -101,7 +141,7 @@ void LCD_Menu_Init()
 	_delay_ms(300);
 }
 
-void LCD_Menu_PresetColors(uint8_t random) {
+uint8_t LCD_Menu_PresetColors(uint8_t random) {
 
 	while(1)
 	{
@@ -109,47 +149,39 @@ void LCD_Menu_PresetColors(uint8_t random) {
 		switch(ColorTable)
 		{
 			case RED:
-//				UART.sendString("\nRed\r");
 				LCD.DataFlow->SendString("Red");
 				break;
 
 			case ORANGE:
-//				UART.sendString("\nOrange\r");
 				LCD.DataFlow->SendString("Orange");
 				break;
 
 			case YELLOW:
-//				UART.sendString("\nYellow\r");
 				LCD.DataFlow->SendString("Yellow");
 				break;
 
 			case GREEN:
-//				UART.sendString("\nGreen\r");
 				LCD.DataFlow->SendString("Green");
 				break;
 
 			case BLUE:
-//				UART.sendString("\nBlue\r");
 				LCD.DataFlow->SendString("Blue");
 				break;
 
 			case INDIGO:
-//				UART.sendString("\nIndigo\r");
 				LCD.DataFlow->SendString("Indigo");
 				break;
 
 			case VIOLET:
-//				UART.sendString("\nViolet\r");
 				LCD.DataFlow->SendString("Violet");
 				break;
 
 			case WHITE:
-//				UART.sendString("\nWhite\r");
 				LCD.DataFlow->SendString("White");
 				break;
 
 			default:
-//				UART.sendString("\nError : LCD_Menu_preset_colors; Default\r");
+				LCD.DataFlow->SendString("Error color");
 				break;
 		}
 
@@ -190,7 +222,7 @@ void LCD_Menu_PresetColors(uint8_t random) {
 
 			case B_RETURN:
 				Menu.optSelected = B_VOID;
-				return;
+				return 0;
 				break;
 
 			default:
@@ -201,7 +233,7 @@ void LCD_Menu_PresetColors(uint8_t random) {
 	}
 }
 
-void LCD_Menu_CustomColor(uint8_t preview) {
+uint8_t LCD_Menu_CustomColor(uint8_t preview) {
 
 }
 

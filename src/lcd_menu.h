@@ -13,8 +13,8 @@
 #include "uart.h"
 
 void LCD_Menu_Init(void);
-void LCD_Menu_PresetColors(uint8_t random);
-void LCD_Menu_CustomColor(uint8_t preview);
+uint8_t LCD_Menu_PresetColors(uint8_t random);
+uint8_t LCD_Menu_CustomColor(uint8_t preview);
 void LCD_Menu_SelectCh(uint8_t io);
 void LCD_Menu_setOpt(uint8_t opt);
 uint8_t LCD_Menu_getOpt(void);
@@ -45,7 +45,6 @@ typedef enum {
 
 extern ColorTable_t ColorTable;
 
-
 typedef struct {
 	uint8_t (*getData)(uint8_t* data, uint8_t* ok);
 	uint8_t (*setData)(uint8_t* data, uint8_t* ok);
@@ -53,29 +52,31 @@ typedef struct {
 
 }Channels_t;
 
+Channels_t Ch;
 
 typedef struct {
 	uint8_t (*color_custom)(uint8_t io);
 	uint8_t (*color_present)(uint8_t io);
 
 	Channels_t* ch;
+	char* funcNames[2];
 }LEDs_t;
 
-extern LEDs_t LEDs;
+LEDs_t LEDs;
 
 
 typedef struct {
 
 }Settings_t;
 
-extern Settings_t Set;
+Settings_t Set;
 
 
 typedef struct {
 
 }Profiles_t;
 
-extern Profiles_t Prof;
+Profiles_t Prof;
 
 
 typedef struct {
@@ -90,7 +91,7 @@ typedef struct {
 
 	char* funcNames[3];
 	uint8_t optSelected;
-	uint8_t pos_1L;
+	uint8_t pos;
 }LCD_Menu_t;
 
 extern LCD_Menu_t Menu;
