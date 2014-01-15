@@ -15,12 +15,17 @@
 void LCD_Menu_Init(void);
 uint8_t LCD_Menu_PresetColors(uint8_t random);
 uint8_t LCD_Menu_CustomColor(uint8_t preview);
-void LCD_Menu_SelectCh(uint8_t io);
+uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok);
 void LCD_Menu_setOpt(uint8_t opt);
 uint8_t LCD_Menu_getOpt(void);
 void LCD_Menu_branch_LEDs(void);
 void LCD_Menu_branch_Set(void);
 void LCD_Menu_branch_Profs(void);
+uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok);
+uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok);
+void LCD_Menu_Colors(void);
+void LCD_Menu_Channels(void);
+int8_t LCD_Menu_Choice(uint8_t lim, uint8_t fixed, char** names);
 
 #define B_VOID		0x00
 #define B_SELECT	0x10
@@ -57,9 +62,20 @@ Channels_t Ch;
 typedef struct {
 	uint8_t (*color_custom)(uint8_t io);
 	uint8_t (*color_present)(uint8_t io);
+	char* funcNames[2];
 
+	char* colorNames[NUM_OF_COLORS];
+	uint8_t (*branch[2])(uint8_t);
+}Colors_t;
+
+Colors_t Colors;
+
+typedef struct {
+	Colors_t* colors;
 	Channels_t* ch;
 	char* funcNames[2];
+	void (*branch[2])(void);
+
 }LEDs_t;
 
 LEDs_t LEDs;
@@ -87,6 +103,7 @@ typedef struct {
 	void (*Init)(void);
 	void (*setOpt)(uint8_t opt);
 	uint8_t (*getOpt)(void);
+
 	void (*branch[MAX_1L])(void);
 
 	char* funcNames[3];
