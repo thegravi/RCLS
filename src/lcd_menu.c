@@ -9,6 +9,7 @@
 #include "lcd.h"
 #include <avr/io.h>
 #include <util/delay.h>
+#include "common.h"
 
 LEDs_t LEDs = {
 		LCD_Menu_CustomColor,
@@ -54,47 +55,57 @@ ColorTable_t ColorTable = RED;
 
 void LCD_Menu_branch_LEDs(void)
 {
-	char* funcName = NULL;
-
-	LCD.DataFlow->SendCommand(8, 0x01);
-	funcName = Menu.funcNames[Menu.pos];
-	LCD.Position(1, 1);
-	LCD.DataFlow->SendString(funcName);
-	LCD.Position(4, 1);
-	LCD.DataFlow->SendNumber(Menu.pos);
-	while (1)
+	while(1)
 	{
-		_delay_ms(10);
+		LCD.Position(Menu.pos+2, 1);
+		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
-		if (Menu.getOpt() == B_RETURN)
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("------- Menu -------");
+		funcName = Menu.leds->funcNames[0];
+		LCD.Position(2, 3);
+		LCD.DataFlow->SendString(funcName);
+		funcName = Menu.leds->funcNames[1];
+		LCD.Position(3, 3);
+		LCD.DataFlow->SendString(funcName);
+
+		while (!Menu.getOpt())
+		{
+			_delay_ms(10);
+
+			if (Menu.getOpt() == B_VOID)
+				break;
+		}
+
+		switch (Menu.getOpt())
+		{
+			case B_NEXT:
+				LCD.Position(Menu.pos+2, 1);
+				LCD.DataFlow->SendCharacter(S_BLANK);
+				if (Menu.pos < 1)
+					Menu.pos++;
+				else
+					Menu.pos = 0;
 			break;
-	}
 
-	switch (Menu.getOpt())
-	{
-		case B_NEXT:
-			if (Menu.pos < 1)
-				Menu.pos++;
-			else
-				Menu.pos = 0;
-		break;
+			case B_PREV:
+				LCD.Position(Menu.pos+2, 1);
+				LCD.DataFlow->SendCharacter(S_BLANK);
+				if (Menu.pos > 0)
+					Menu.pos--;
+				else
+					Menu.pos = 1;
+			break;
 
-		case B_PREV:
-			if (Menu.pos > 0)
-				Menu.pos--;
-			else
-				Menu.pos = 1;
-		break;
+			case B_SELECT:
+				Menu.setOpt(B_VOID);
+	//			Menu.branch[Menu.pos]();
+			break;
 
-		case B_SELECT:
-			Menu.setOpt(B_VOID);
-//			Menu.branch[Menu.pos]();
-		break;
-
-		case B_RETURN:
-			LCD.Position(2, 1);
-			LCD.DataFlow->SendString("return");
-		break;
+			case B_RETURN:
+				return;
+			break;
+		}
 	}
 }
 void LCD_Menu_branch_Set(void)
