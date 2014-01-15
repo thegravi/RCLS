@@ -16,6 +16,11 @@ void LCD_Menu_Init(void);
 void LCD_Menu_PresetColors(uint8_t random);
 void LCD_Menu_CustomColor(uint8_t preview);
 void LCD_Menu_SelectCh(uint8_t io);
+void LCD_Menu_setOpt(uint8_t opt);
+uint8_t LCD_Menu_getOpt(void);
+void LCD_Menu_branch_LEDs(void);
+void LCD_Menu_branch_Set(void);
+void LCD_Menu_branch_Profs(void);
 
 #define B_VOID		0x00
 #define B_SELECT	0x10
@@ -81,11 +86,11 @@ typedef struct {
 	void (*Init)(void);
 	void (*setOpt)(uint8_t opt);
 	uint8_t (*getOpt)(void);
+	void (*branch[MAX_1L])(void);
 
 	char* funcNames[3];
 	uint8_t optSelected;
 	uint8_t pos_1L;
-
 }LCD_Menu_t;
 
 extern LCD_Menu_t Menu;

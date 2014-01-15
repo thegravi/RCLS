@@ -15,7 +15,7 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd)
 	}
 	else if (size == 8)	{
 			// temporary delay, until "WaitIfBusy" function is completed
-			_delay_ms(2);
+			_delay_ms(5);
 		//	LCD_Interface.Comm.WaitIfBusy();
 			LCD.DataFlow->ProcessData(cmd >> 4);
 			LCD.Com->ExecuteCMD();
@@ -62,7 +62,7 @@ static void LCD_WaitIfBusy()
 
 void LCD_SendCharacter(uint8_t character)
 {
-	_delay_us(50);
+	_delay_us(40);
 	LCD.Regs->PORT_RS(SET);
 	LCD.DataFlow->SendCommand(8, character);
 	LCD.Regs->PORT_RS(RESET);
@@ -77,7 +77,7 @@ void LCD_SendNumber(int16_t number)
 
 void LCD_SendString(char* charString)
 {
-	while(*charString != '\0')
+	while(*charString > 0)
 		LCD.DataFlow->SendCharacter(*charString++);
 }
 
@@ -117,8 +117,8 @@ void LCD_Init()
 
 	_delay_ms(20);
 	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(5);
-	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(1);
-	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(1);
+	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(2);
+	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(2);
 	LCD.DataFlow->SendCommand(4, 0x02);	_delay_ms(5);
 	// 4-bit mode, 2 lines
 	LCD.DataFlow->SendCommand(4, 0x02); 	_delay_ms(2);

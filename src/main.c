@@ -5,12 +5,12 @@
  *      Author: Gražvidas
  */
 
-
 #include <avr/io.h>
 #include "lcd.h"
 #include "lcd_menu.h"
 #include "buttons.h"
 #include "uart.h"
+#include "common.h"
 
 #define F_CPU 8000000UL
 
@@ -26,8 +26,14 @@ int main()
 
 	while(1)
 	{
-		UART.sendByte(Menu.optSelected);
-		PORTC |= 1<<PC5;
+		LCD.DataFlow->SendCommand(8, 0x01);
+		funcName = Menu.funcNames[Menu.pos_1L];
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString(funcName);
+		LCD.Position(4, 1);
+		LCD.DataFlow->SendNumber(Menu.pos_1L);
+
+		LED_ON();
 
 		while (!Menu.getOpt())
 		{
@@ -37,9 +43,8 @@ int main()
 				break;
 		}
 
-		PORTC &= ~(1<<PC5);
-		cli();
-
+		LED_OFF();
+//		cli();
 		switch(Menu.getOpt())
 		{
 			case B_NEXT:
@@ -57,16 +62,19 @@ int main()
 			break;
 
 			case B_SELECT:
+				Menu.setOpt(B_VOID);
+				Menu.branch[Menu.pos_1L]();
 			break;
 
 			case B_RETURN:
+				LCD.Position(2, 1);
+				LCD.DataFlow->SendString("return");
 			break;
 		}
-		funcName = Menu.funcNames[Menu.pos_1L];
-		LCD.DataFlow->SendCommand(8, 0x01);
-		LCD.DataFlow->SendString(funcName);
+
 		Menu.setOpt(B_VOID);
-		sei();
+		_delay_ms(50);
+//		sei();
 	}
 
 	return 0;
@@ -75,7 +83,7 @@ int main()
 void Init()
 {
 	cli();
-	UART.Init();
+//	UART.Init();
 	LCD.Init();
 	Menu.Init();
 	Buttons.Init();

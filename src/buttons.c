@@ -27,43 +27,39 @@ void BUTTONS_Init() {
 
 ISR(PCINT0_vect)
 {
-	volatile uint8_t temp = 0;
-//	_delay_ms(110);
+        volatile uint8_t temp = 0;
+        _delay_ms(110);
 
-	Buttons.readStates = BUTTON_PIN & 0xF0;
-	Menu.setOpt(0);
-	Menu.optSelected = B_VOID;
+        Buttons.readStates = BUTTON_PIN & 0xF0;
+        Menu.setOpt(0);
+        Menu.optSelected = B_VOID;
 
-	if (!(Buttons.readStates & 0x40)) {
-			temp = 0x40;
-			Buttons.pressed = BUTTON_NEXT;
-			Menu.setOpt(B_NEXT);
-			UART.sendString("Next->\n", 7);
-	}
-	else if (!(Buttons.readStates & 0x80)){
-			temp = 0x80;
-			Buttons.pressed = BUTTON_PREV;
-			Menu.setOpt(B_PREV);
-			UART.sendString("Previous->\n", 11);
-	}
-	else if (!(Buttons.readStates & 0x10)) {
-			temp = 0x10;
-			Buttons.pressed = BUTTON_SELECT;
-			Menu.setOpt(B_SELECT);
-			UART.sendString("Select->\n", 9);
-	}
-	else if (!(Buttons.readStates & 0x20)) {
-			temp = 0x20;
-			Buttons.pressed = BUTTON_RETURN;
-			Menu.setOpt(B_RETURN);
-			UART.sendString("Return->\n", 9);
-	}
-	else {
-			temp = 0;
-	}
+        if (!(Buttons.readStates & 0x40)) {
+                        temp = 0x40;
+                        Buttons.pressed = BUTTON_NEXT;
+                        Menu.setOpt(B_NEXT);
+        }
+        else if (!(Buttons.readStates & 0x80)){
+                        temp = 0x80;
+                        Buttons.pressed = BUTTON_PREV;
+                        Menu.setOpt(B_PREV);
+        }
+        else if (!(Buttons.readStates & 0x10)) {
+                        temp = 0x10;
+                        Buttons.pressed = BUTTON_SELECT;
+                        Menu.setOpt(B_SELECT);
+        }
+        else if (!(Buttons.readStates & 0x20)) {
+                        temp = 0x20;
+                        Buttons.pressed = BUTTON_RETURN;
+                        Menu.setOpt(B_RETURN);
+        }
+        else {
+                        temp = 0;
+        }
 
-//	if (temp)
-//		while(!(BUTTON_PIN & temp));
+//        if (temp)
+//                while(!(BUTTON_PIN & temp));
 
-//	_delay_ms(110);
+//        _delay_ms(110);
 }
