@@ -199,6 +199,10 @@ uint8_t LCD_Menu_PresetColors(uint8_t io)
 //				break;
 //		}
 
+		LCD.DataFlow->SendCommand(8, 0x01);
+		funcName = Menu.leds->colors->colorNames[status];
+		LCD.DataFlow->SendString(funcName);
+		while(1);
 		Menu.optSelected = B_VOID;
 	}
 
@@ -289,10 +293,17 @@ int8_t LCD_Menu_Choice(uint8_t lim, uint8_t fixed, char** names)
 			}
 		}
 
-		if (!fixed)
-			LCD.Position(2, 1);
-		else
-			LCD.Position(Menu.pos+2, 1);
+		if (!fixed) {
+				if (Menu.pos == 0)
+					LCD.Position(2, 1);
+				else if (Menu.pos > 0 && Menu.pos < 3)
+					LCD.Position(Menu.pos + 2, 1);
+				else
+					LCD.Position(4, 1);
+		}
+		else {
+				LCD.Position(Menu.pos+2, 1);
+		}
 
 		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
