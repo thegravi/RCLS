@@ -7,40 +7,41 @@
 
 #include "lcd.h"
 
-void LCD_SendCommand(uint8_t size, uint8_t cmd) {
-
+void LCD_SendCommand(uint8_t size, uint8_t cmd)
+{
 	if (size == 4) {
-		LCD.DataFlow->ProcessData(cmd & 0x0F);
-		LCD.Com->ExecuteCMD();
-	} else if (size == 8) {
-		// temporary delay, until "WaitIfBusy" function is completed
-		_delay_ms(2);
-	//	LCD_Interface.Comm.WaitIfBusy();
-		LCD.DataFlow->ProcessData(cmd >> 4);
-		LCD.Com->ExecuteCMD();
-		LCD.DataFlow->ProcessData(cmd & 0x0F);
-		LCD.Com->ExecuteCMD();
+			LCD.DataFlow->ProcessData(cmd & 0x0F);
+			LCD.Com->ExecuteCMD();
+	}
+	else if (size == 8)	{
+			// temporary delay, until "WaitIfBusy" function is completed
+			_delay_ms(2);
+		//	LCD_Interface.Comm.WaitIfBusy();
+			LCD.DataFlow->ProcessData(cmd >> 4);
+			LCD.Com->ExecuteCMD();
+			LCD.DataFlow->ProcessData(cmd & 0x0F);
+			LCD.Com->ExecuteCMD();
 	}
 }
 
-static void LCD_ExecuteCMD() {
-
+static void LCD_ExecuteCMD()
+{
 	LCD.Regs->PORT_E(SET);
 	asm("nop");
 	asm("nop");
 	LCD.Regs->PORT_E(RESET);
 }
 
-static void LCD_WaitIfBusy() {
-
+static void LCD_WaitIfBusy()
+{
 	volatile uint8_t data;
-	uint8_t busy_f = 1;
+	uint8_t busy_f = SET;
 
 	LCD.Regs->PORT_RW(SET);
 	DATA_DIR &= ~(1<<LCD_DATA0) | ~(1<<LCD_DATA1) | ~(1<<LCD_DATA2) | ~(1<<LCD_DATA3);
 
-	while (busy_f) {
-
+	while (busy_f)
+	{
 		LCD.Regs->PORT_E(SET);
 		_delay_us(1);
 		data = DATA_PIN  << 4;
@@ -52,66 +53,60 @@ static void LCD_WaitIfBusy() {
 		LCD.Regs->PORT_E(RESET);
 		_delay_us(1);
 
-		if (data & 0x80) { } else { busy_f = 0; }
+		if (!(data & 0x80))
+				busy_f = RESET;
 	}
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
 	LCD.Regs->PORT_RW(RESET);
 }
 
-void LCD_SendCharacter(uint8_t character) {
-
+void LCD_SendCharacter(uint8_t character)
+{
 	_delay_us(50);
-	//LCD_Interface.Comm.WaitIfBusy();
 	LCD.Regs->PORT_RS(SET);
 	LCD.DataFlow->SendCommand(8, character);
 	LCD.Regs->PORT_RS(RESET);
 }
 
-void LCD_SendNumber(int16_t number) {
-
+void LCD_SendNumber(int16_t number)
+{
 	char convNum[8];
-
 	ltoa(number, convNum, 10);
-
 	LCD.DataFlow->SendString(convNum);
-
 }
 
-void LCD_SendString(char* charString) {
-
-	while(*charString != '\0') {
+void LCD_SendString(char* charString)
+{
+	while(*charString != '\0')
 		LCD.DataFlow->SendCharacter(*charString++);
-	}
 }
 
-static void LCD_ProcessData(int8_t data) {
-
-	if (data & 0x01) {
+static void LCD_ProcessData(int8_t data)
+{
+	if (data & 0x01)
 		DATA_PORT |=  (1<<LCD_DATA0);
-	} else { DATA_PORT &= ~(1<<LCD_DATA0); }
+	else
+		DATA_PORT &= ~(1<<LCD_DATA0);
 
-	if (data & 0x02) {
+	if (data & 0x02)
 		DATA_PORT |=  (1<<LCD_DATA1);
-	} else { DATA_PORT &= ~(1<<LCD_DATA1); }
+	else
+		DATA_PORT &= ~(1<<LCD_DATA1);
 
-	if (data & 0x04) {
+	if (data & 0x04)
 		DATA_PORT |=  (1<<LCD_DATA2);
-	} else { DATA_PORT &= ~(1<<LCD_DATA2); }
+	else
+		DATA_PORT &= ~(1<<LCD_DATA2);
 
-	if (data & 0x08) {
+	if (data & 0x08)
 		DATA_PORT |=  (1<<LCD_DATA3);
-	} else { DATA_PORT &= ~(1<<LCD_DATA3); }
+	else
+		DATA_PORT &= ~(1<<LCD_DATA3);
 }
 
-void LCD_Init() {
-
+void LCD_Init()
+{
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
-	CMD_DIR |= (1<<LCD_E);
-	CMD_DIR |= (1<<LCD_RS);
-	CMD_DIR |= (1<<LCD_RW);
-	CMD_PORT &= ~(1<<LCD_E);
-	CMD_PORT &= ~(1<<LCD_RS);
-	CMD_PORT &= ~(1<<LCD_RW);
 
 	LCD.Regs->DDR_E(SET);
 	LCD.Regs->DDR_RS(SET);
@@ -119,7 +114,6 @@ void LCD_Init() {
 	LCD.Regs->PORT_E(RESET);
 	LCD.Regs->PORT_RS(RESET);
 	LCD.Regs->PORT_RW(RESET);
-
 
 	_delay_ms(20);
 	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(5);
@@ -133,7 +127,7 @@ void LCD_Init() {
 	LCD.DataFlow->SendCommand(8, 0x0C);
 	// clear display, return position
 	LCD.DataFlow->SendCommand(8, 0x01);
-	LCD.DataFlow->SendString("LCD init");_delay_ms(400);
+	LCD.DataFlow->SendString("LCD init..SUCCESS");_delay_ms(300);
 	LCD.DataFlow->SendCommand(8, 0x01);
 }
 
@@ -142,13 +136,12 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 	uint8_t pos;
 	uint8_t LCD_Rows[4] = {0x80+0, 0x80+0x40, 0x80+0x14, 0x80+0x54};
 
-	if ((pos_y == 0 || pos_y > 4) || (pos_x == 0 || pos_x > 20))
-	{
+	if ((!pos_y || pos_y > 4) || (!pos_x || pos_x > LCD_LINE_LENGTH)) {
 			pos_y = 1;
 			pos_x = 1;
 	}
 
-	pos = LCD_Rows[pos_y - 1] + (pos_x - 1);
+	pos = LCD_Rows[pos_y-1] + (pos_x - 1);
 	LCD.DataFlow->SendCommand(8, pos);
 }
 

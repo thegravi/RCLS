@@ -13,11 +13,13 @@
 
 #define SET					1
 #define RESET				0
+
 #define CMD_DIR				DDRB
 #define CMD_PORT			PORTB
 #define LCD_E				PB0
 #define LCD_RS				PB1
 #define LCD_RW				PB2
+
 #define DATA_DIR			DDRC
 #define DATA_PORT			PORTC
 #define DATA_PIN			PINC
@@ -25,6 +27,8 @@
 #define LCD_DATA1			PC1
 #define LCD_DATA2			PC2
 #define LCD_DATA3			PC3
+
+#define LCD_LINE_LENGTH		20
 //____________________________________ CHARACTERS ________________________________________________/
 
 #define S_CELSIUS			0xDF

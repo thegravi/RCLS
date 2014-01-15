@@ -9,7 +9,8 @@
 #include "lcd.h"
 #include <avr/io.h>
 #include <util/delay.h>
-
+void LCD_Menu_setOpt(uint8_t opt);
+uint8_t LCD_Menu_getOpt(void);
 LEDs_t LEDs = {
 
 };
@@ -23,126 +24,45 @@ Profiles_t Prof = {
 };
 
 LCD_Menu_t Menu = {
-		LCD_Menu_Init,
 		&LEDs,
 		&Set,
 		&Prof,
-		B_VOID
+		LCD_Menu_Init,
+		LCD_Menu_setOpt,
+		LCD_Menu_getOpt,
+		{
+				"LEDs",
+				"Settings",
+				"Profiles"
+		},
+		B_VOID,
+		0
 };
 
 ColorTable_t ColorTable = RED;
 
-void LCD_Menu_Init() {
+uint8_t LCD_Menu_getOpt(void)
+{
+	return Menu.optSelected;
+}
 
-	// LED Object
-//	LCD_Menu.Options.LED.CurrentFunction[0] = LCD_Menu_Preset_colors;
-//	LCD_Menu.Options.LED.CurrentFunction[1] = LCD_Menu_Custom_color;
-//	LCD_Menu.Options.LED.CurrentFunction[2] = LCD_Menu_ChooseChannel;
-//
-//	LCD_Menu.Options.LED.CurrentFunctionName[0] = "Preset colors";
-//	LCD_Menu.Options.LED.CurrentFunctionName[1] = "Custom color";
-//	LCD_Menu.Options.LED.CurrentFunctionName[2] = "Select channel";
-//
-//	LCD_Menu.Options.LED.PresetColors = LCD_Menu_Preset_colors;
-//	LCD_Menu.Options.LED.CustomColor = LCD_Menu_Custom_color;
-//	LCD_Menu.Options.LED.ChooseChannel = LCD_Menu_ChooseChannel;
-//
-////	LCD_Menu.Options.LED.cur
-//	LCD_Menu.Options.LED.CurrentSubFunctionName[0] = "ChannelDetails";
-//	LCD_Menu.Options.LED.objName = "LED";
-//
-//	// Settings Object
-//	LCD_Menu.Options.Prefs.objName = "Preferences";
-//
-//	// Profiles Object
-//	LCD_Menu.Options.Profs.objName = "Profiles";
-//
-//	// Menu Object
-//	LCD_Menu.Enter 					= LCD_Menu_Enter;
-//	LCD_Menu.setFuncLevelDepth 		= LCD_setFuncLevelDepth;
-//	LCD_Menu.setSubFuncLevelDepth 	= LCD_setSubFuncLevelDepth;
-//	LCD_Menu.getFuncLevelDepth 		= LCD_getFuncLevelDepth;
-//	LCD_Menu.getSubFuncLevelDepth 	= LCD_getSubFuncLevelDepth;
-//	LCD_Menu.optionSelected 		= B_VOID;
-//	LCD_Menu.subFuncPos 			= 0;
-//	LCD_Menu.funcPos 				= 0;
-//	LCD_Menu.selectedBranch 		= 0;
-//
-//	// Options Object
-//	LCD_Menu.Options.LED_color 		= LCD_Menu_LED_color;
-//	LCD_Menu.Options.Preferences 	= LCD_Menu_Preferences;
-//	LCD_Menu.Options.Profiles 		= LCD_Menu_Profiles;
-//
-//	LCD_Menu.Options.CurrentFunctionName[0] = LCD_Menu.Options.LED.objName;
-//	LCD_Menu.Options.CurrentFunctionName[1] = LCD_Menu.Options.Prefs.objName;
-//	LCD_Menu.Options.CurrentFunctionName[2] = LCD_Menu.Options.Profs.objName;
-//
-//	LCD_Menu.Options.CurrentFunction[0] = LCD_Menu.Options.LED_color;
-//	LCD_Menu.Options.CurrentFunction[1] = LCD_Menu.Options.Preferences;
-//	LCD_Menu.Options.CurrentFunction[2] = LCD_Menu.Options.Profiles;
-//
-//	// MAP declarations
-//	LCD_Menu.MAP[0].funcQuantity = 3;
-//	LCD_Menu.MAP[0].level1objName[0] = LCD_Menu.Options.LED.CurrentFunctionName[0];
-//	LCD_Menu.MAP[0].level1objName[1] = LCD_Menu.Options.LED.CurrentFunctionName[1];
-//    LCD_Menu.MAP[0].level1objName[2] = LCD_Menu.Options.LED.CurrentFunctionName[2];
-//
-//    LCD_Menu.MAP[0].level1objFunc[0] = LCD_Menu.Options.LED.CurrentFunction[0];
-//    LCD_Menu.MAP[0].level1objFunc[1] = LCD_Menu.Options.LED.CurrentFunction[1];
-//    LCD_Menu.MAP[0].level1objFunc[2] = LCD_Menu.Options.LED.CurrentFunction[2];
-//
-//	LCD_Menu.MAP[1].funcQuantity = 0;
-//	LCD_Menu.MAP[2].funcQuantity = 0;
+void LCD_Menu_setOpt(uint8_t opt)
+{
+	Menu.optSelected = opt;
+}
+
+void LCD_Menu_Init()
+{
 
 	LCD.DataFlow->SendCommand(8, 0x01);
-	LCD.DataFlow->SendString("LCD Menu init");_delay_ms(400);
+	LCD.DataFlow->SendString("Menu init.. SUCCESS");
+	_delay_ms(300);
 }
-
-
-void LCD_setSubFuncLevelDepth(int8_t pos) {
-	Menu.subFuncPos = Menu.subFuncPos + pos;
-}
-
-void LCD_setFuncLevelDepth(int8_t pos) {
-	Menu.funcPos = Menu.funcPos + pos;
-}
-
-uint8_t LCD_getSubFuncLevelDepth(void) { return Menu.subFuncPos; }
-uint8_t LCD_getFuncLevelDepth(void) { return Menu.funcPos; }
-
-//void LCD_Menu_Enter() {
-//
-//	char* functionName = 0;
-//
-//	DDRC |= 1<<PC5;
-//
-//	LCD_Menu_BottomLineDeclaration();
-//	functionName = LCD_Menu.Options.CurrentFunctionName[0];
-//	LCD_Interface.DataFlow.SendString(functionName);
-//
-//	while(1) {
-//
-//		LCD_Menu_Option_Selection(2);
-//		LCD_Menu.optionSelected = B_VOID;
-//
-//			while(1)
-//			{
-//				UART.sendString("i");
-//				asm("nop");
-////				PORTC |= 1<<PC5;
-////				_delay_ms(50);
-//				if (LCD_Menu.optionSelected != B_VOID) { break;}
-//			}
-//
-//	}
-//
-//}
 
 void LCD_Menu_PresetColors(uint8_t random) {
 
 	while(1)
 	{
-		LCD_Menu_BottomLineDeclaration();
 		UART.sendByte(ColorTable);
 		switch(ColorTable)
 		{
@@ -197,7 +117,8 @@ void LCD_Menu_PresetColors(uint8_t random) {
 		while(1)
 		{
 			asm("nop");
-			UART.sendData(&Menu.optSelected, 1);UART.sendString(" ");
+			UART.sendData(&Menu.optSelected, 1);
+			UART.sendString(" ", 1);
 			if (Menu.optSelected != B_VOID) { break; cli(); }
 		}
 		PORTC &= ~(1<<PC5);
@@ -246,15 +167,7 @@ void LCD_Menu_SelectCh(uint8_t io) {
 
 }
 
-void LCD_Menu_Preferences() {
-
-}
-
-void LCD_Menu_Profiles() {
-
-}
-
-void LCD_Menu_OptionSelection() {
+/*void LCD_Menu_OptionSelection() {
 
 	cli();
 	uint8_t subFuncQuantity = 2;
@@ -368,3 +281,4 @@ void LCD_Menu_BottomLineDeclaration() {
 	LCD.DataFlow->SendString("              ");
 	LCD.Position(2, 3);
 }
+*/

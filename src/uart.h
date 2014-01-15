@@ -17,7 +17,7 @@ typedef struct {
 	void (*sendByte)(uint8_t data);
 	void (*sendChar)(char c);
 	void (*sendData)(uint8_t* buffer, uint8_t bytes);
-	void (*sendString)(char* buffer);
+	void (*sendString)(char* buffer, uint8_t len);
 }UART_t;
 
 extern UART_t UART;

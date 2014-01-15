@@ -25,46 +25,45 @@ void BUTTONS_Init() {
 	PCICR |= (1<<PCIE0);
 }
 
-ISR (PCINT0_vect)
+ISR(PCINT0_vect)
 {
 	volatile uint8_t temp = 0;
-	_delay_ms(110);
+//	_delay_ms(110);
 
 	Buttons.readStates = BUTTON_PIN & 0xF0;
-	Buttons.pressed = 0;
+	Menu.setOpt(0);
+	Menu.optSelected = B_VOID;
 
 	if (!(Buttons.readStates & 0x40)) {
 			temp = 0x40;
 			Buttons.pressed = BUTTON_NEXT;
-			UART.sendString("\rNext->\n");
-			Menu.optSelected = B_NEXT;
+			Menu.setOpt(B_NEXT);
+			UART.sendString("Next->\n", 7);
 	}
 	else if (!(Buttons.readStates & 0x80)){
 			temp = 0x80;
 			Buttons.pressed = BUTTON_PREV;
-			UART.sendString("\rPrevious->\n");
-			Menu.optSelected = B_PREV;
+			Menu.setOpt(B_PREV);
+			UART.sendString("Previous->\n", 11);
 	}
 	else if (!(Buttons.readStates & 0x10)) {
 			temp = 0x10;
 			Buttons.pressed = BUTTON_SELECT;
-			UART.sendString("\rSelect->\n");
-			Menu.optSelected = B_SELECT;
+			Menu.setOpt(B_SELECT);
+			UART.sendString("Select->\n", 9);
 	}
 	else if (!(Buttons.readStates & 0x20)) {
 			temp = 0x20;
 			Buttons.pressed = BUTTON_RETURN;
-			UART.sendString("\rReturn->\n");
-			Menu.optSelected = B_RETURN;
+			Menu.setOpt(B_RETURN);
+			UART.sendString("Return->\n", 9);
 	}
 	else {
 			temp = 0;
 	}
 
-	if (temp)
-		while(!(BUTTON_PIN & temp));
+//	if (temp)
+//		while(!(BUTTON_PIN & temp));
 
-	_delay_ms(110);
-	PCIFR |= (1<<PCIF0);
-
+//	_delay_ms(110);
 }

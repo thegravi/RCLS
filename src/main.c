@@ -18,58 +18,66 @@ void Init(void);
 
 int main()
 {
+	volatile int i;
+	char* funcName = NULL;
+	DDRC |= 1<<PC5;
 
 	Init();
 
-////	LCD_Menu.Enter();
-//	char* functionName = 0;
-//	DDRC |= 1<<PC5;
-//
-//	//LCD_Menu_BottomLineDeclaration();
-//	functionName = Menu.Options.CurrentFunctionName[0];
-//	LCD_Interface.DataFlow.SendString(functionName);
-//
-//	while(1)
-//	{
-//
-//	//	LCD_Menu_OptionSelection();
-//		Menu.optSelected = B_VOID;
-//
-//		while(Menu.optSelected)
-//		{
-////					UART.sendString("i");
-////					asm("nop");
-////		//				PORTC |= 1<<PC5;
-////		//				_delay_ms(50);
-//			//if (LCD_Menu.optionSelected != OPT_VOID) { break;}
-//		}
-//
-//	}
+	while(1)
+	{
+		UART.sendByte(Menu.optSelected);
+		PORTC |= 1<<PC5;
+
+		while (!Menu.getOpt())
+		{
+			_delay_ms(10);
+
+			if (Menu.getOpt() != B_VOID)
+				break;
+		}
+
+		PORTC &= ~(1<<PC5);
+		cli();
+
+		switch(Menu.getOpt())
+		{
+			case B_NEXT:
+				if (Menu.pos_1L < MAX_1L-1)
+					Menu.pos_1L++;
+				else
+					Menu.pos_1L = 0;
+			break;
+
+			case B_PREV:
+				if (Menu.pos_1L > 0)
+					Menu.pos_1L--;
+				else
+					Menu.pos_1L = MAX_1L-1;
+			break;
+
+			case B_SELECT:
+			break;
+
+			case B_RETURN:
+			break;
+		}
+		funcName = Menu.funcNames[Menu.pos_1L];
+		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.DataFlow->SendString(funcName);
+		Menu.setOpt(B_VOID);
+		sei();
+	}
 
 	return 0;
 }
 
 void Init()
 {
+	cli();
 	UART.Init();
-	TCCR0B |= (1<<CS02) | (1<<CS00);
-	TIMSK0 |= (1<<TOIE0);
-
-	LCD_Interface.Initialize();
-	Menu.Initialize();
-	BUTTONS_Interface.Initialize();
-
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);
-	LCD_Interface.Position(2, 1);
-	LCD_Interface.DataFlow.SendString("COMPLETED");	_delay_ms(500);
-	LCD_Interface.DataFlow.SendCommand(8, 0x01);
+	LCD.Init();
+	Menu.Init();
+	Buttons.Init();
+	sei();
 }
-
-// TODO: set INT0 for OPT_NEXT
-// TODO: set INT1 for OPT_PREV
-// TODO: set PCINT0 for OPT_SELECT
-// TODO: set PCINT1 for OPT_RETURN
-
-
-
-//ISR (TIMER0_OVF_vect){}
