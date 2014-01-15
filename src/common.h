@@ -18,5 +18,6 @@
 #define LED_OFF()	DDRC &= ~(1<<PC5); PORTC &= ~(1<<PC5);
 
 extern char* funcName;
+extern int8_t status;
 
 #endif /* COMMON_H_ */
