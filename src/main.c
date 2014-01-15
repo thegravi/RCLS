@@ -17,22 +17,23 @@
 void Init(void);
 
 char* funcName;
+int8_t status = -1;
 
 int main()
 {
-	volatile int i;
-//	char* funcName = NULL;
 	DDRC |= 1<<PC5;
 
 	Init();
 
 	while(1)
 	{
+		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("------- Menu -------");
+
 		LCD.Position(Menu.pos+2, 1);
 		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
-		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("------- Menu -------");
 		funcName = Menu.funcNames[0];
 		LCD.Position(2, 3);
 		LCD.DataFlow->SendString(funcName);
@@ -43,53 +44,9 @@ int main()
 		LCD.Position(4, 3);
 		LCD.DataFlow->SendString(funcName);
 
-		LED_ON();
-
-		while (!Menu.getOpt())
-		{
-			_delay_ms(10);
-
-			if (Menu.getOpt() != B_VOID)
-				break;
-		}
-
-		LED_OFF();
-
-		switch(Menu.getOpt())
-		{
-			case B_NEXT:
-				LCD.Position(Menu.pos+2, 1);
-				LCD.DataFlow->SendCharacter(S_BLANK);
-				if (Menu.pos < MAX_1L-1)
-					Menu.pos++;
-				else
-					Menu.pos = 0;
-			break;
-
-			case B_PREV:
-				LCD.Position(Menu.pos+2, 1);
-				LCD.DataFlow->SendCharacter(S_BLANK);
-				if (Menu.pos > 0)
-					Menu.pos--;
-				else
-					Menu.pos = MAX_1L-1;
-			break;
-
-			case B_SELECT:
-				LCD.DataFlow->SendCommand(8, 0x01);
-				Menu.setOpt(B_VOID);
-				Menu.branch[Menu.pos]();
-				LCD.DataFlow->SendCommand(8, 0x01);
-			break;
-
-			case B_RETURN:
-				LCD.Position(2, 1);
-				LCD.DataFlow->SendString("return");
-			break;
-		}
-
-		Menu.setOpt(B_VOID);
-		_delay_ms(50);
+		status = LCD_Menu_Choice(3, TRUE, NULL);
+		if (status > -1)
+			Menu.branch[status]();
 	}
 
 	return 0;
