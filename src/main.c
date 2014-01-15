@@ -16,18 +16,18 @@
 
 void Init(void);
 
+char* funcName;
+
 int main()
 {
 	volatile int i;
-	char* funcName = NULL;
+//	char* funcName = NULL;
 	DDRC |= 1<<PC5;
 
 	Init();
 
 	while(1)
 	{
-//		LCD.DataFlow->SendCommand(8, 0x01);
-
 		LCD.Position(Menu.pos+2, 1);
 		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
@@ -42,8 +42,6 @@ int main()
 		funcName = Menu.funcNames[2];
 		LCD.Position(4, 3);
 		LCD.DataFlow->SendString(funcName);
-
-
 
 		LED_ON();
 
@@ -78,8 +76,10 @@ int main()
 			break;
 
 			case B_SELECT:
+				LCD.DataFlow->SendCommand(8, 0x01);
 				Menu.setOpt(B_VOID);
 				Menu.branch[Menu.pos]();
+				LCD.DataFlow->SendCommand(8, 0x01);
 			break;
 
 			case B_RETURN:
