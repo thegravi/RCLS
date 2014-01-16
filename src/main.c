@@ -27,24 +27,10 @@ int main()
 
 	while(1)
 	{
-		LCD.DataFlow->SendCommand(8, 0x01);
 		LCD.Position(1, 1);
 		LCD.DataFlow->SendString("------- Menu -------");
 
-		LCD.Position(Menu.pos+2, 1);
-		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
-
-		funcName = Menu.funcNames[0];
-		LCD.Position(2, 3);
-		LCD.DataFlow->SendString(funcName);
-		funcName = Menu.funcNames[1];
-		LCD.Position(3, 3);
-		LCD.DataFlow->SendString(funcName);
-		funcName = Menu.funcNames[2];
-		LCD.Position(4, 3);
-		LCD.DataFlow->SendString(funcName);
-
-		status = LCD_Menu_Choice(3, TRUE, NULL);
+		status = Menu.choice(3, Menu.funcNames);
 		if (status > -1)
 			Menu.branch[status]();
 	}
