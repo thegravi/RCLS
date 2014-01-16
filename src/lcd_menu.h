@@ -13,8 +13,8 @@
 #include "uart.h"
 
 void LCD_Menu_Init(void);
-uint8_t LCD_Menu_PresetColors(uint8_t random);
-uint8_t LCD_Menu_CustomColor(uint8_t preview);
+uint8_t LCD_Menu_PresetColors(uint8_t io);
+uint8_t LCD_Menu_CustomColor(uint8_t io);
 uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok);
 void LCD_Menu_setOpt(uint8_t opt);
 uint8_t LCD_Menu_getOpt(void);
