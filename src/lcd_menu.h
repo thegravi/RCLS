@@ -15,7 +15,8 @@
 void LCD_Menu_Init(void);
 uint8_t LCD_Menu_PresetColors(uint8_t io);
 uint8_t LCD_Menu_CustomColor(uint8_t io);
-uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok);
+//uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok);
+uint8_t LCD_Menu_SelectCh(uint8_t* ok);
 void LCD_Menu_setOpt(uint8_t opt);
 uint8_t LCD_Menu_getOpt(void);
 void LCD_Menu_branch_LEDs(void);
@@ -53,7 +54,11 @@ extern ColorTable_t ColorTable;
 typedef struct {
 	uint8_t (*getData)(uint8_t* data, uint8_t* ok);
 	uint8_t (*setData)(uint8_t* data, uint8_t* ok);
-	uint8_t (*selectCh)(uint8_t ch, uint8_t io, uint8_t* ok);
+	uint8_t (*selectCh)(uint8_t* ok);
+
+	uint8_t (*branch[2])(uint8_t* data, uint8_t* ok);
+	char* funcNames[2];
+	char* chList[16];
 
 }Channels_t;
 
@@ -66,6 +71,7 @@ typedef struct {
 
 	char* colorNames[NUM_OF_COLORS];
 	uint8_t (*branch[2])(uint8_t);
+
 }Colors_t;
 
 Colors_t Colors;
@@ -109,6 +115,7 @@ typedef struct {
 	char* funcNames[3];
 	uint8_t optSelected;
 	uint8_t pos;
+
 }LCD_Menu_t;
 
 extern LCD_Menu_t Menu;
