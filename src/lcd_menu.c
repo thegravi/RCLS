@@ -15,41 +15,67 @@ Colors_t Colors = {
 		LCD_Menu_CustomColor,
 		LCD_Menu_PresetColors,
 		{
-				"Custom color",
-				"Preset Colors"
+			"Custom color",
+			"Preset Colors"
 		},
 		{
-				"Red",
-				"Orange",
-				"Yellow",
-				"Green",
-				"Blue",
-				"Indigo",
-				"Violet",
-				"White"
+			"Red",
+			"Orange",
+			"Yellow",
+			"Green",
+			"Blue",
+			"Indigo",
+			"Violet",
+			"White"
 		},
 		{
-				LCD_Menu_CustomColor,
-				LCD_Menu_PresetColors
+			LCD_Menu_CustomColor,
+			LCD_Menu_PresetColors
 		}
 };
 
 Channels_t Ch = {
 		LCD_Menu_ChGetData,
 		LCD_Menu_ChSetData,
-		LCD_Menu_SelectCh
+		LCD_Menu_SelectCh,
+		{
+			LCD_Menu_ChGetData,
+			LCD_Menu_ChSetData
+		},
+		{
+			"Get Data",
+			"Set Data"
+		},
+		{
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"11",
+				"12",
+				"13",
+				"14",
+				"15"
+		}
 };
 
 LEDs_t LEDs = {
 		&Colors,
 		&Ch,
 		{
-				"Channels",
-				"Colors"
+			"Channels",
+			"Colors"
 		},
 		{
-				LCD_Menu_Channels,
-				LCD_Menu_Colors,
+			LCD_Menu_Channels,
+			LCD_Menu_Colors,
 		}
 
 };
@@ -71,14 +97,14 @@ LCD_Menu_t Menu = {
 		LCD_Menu_getOpt,
 		LCD_Menu_Choice,
 		{
-				LCD_Menu_branch_LEDs,
-				LCD_Menu_branch_Set,
-				LCD_Menu_branch_Profs,
+			LCD_Menu_branch_LEDs,
+			LCD_Menu_branch_Set,
+			LCD_Menu_branch_Profs,
 		},
 		{
-				"LEDs",
-				"Settings",
-				"Profiles"
+			"LEDs",
+			"Settings",
+			"Profiles"
 		},
 		0xFF,
 		0
@@ -150,7 +176,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("Choose a color:");
+		LCD.DataFlow->SendString("Choose color:");
 
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
@@ -173,7 +199,7 @@ uint8_t LCD_Menu_CustomColor(uint8_t io)
 	uint8_t idx;
 
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("Adjust the color:");
+	LCD.DataFlow->SendString("Adjust color:");
 	LCD.Position(4, 1);
 	LCD.DataFlow->SendString("R:     G:     B:");
 	LCD.Position(3, 1);
@@ -208,21 +234,65 @@ uint8_t LCD_Menu_CustomColor(uint8_t io)
 //	return FAIL;
 }
 
-uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok)
+uint8_t LCD_Menu_SelectCh(uint8_t* ok)
 {
+	while(1)
+	{
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("Select channel:");
 
-	return FAIL;
+		status = Menu.choice(16, Menu.leds->ch->chList);
+		if (status < 0) {
+			*ok = FAIL;
+			return 0xFF;
+		}
+		LCD.DataFlow->SendCommand(8, 0x01);
+		*ok = SUCC;
+		break;
+	}
+	return status;
 }
 
 uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok)
 {
+	uint8_t idx;
+	uint8_t ch = Menu.leds->ch->selectCh(ok);
+
+	// dummy values for testing
+	data[0] = 120;
+	data[1] = 170;
+	data[2] = 210;
+	data[3] = 90;
+
+	if (!*ok)
+		return FAIL;
+
+	LCD.Position(1, 1);
+	LCD.DataFlow->SendString("Channel ");
+	LCD.DataFlow->SendNumber(ch);
+	LCD.DataFlow->SendString(" info:");
+	LCD.Position(4, 1);
+	LCD.DataFlow->SendString("R:     G:     B:");
+	LCD.Position(3, 1);
+	LCD.DataFlow->SendString("Brightness:    %");
+
+	_delay_ms(5);
+	for (idx = 0; idx < 3; idx++) {
+			LCD.Position(4, 4 + (idx * 7));
+			LCD.DataFlow->SendNumber(data[idx]);
+	}
+
+	LCD.Position(3, 13);
+	LCD.DataFlow->SendNumber(data[3]);
+
+	while(Menu.getOpt() != B_RETURN);
 
 	return SUCC;
 }
 
 uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok)
 {
-
+	uint8_t ch = Menu.leds->ch->selectCh(ok);
 	return SUCC;
 }
 
@@ -244,7 +314,21 @@ void LCD_Menu_Colors(void)
 
 void LCD_Menu_Channels(void)
 {
+	uint8_t ok;
+	uint8_t data[4];
 
+	while(1)
+	{
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("----- Channels -----");
+
+		status = Menu.choice(2, Menu.leds->ch->funcNames);
+		if (status < 0)
+			return;
+
+		Menu.leds->ch->branch[status](data, &ok);
+		LCD.DataFlow->SendCommand(8, 0x01);
+	}
 }
 
 int8_t LCD_Menu_Choice(uint8_t lim, char** names)
