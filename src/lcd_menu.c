@@ -47,22 +47,22 @@ Channels_t Ch = {
 			"Set Data"
 		},
 		{
-				"0",
-				"1",
-				"2",
-				"3",
-				"4",
-				"5",
-				"6",
-				"7",
-				"8",
-				"9",
-				"10",
-				"11",
-				"12",
-				"13",
-				"14",
-				"15"
+			"0",
+			"1",
+			"2",
+			"3",
+			"4",
+			"5",
+			"6",
+			"7",
+			"8",
+			"9",
+			"10",
+			"11",
+			"12",
+			"13",
+			"14",
+			"15"
 		}
 };
 
@@ -131,7 +131,7 @@ void LCD_Menu_branch_LEDs(void)
 void LCD_Menu_branch_Set(void)
 {
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("set menu");
+	LCD.DataFlow->SendString("----- Settings -----");
 	while (1)
 	{
 		_delay_ms(10);
@@ -144,7 +144,7 @@ void LCD_Menu_branch_Set(void)
 void LCD_Menu_branch_Profs(void)
 {
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("profs menu");
+	LCD.DataFlow->SendString("----- Profiles -----");
 	while (1)
 	{
 		_delay_ms(10);
