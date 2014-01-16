@@ -6,10 +6,6 @@
  */
 
 #include "lcd_menu.h"
-#include "lcd.h"
-#include <avr/io.h>
-#include <util/delay.h>
-#include "common.h"
 
 Colors_t Colors = {
 		LCD_Menu_CustomColor,

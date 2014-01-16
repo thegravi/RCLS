@@ -9,8 +9,11 @@
 #define LCD_MENIU_H_
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include <avr/interrupt.h>
 #include "uart.h"
+#include "lcd.h"
+#include "common.h"
 
 void LCD_Menu_Init(void);
 uint8_t LCD_Menu_PresetColors(uint8_t io);
