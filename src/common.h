@@ -14,10 +14,16 @@
 #define FAIL	0
 #define ERR		-1
 
-#define LED_ON() DDRC |= 1<<PC5; PORTC |= 1<<PC5;
-#define LED_OFF()	DDRC &= ~(1<<PC5); PORTC &= ~(1<<PC5);
+#define LED_ON() 	DDRC |= 1<<PC5; PORTC |= 1<<PC5;
+#define LED_OFF() 	DDRC &= ~(1<<PC5); PORTC &= ~(1<<PC5);
+
+#define CH_SIZE	16
 
 extern char* funcName;
 extern int8_t status;
+extern uint8_t ch[CH_SIZE];
+
+char* funcName;
+uint8_t ch[CH_SIZE];
 
 #endif /* COMMON_H_ */
