@@ -16,7 +16,6 @@
 
 void Init(void);
 
-char* funcName;
 int8_t status = -1;
 
 int main()
