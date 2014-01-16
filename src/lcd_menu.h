@@ -25,7 +25,7 @@ uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok);
 uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok);
 void LCD_Menu_Colors(void);
 void LCD_Menu_Channels(void);
-int8_t LCD_Menu_Choice(uint8_t lim, uint8_t fixed, char** names);
+int8_t LCD_Menu_Choice(uint8_t lim, char** names);
 
 #define B_VOID		0x00
 #define B_SELECT	0x10
@@ -103,7 +103,7 @@ typedef struct {
 	void (*Init)(void);
 	void (*setOpt)(uint8_t opt);
 	uint8_t (*getOpt)(void);
-
+	int8_t (*choice)(uint8_t lim, char** names);
 	void (*branch[MAX_1L])(void);
 
 	char* funcNames[3];
