@@ -99,6 +99,7 @@ void LCD_Menu_branch_LEDs(void)
 			return;
 
 		Menu.leds->branch[status]();
+		LCD.DataFlow->SendCommand(8, 0x01);
 	}
 }
 void LCD_Menu_branch_Set(void)
@@ -167,10 +168,44 @@ uint8_t LCD_Menu_PresetColors(uint8_t io)
 	return FAIL;
 }
 
-uint8_t LCD_Menu_CustomColor(uint8_t preview)
+uint8_t LCD_Menu_CustomColor(uint8_t io)
 {
+	uint8_t idx;
 
-	return FAIL;
+	LCD.Position(1, 1);
+	LCD.DataFlow->SendString("Adjust the color:");
+	LCD.Position(4, 1);
+	LCD.DataFlow->SendString("R:     G:     B:");
+	LCD.Position(3, 1);
+	LCD.DataFlow->SendString("Brightness:    %");
+
+	while(1)
+	{
+		_delay_ms(5);
+		for (idx = 0; idx < 3; idx++) {
+				LCD.Position(4, 4 + (idx * 7));
+				LCD.DataFlow->SendNumber(0);
+		}
+		// TODO: add adc measuring function
+		LCD.Position(3, 13);
+		LCD.DataFlow->SendNumber(0);
+
+		if (Menu.getOpt() == B_RETURN)
+			return SUCC;
+
+		if (Menu.getOpt() == B_SELECT)
+			break;
+	}
+
+	if (io == 0) {
+		// light LED
+	}
+	else {
+		// send data
+	}
+	return SUCC;
+
+//	return FAIL;
 }
 
 uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok)
@@ -203,6 +238,7 @@ void LCD_Menu_Colors(void)
 			return;
 
 		Menu.leds->colors->branch[status](0);
+		LCD.DataFlow->SendCommand(8, 0x01);
 	}
 }
 
@@ -213,25 +249,23 @@ void LCD_Menu_Channels(void)
 
 int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 {
-	uint8_t i;
+	uint8_t idx;
 	uint8_t numOfRecords = (lim < 3)? lim : 3;
 
 	Menu.setOpt(B_VOID);
 	Menu.pos = 0;
 	while(1)
 	{
-//		if (!fixed)
-//		{
-			for (i = 0; i < numOfRecords; i++)
+			for (idx = 0; idx < numOfRecords; idx++)
 			{
-				LCD.Position(i+2, 1);
+				LCD.Position(idx+2, 1);
 				LCD.DataFlow->SendString("                  ");
-				LCD.Position(i+2, 3);
+				LCD.Position(idx+2, 3);
 
 				if (Menu.pos <=2 )
-					LCD.DataFlow->SendString(names[i]);
+					LCD.DataFlow->SendString(names[idx]);
 				else
-					LCD.DataFlow->SendString(names[Menu.pos-2+i]);
+					LCD.DataFlow->SendString(names[Menu.pos-2+idx]);
 			}
 
 			if (Menu.pos == 0)
@@ -240,11 +274,6 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 				LCD.Position(Menu.pos + 2, 1);
 			else
 				LCD.Position(4, 1);
-//		}
-//		else
-//		{
-//			LCD.Position(Menu.pos+2, 1);
-//		}
 
 		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
@@ -259,11 +288,6 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 		switch (Menu.getOpt())
 		{
 			case B_NEXT:
-//				if(fixed) {
-						LCD.Position(Menu.pos + 2, 1);
-						LCD.DataFlow->SendCharacter(S_BLANK);
-//				}
-
 				if (Menu.pos < lim-1)
 					Menu.pos++;
 				else
@@ -271,11 +295,6 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 			break;
 
 			case B_PREV:
-//				if(fixed) {
-						LCD.Position(Menu.pos + 2, 1);
-						LCD.DataFlow->SendCharacter(S_BLANK);
-//				}
-
 				if (Menu.pos > 0)
 					Menu.pos--;
 				else
