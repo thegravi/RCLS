@@ -167,7 +167,7 @@ void LCD_Menu_Init()
 	_delay_ms(300);
 }
 
-uint8_t LCD_Menu_PresetColors(uint8_t io)
+uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 {
 	while(1)
 	{
@@ -190,7 +190,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io)
 	return FAIL;
 }
 
-uint8_t LCD_Menu_CustomColor(uint8_t io)
+uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 {
 	uint8_t idx;
 
@@ -289,6 +289,23 @@ uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok)
 uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok)
 {
 	uint8_t ch = Menu.leds->ch->selectCh(ok);
+
+	if (!*ok)
+		return FAIL;
+
+	while(1)
+	{
+		LCD.Position(1, 1);
+		LCD.DataFlow->SendString("------ Colors ------");
+
+		status = Menu.choice(2, Menu.leds->colors->funcNames);
+		if (status < 0)
+			return FAIL;
+
+		Menu.leds->colors->branch[status](1, data);
+		LCD.DataFlow->SendCommand(8, 0x01);
+	}
+
 	return SUCC;
 }
 
@@ -303,7 +320,7 @@ void LCD_Menu_Colors(void)
 		if (status < 0)
 			return;
 
-		Menu.leds->colors->branch[status](0);
+		Menu.leds->colors->branch[status](0, NULL);
 		LCD.DataFlow->SendCommand(8, 0x01);
 	}
 }
