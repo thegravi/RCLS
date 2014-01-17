@@ -26,7 +26,6 @@ int main()
 
 	while(1)
 	{
-		LCD.Position(1, 1);
 		LCD.DataFlow->SendString("------- Menu -------");
 
 		status = Menu.choice(3, Menu.funcNames);

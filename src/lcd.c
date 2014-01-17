@@ -127,8 +127,6 @@ void LCD_Init()
 	LCD.DataFlow->SendCommand(8, 0x0C);
 	// clear display, return position
 	LCD.DataFlow->SendCommand(8, 0x01);
-	LCD.DataFlow->SendString("LCD init..SUCCESS");_delay_ms(300);
-	LCD.DataFlow->SendCommand(8, 0x01);
 }
 
 void LCD_Position(uint8_t pos_y, uint8_t pos_x) {

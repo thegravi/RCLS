@@ -47,7 +47,7 @@ void LCD_SendCharacter(uint8_t character);
 void LCD_SendString(char* charString);
 void LCD_SendNumber(int16_t number);
 
-//_____________________________________________________________________________________________________/
+//_________________________________________________________________________________________________/
 
 typedef struct {
 	void (*DDR_E)(uint8_t sc);

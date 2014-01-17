@@ -2,18 +2,16 @@
  * buttons.h
  *
  *  Created on: 2013.09.30
- *      Author: Graþvidas
+ *      Author: Gražvidas
  */
 
 #ifndef BUTTONS_H_
 #define BUTTONS_H_
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "lcd_menu.h"
-#include "lcd.h"
 #include "uart.h"
 
 #define BUTTON_DDR				DDRB
@@ -31,7 +29,6 @@ typedef struct {
 	void (*Init)(void);
 
 	uint8_t readStates;
-	uint8_t pressed;
 
 }BUTTONS_Interface_t;
 

@@ -33,10 +33,8 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names);
 #define B_VOID		0x00
 #define B_SELECT	0x10
 #define B_RETURN	0x20
-#define B_NEXT		0x30
-#define B_PREV		0x40
-
-#define MAX_1L		3
+#define B_NEXT		0x40
+#define B_PREV		0x80
 
 typedef enum {
 	RED=0,
@@ -53,12 +51,13 @@ typedef enum {
 
 extern ColorTable_t ColorTable;
 
+
 typedef struct {
 	uint8_t (*getData)(uint8_t* data, uint8_t* ok);
 	uint8_t (*setData)(uint8_t* data, uint8_t* ok);
 	uint8_t (*selectCh)(uint8_t* ok);
-
 	uint8_t (*branch[2])(uint8_t* data, uint8_t* ok);
+
 	char* funcNames[2];
 	char* chList[16];
 
@@ -66,23 +65,27 @@ typedef struct {
 
 Channels_t Ch;
 
+
 typedef struct {
 	uint8_t (*color_custom)(uint8_t io, uint8_t* data);
 	uint8_t (*color_present)(uint8_t io, uint8_t* data);
-	char* funcNames[2];
-
-	char* colorNames[NUM_OF_COLORS];
 	uint8_t (*branch[2])(uint8_t io, uint8_t* data);
+
+	char* funcNames[2];
+	char* colorNames[NUM_OF_COLORS];
 
 }Colors_t;
 
 Colors_t Colors;
 
+
 typedef struct {
 	Colors_t* colors;
 	Channels_t* ch;
-	char* funcNames[2];
+
 	void (*branch[2])(void);
+
+	char* funcNames[2];
 
 }LEDs_t;
 
@@ -112,7 +115,7 @@ typedef struct {
 	void (*setOpt)(uint8_t opt);
 	uint8_t (*getOpt)(void);
 	int8_t (*choice)(uint8_t lim, char** names);
-	void (*branch[MAX_1L])(void);
+	void (*branch[3])(void);
 
 	char* funcNames[3];
 	uint8_t optSelected;

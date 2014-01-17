@@ -11,6 +11,10 @@ Colors_t Colors = {
 		LCD_Menu_CustomColor,
 		LCD_Menu_PresetColors,
 		{
+			LCD_Menu_CustomColor,
+			LCD_Menu_PresetColors
+		},
+		{
 			"Custom color",
 			"Preset Colors"
 		},
@@ -23,10 +27,6 @@ Colors_t Colors = {
 			"Indigo",
 			"Violet",
 			"White"
-		},
-		{
-			LCD_Menu_CustomColor,
-			LCD_Menu_PresetColors
 		}
 };
 
@@ -66,14 +66,13 @@ LEDs_t LEDs = {
 		&Colors,
 		&Ch,
 		{
-			"Channels",
-			"Colors"
-		},
-		{
 			LCD_Menu_Channels,
 			LCD_Menu_Colors,
+		},
+		{
+			"Channels",
+			"Colors"
 		}
-
 };
 
 Settings_t Set = {
@@ -121,7 +120,6 @@ void LCD_Menu_branch_LEDs(void)
 			return;
 
 		Menu.leds->branch[status]();
-		LCD.DataFlow->SendCommand(8, 0x01);
 	}
 }
 void LCD_Menu_branch_Set(void)
@@ -163,7 +161,6 @@ void LCD_Menu_setOpt(uint8_t opt)
 void LCD_Menu_Init()
 {
 	LCD.DataFlow->SendCommand(8, 0x01);
-	LCD.DataFlow->SendString("Menu init.. SUCCESS");
 	_delay_ms(300);
 }
 
@@ -238,11 +235,13 @@ uint8_t LCD_Menu_SelectCh(uint8_t* ok)
 		LCD.DataFlow->SendString("Select channel:");
 
 		status = Menu.choice(16, Menu.leds->ch->chList);
+		LCD.DataFlow->SendCommand(8, 0x01);
+
 		if (status < 0) {
 			*ok = FAIL;
 			return 0xFF;
 		}
-		LCD.DataFlow->SendCommand(8, 0x01);
+
 		*ok = SUCC;
 		break;
 	}
