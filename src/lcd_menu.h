@@ -16,9 +16,8 @@
 #include "common.h"
 
 void LCD_Menu_Init(void);
-uint8_t LCD_Menu_PresetColors(uint8_t io);
-uint8_t LCD_Menu_CustomColor(uint8_t io);
-//uint8_t LCD_Menu_SelectCh(uint8_t ch, uint8_t io, uint8_t* ok);
+uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data);
+uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data);
 uint8_t LCD_Menu_SelectCh(uint8_t* ok);
 void LCD_Menu_setOpt(uint8_t opt);
 uint8_t LCD_Menu_getOpt(void);
@@ -68,12 +67,12 @@ typedef struct {
 Channels_t Ch;
 
 typedef struct {
-	uint8_t (*color_custom)(uint8_t io);
-	uint8_t (*color_present)(uint8_t io);
+	uint8_t (*color_custom)(uint8_t io, uint8_t* data);
+	uint8_t (*color_present)(uint8_t io, uint8_t* data);
 	char* funcNames[2];
 
 	char* colorNames[NUM_OF_COLORS];
-	uint8_t (*branch[2])(uint8_t);
+	uint8_t (*branch[2])(uint8_t io, uint8_t* data);
 
 }Colors_t;
 
