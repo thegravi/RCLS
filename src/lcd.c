@@ -7,23 +7,6 @@
 
 #include "lcd.h"
 
-void LCD_SendCommand(uint8_t size, uint8_t cmd)
-{
-	if (size == 4) {
-			LCD.DataFlow->ProcessData(cmd & 0x0F);
-			LCD.Com->ExecuteCMD();
-	}
-	else if (size == 8)	{
-			// temporary delay, until "WaitIfBusy" function is completed
-			_delay_ms(5);
-		//	LCD_Interface.Comm.WaitIfBusy();
-			LCD.DataFlow->ProcessData(cmd >> 4);
-			LCD.Com->ExecuteCMD();
-			LCD.DataFlow->ProcessData(cmd & 0x0F);
-			LCD.Com->ExecuteCMD();
-	}
-}
-
 static void LCD_ExecuteCMD()
 {
 	LCD.Regs->PORT_E(SET);
@@ -32,7 +15,7 @@ static void LCD_ExecuteCMD()
 	LCD.Regs->PORT_E(RESET);
 }
 
-static void LCD_WaitIfBusy()
+/*static void LCD_WaitIfBusy()
 {
 	volatile uint8_t data;
 	uint8_t busy_f = SET;
@@ -58,28 +41,7 @@ static void LCD_WaitIfBusy()
 	}
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
 	LCD.Regs->PORT_RW(RESET);
-}
-
-void LCD_SendCharacter(uint8_t character)
-{
-	_delay_us(40);
-	LCD.Regs->PORT_RS(SET);
-	LCD.DataFlow->SendCommand(8, character);
-	LCD.Regs->PORT_RS(RESET);
-}
-
-void LCD_SendNumber(int16_t number)
-{
-	char convNum[8];
-	ltoa(number, convNum, 10);
-	LCD.DataFlow->SendString(convNum);
-}
-
-void LCD_SendString(char* charString)
-{
-	while(*charString > 0)
-		LCD.DataFlow->SendCharacter(*charString++);
-}
+}*/
 
 static void LCD_ProcessData(int8_t data)
 {
@@ -104,6 +66,45 @@ static void LCD_ProcessData(int8_t data)
 		DATA_PORT &= ~(1<<LCD_DATA3);
 }
 
+void LCD_SendCommand(uint8_t size, uint8_t cmd)
+{
+	if (size == 4) {
+		LCD_ProcessData(cmd & 0x0F);
+		LCD_ExecuteCMD();
+	}
+	else if (size == 8)	{
+	// temporary delay, until "WaitIfBusy" function is completed
+		_delay_ms(5);
+	//	LCD_Interface.Comm.WaitIfBusy();
+		LCD_ProcessData(cmd >> 4);
+		LCD_ExecuteCMD();
+		LCD_ProcessData(cmd & 0x0F);
+		LCD_ExecuteCMD();
+	}
+}
+
+void LCD_SendCharacter(uint8_t character)
+{
+	_delay_us(40);
+	LCD.Regs->PORT_RS(SET);
+	LCD.DataFlow->SendCommand(8, character);
+	LCD.Regs->PORT_RS(RESET);
+}
+
+void LCD_SendNumber(int16_t number)
+{
+	char convNum[8];
+
+	ltoa(number, convNum, 10);
+	LCD.DataFlow->SendString(convNum);
+}
+
+void LCD_SendString(char* charString)
+{
+	while(*charString > 0)
+		LCD.DataFlow->SendCharacter(*charString++);
+}
+
 void LCD_Init()
 {
 	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
@@ -121,8 +122,8 @@ void LCD_Init()
 	LCD.DataFlow->SendCommand(4, 0x03);	_delay_ms(2);
 	LCD.DataFlow->SendCommand(4, 0x02);	_delay_ms(5);
 	// 4-bit mode, 2 lines
-	LCD.DataFlow->SendCommand(4, 0x02); 	_delay_ms(2);
-	LCD.DataFlow->SendCommand(4, 0x08); 	_delay_ms(2);
+	LCD.DataFlow->SendCommand(4, 0x02); _delay_ms(2);
+	LCD.DataFlow->SendCommand(4, 0x08); _delay_ms(2);
 	// display on
 	LCD.DataFlow->SendCommand(8, 0x0C);
 	// clear display, return position
@@ -194,21 +195,14 @@ LCD_Interface_t LCD = {
 		LCD_Init,
 		LCD_Position,
 		&Regs,
-		&DataFlow,
-		&Com
-};
-
-Communication_t Com = {
-		LCD_ExecuteCMD,
-		LCD_WaitIfBusy
+		&DataFlow
 };
 
 DataFlow_t DataFlow = {
 		LCD_SendCommand,
 		LCD_SendCharacter,
 		LCD_SendString,
-		LCD_SendNumber,
-		LCD_ProcessData
+		LCD_SendNumber
 };
 
 Regs_t Regs = {

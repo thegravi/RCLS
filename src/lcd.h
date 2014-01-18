@@ -66,19 +66,19 @@ typedef struct {
 	void (*SendCharacter)(uint8_t character);
 	void (*SendString)(char* charString);
 	void (*SendNumber)(int16_t number);
-	void (*ProcessData)(int8_t data);
+//	void (*ProcessData)(int8_t data);
 
 }DataFlow_t;
 
 DataFlow_t DataFlow;
 
-typedef struct {
-	void (*ExecuteCMD)(void);
-	void (*WaitIfBusy)(void);
-
-}Communication_t;
-
-Communication_t Com;
+//typedef struct {
+//	void (*ExecuteCMD)(void);
+//	void (*WaitIfBusy)(void);
+//
+//}Communication_t;
+//
+//Communication_t Com;
 
 typedef struct {
 	void (*Init)(void);
@@ -86,7 +86,7 @@ typedef struct {
 
 	Regs_t* Regs;
 	DataFlow_t* DataFlow;
-	Communication_t* Com;
+//	Communication_t* Com;
 
 }LCD_Interface_t;
 
