@@ -11,8 +11,8 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "lcd_menu.h"
-#include "uart.h"
+#include "../Menu/lcd_menu.h"
+#include "../../Drivers/UART/uart.h"
 
 #define BUTTON_DDR				DDRB
 #define BUTTON_PORT				PORTB

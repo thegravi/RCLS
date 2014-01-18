@@ -11,9 +11,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "uart.h"
-#include "lcd.h"
-#include "common.h"
+
+#include "../../Drivers/UART/uart.h"
+#include "../../Drivers/LCD/lcd.h"
+#include "../../common.h"
 
 void LCD_Menu_Init(void);
 uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data);

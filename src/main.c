@@ -6,10 +6,10 @@
  */
 
 #include <avr/io.h>
-#include "lcd.h"
-#include "lcd_menu.h"
-#include "buttons.h"
-#include "uart.h"
+#include "Drivers/LCD/lcd.h"
+#include "Modules/Menu/lcd_menu.h"
+#include "Modules/PushButtons/buttons.h"
+#include "Drivers/UART/uart.h"
 #include "common.h"
 
 #define F_CPU 8000000UL
