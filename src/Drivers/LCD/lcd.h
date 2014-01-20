@@ -50,41 +50,19 @@ void LCD_SendNumber(int16_t number);
 //_________________________________________________________________________________________________/
 
 typedef struct {
-	void (*DDR_E)(uint8_t sc);
-	void (*DDR_RS)(uint8_t sc);
-	void (*DDR_RW)(uint8_t sc);
-	void (*PORT_E)(uint8_t sc);
-	void (*PORT_RS)(uint8_t sc);
-	void (*PORT_RW)(uint8_t sc);
-
-}Regs_t;
-
-Regs_t Regs;
-
-typedef struct {
 	void (*SendCommand)(uint8_t size, uint8_t cmd);
 	void (*SendCharacter)(uint8_t character);
 	void (*SendString)(char* charString);
 	void (*SendNumber)(int16_t number);
-//	void (*ProcessData)(int8_t data);
 
 }DataFlow_t;
 
 DataFlow_t DataFlow;
 
-//typedef struct {
-//	void (*ExecuteCMD)(void);
-//	void (*WaitIfBusy)(void);
-//
-//}Communication_t;
-//
-//Communication_t Com;
-
 typedef struct {
 	void (*Init)(void);
 	void (*Position)(uint8_t pos_x, uint8_t pos_y);
 
-	Regs_t* Regs;
 	DataFlow_t* DataFlow;
 //	Communication_t* Com;
 

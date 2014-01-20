@@ -195,7 +195,6 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 LCD_Interface_t LCD = {
 		LCD_Init,
 		LCD_Position,
-		&Regs,
 		&DataFlow
 };
 
@@ -204,13 +203,4 @@ DataFlow_t DataFlow = {
 		LCD_SendCharacter,
 		LCD_SendString,
 		LCD_SendNumber
-};
-
-Regs_t Regs = {
-		LCD_DDR_E,
-		LCD_DDR_RS,
-		LCD_DDR_RW,
-		LCD_PORT_E,
-		LCD_PORT_RS,
-		LCD_PORT_RW,
 };
