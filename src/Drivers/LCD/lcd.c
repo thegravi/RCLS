@@ -57,7 +57,6 @@ static void LCD_PORT_RW(uint8_t sc)
 static void LCD_ExecuteCMD()
 {
 	LCD_PORT_E(SET);
-
 	asm("nop");
 	asm("nop");
 	LCD_PORT_E(RESET);

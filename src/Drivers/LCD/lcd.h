@@ -64,7 +64,6 @@ typedef struct {
 	void (*Position)(uint8_t pos_x, uint8_t pos_y);
 
 	DataFlow_t* DataFlow;
-//	Communication_t* Com;
 
 }LCD_Interface_t;
 
