@@ -8,7 +8,8 @@
 #include <avr/io.h>
 #include "Drivers/LCD/lcd.h"
 #include "Modules/Menu/lcd_menu.h"
-#include "Modules/PushButtons/buttons.h"
+#include "Modules/PushButtons/buttons_push.h"
+#include "Modules/RotaryButtons/buttons_rotary.h"
 #include "Drivers/UART/uart.h"
 #include "common.h"
 
