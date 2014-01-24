@@ -7,7 +7,7 @@
 
 #include "ADC.h"
 
-Adc_t Adc = {
+const Adc_t Adc = {
 		ADC_Init,
 		ADC_Enable,
 		ADC_MeasVolt,
@@ -16,7 +16,7 @@ Adc_t Adc = {
 
 void ADC_Init()
 {
-	// prescaler clk/64
+	// prescaler clk/64 => 125 kHz
 	ADCSRA |= 1<<ADPS2 | 1<<ADPS1;
 
 	// voltage reference

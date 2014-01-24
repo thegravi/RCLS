@@ -12,14 +12,6 @@
 #include <avr/interrupt.h>
 #include "../../common.h"
 
-#ifndef ENABLE
-#define ENABLE	1
-#endif
-
-#ifndef DISABLE
-#define DISABLE	0
-#endif
-
 void ADC_Init(void);
 void ADC_Enable(uint8_t state);
 int16_t ADC_MeasVolt(uint8_t ch);
@@ -32,7 +24,5 @@ typedef struct {
 	int16_t (*MeasTemp)(void);
 
 }Adc_t;
-
-extern Adc_t Adc;
 
 #endif /* ADC_H_ */
