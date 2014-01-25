@@ -32,6 +32,8 @@ typedef enum {
 	States
 }LED_State_t;
 
+extern const uint8_t Color_TABLE[8][3];
+
 typedef struct {
 	void (*Init)(void);
 	void (*Enable)(uint8_t state);

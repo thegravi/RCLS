@@ -7,6 +7,17 @@
 
 #include "pwm.h"
 
+const uint8_t Color_TABLE[8][3] = {
+		{255, 0, 0},
+		{255, 165, 0},
+		{255, 255, 0},
+		{0, 255, 0},
+		{0, 0, 255},
+		{75, 0, 130},
+		{143, 0, 255},
+		{255, 255, 255}
+};
+
 Pwm_t Pwm = {
 		PWM_Init,
 		PWM_Enable,
@@ -28,11 +39,11 @@ void PWM_Init()
 	TCCR0A |= 1<<COM0A1 | 1<<COM0B1;
 
 	// default 0
-	OCR0A = 0;OCR0B = 0;
+	OCR0A = OCR0B = 0;
 
 //--------------- Blue channels --------------//
 	// clock source
-	TCCR2B = 1<<CS22;
+	TCCR2B = 1<<CS22 | 1<<CS21;
 
 	// Fast PWM
 	TCCR2A = 1<<WGM21 | 1<<WGM20;
@@ -48,6 +59,8 @@ void PWM_Init()
 
 	LED_RGB_DDR |= 1<<LED_R_PIN | 1<<LED_B_PIN | 1<<LED_G_PIN;
 	Pwm.initSUCC = SUCC;
+
+//	PWM_Enable(DISABLE);
 }
 
 void PWM_Enable(uint8_t state)
@@ -77,6 +90,7 @@ void PWM_Enable(uint8_t state)
 		TCCR2A &= ~(1<<COM2B1) & ~(1<<WGM21) & ~(1<<WGM20);
 		//For Brightness channel
 
+		Pwm.initSUCC = DISABLE;
 	}
 }
 
