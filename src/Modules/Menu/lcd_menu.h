@@ -14,6 +14,7 @@
 
 #include "../../Drivers/UART/uart.h"
 #include "../../Drivers/LCD/lcd.h"
+#include "../../Drivers/PWM/pwm.h"
 #include "../../common.h"
 
 void LCD_Menu_Init(void);

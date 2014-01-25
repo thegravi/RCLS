@@ -166,6 +166,7 @@ void LCD_Menu_Init()
 
 uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 {
+	Pwm.Init();
 	while(1)
 	{
 		LCD.Position(1, 1);
@@ -173,7 +174,10 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
+		{
+			Pwm.Enable(DISABLE);
 			return SUCC;
+		}
 
 		if (io == 0) {
 			// light LED
@@ -181,6 +185,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 		else {
 			// send data
 		}
+		Pwm.Enable(DISABLE);
 		return SUCC;
 	}
 
@@ -347,6 +352,8 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 {
 	uint8_t idx;
 	uint8_t numOfRecords = (lim < 3)? lim : 3;
+	uint8_t pos = 0;
+	uint8_t pos1 = 0;
 
 	Menu.setOpt(B_VOID);
 	Menu.pos = 0;
@@ -359,17 +366,33 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 				LCD.Position(idx+2, 3);
 
 				if (Menu.pos <=2 )
-					LCD.DataFlow->SendString(names[idx]);
+					pos = idx;
 				else
-					LCD.DataFlow->SendString(names[Menu.pos-2+idx]);
+					pos = Menu.pos-2+idx;
+
+				LCD.DataFlow->SendString(names[pos]);
+			}
+
+			if (Pwm.initSUCC)
+			{
+				Pwm.SetIntensity(Red, Color_TABLE[pos1][0]);
+				Pwm.SetIntensity(Green, Color_TABLE[pos1][1]);
+				Pwm.SetIntensity(Blue, Color_TABLE[pos1][2]);
+
+				if (pos1 == 7)
+					pos1=0;
+				else
+					pos1++;
 			}
 
 			if (Menu.pos == 0)
-				LCD.Position(2, 1);
+				pos = 2;
 			else if (Menu.pos > 0 && Menu.pos < numOfRecords)
-				LCD.Position(Menu.pos + 2, 1);
+				pos = Menu.pos + 2;
 			else
-				LCD.Position(4, 1);
+				pos = 4;
+
+			LCD.Position(pos, 1);
 
 		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
 
