@@ -179,12 +179,10 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 			return SUCC;
 		}
 
-		if (io == 0) {
-			// light LED
+		if (io) {
+
 		}
-		else {
-			// send data
-		}
+
 		Pwm.Enable(DISABLE);
 		return SUCC;
 	}
@@ -195,6 +193,8 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 {
 	uint8_t idx;
+	uint8_t adcData[4];
+	memset(adcData, 0, 4);
 
 	LCD.Position(1, 1);
 	LCD.DataFlow->SendString("Adjust color:");
@@ -205,10 +205,22 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 
 	while(1)
 	{
-		_delay_ms(5);
-		for (idx = 0; idx < 3; idx++) {
-				LCD.Position(4, 4 + (idx * 7));
-				LCD.DataFlow->SendNumber(0);
+		Adc.Enable(ENABLE);
+		_delay_ms(100);
+		for (idx = 0; idx < 3; idx++)
+		{
+			adcData[idx] = Adc.MeasVolt(5);
+			LCD.Position(4, 4 + (idx * 7));
+			LCD.DataFlow->SendNumber(adcData[idx]);
+
+//			if (adcData[idx] > 10 && adcData[idx] < 100)
+//			{
+//				LCD.DataFlow->SendString(" ");
+//			}
+//			else if (adcData[idx] < 10)
+//			{
+//				LCD.DataFlow->SendString("  ");
+//			}
 		}
 		// TODO: add adc measuring function
 		LCD.Position(3, 13);
@@ -353,7 +365,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 	uint8_t idx;
 	uint8_t numOfRecords = (lim < 3)? lim : 3;
 	uint8_t pos = 0;
-	uint8_t pos1 = 0;
+	uint8_t pos_color = 0;
 
 	Menu.setOpt(B_VOID);
 	Menu.pos = 0;
@@ -375,14 +387,14 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 
 			if (Pwm.initSUCC)
 			{
-				Pwm.SetIntensity(Red, Color_TABLE[pos1][0]);
-				Pwm.SetIntensity(Green, Color_TABLE[pos1][1]);
-				Pwm.SetIntensity(Blue, Color_TABLE[pos1][2]);
+				Pwm.SetIntensity(Red, Color_TABLE[pos_color][0]);
+				Pwm.SetIntensity(Green, Color_TABLE[pos_color][1]);
+				Pwm.SetIntensity(Blue, Color_TABLE[pos_color][2]);
 
-				if (pos1 == 7)
-					pos1=0;
+				if (pos_color == 7)
+					pos_color=0;
 				else
-					pos1++;
+					pos_color++;
 			}
 
 			if (Menu.pos == 0)
@@ -423,6 +435,10 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 			case B_SELECT:
 				LCD.DataFlow->SendCommand(8, 0x01);
 				Menu.setOpt(B_VOID);
+
+				if(Pwm.initSUCC)
+					return pos_color;
+
 				return Menu.pos;
 			break;
 

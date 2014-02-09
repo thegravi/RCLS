@@ -58,6 +58,7 @@ void Init()
 	cli();
 //	UART.Init();
 	LCD.Init();
+	Adc.Init();
 //	Pwm.Init();
 	Menu.Init();
 	Buttons.Init();

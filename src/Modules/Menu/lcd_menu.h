@@ -11,10 +11,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <string.h>
 
 #include "../../Drivers/UART/uart.h"
 #include "../../Drivers/LCD/lcd.h"
 #include "../../Drivers/PWM/pwm.h"
+#include "../../Drivers/ADC/ADC.h"
 #include "../../common.h"
 
 void LCD_Menu_Init(void);

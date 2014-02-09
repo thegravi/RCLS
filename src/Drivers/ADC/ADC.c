@@ -7,7 +7,7 @@
 
 #include "ADC.h"
 
-const Adc_t Adc = {
+Adc_t Adc = {
 		ADC_Init,
 		ADC_Enable,
 		ADC_MeasVolt,
@@ -20,13 +20,15 @@ void ADC_Init()
 	ADCSRA |= 1<<ADPS2 | 1<<ADPS1;
 
 	// voltage reference
-	ADMUX |= 1<<REFS0 | 1<<REFS1;
+	ADMUX |= 1<<REFS0;// | 1<<REFS1;
 
 	// interrupt enable
 	ADCSRA |= 1<<ADIE;
 
 	// disable adc
 	ADCSRA &= ~(1<<ADEN);
+
+	ADC_DDR &= ~(1<<ADC_CH_R) & ~(1<<ADC_CH_G) & ~(1<<ADC_CH_B) & ~(1<<ADC_CH_BRIGH);
 }
 
 void ADC_Enable(uint8_t state)

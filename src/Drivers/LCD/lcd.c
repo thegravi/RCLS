@@ -121,7 +121,7 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd)
 	}
 	else if (size == 8)	{
 	// temporary delay, until "WaitIfBusy" function is completed
-		_delay_ms(5);
+		_delay_ms(2);
 	//	LCD_Interface.Comm.WaitIfBusy();
 		LCD_ProcessData(cmd >> 4);
 		LCD_ExecuteCMD();
