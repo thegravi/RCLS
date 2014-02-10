@@ -14,7 +14,7 @@
 
 #define ADC_DDR		 	DDRC
 #define ADC_CH_R	 	PC5
-#define ADC_CH_G	 	PC5
+#define ADC_CH_G	 	PC4
 #define ADC_CH_B	 	PC5
 #define ADC_CH_BRIGH	PC5
 
@@ -31,6 +31,6 @@ typedef struct {
 
 }Adc_t;
 
-extern Adc_t Adc;
+extern const Adc_t Adc;
 
 #endif /* ADC_H_ */

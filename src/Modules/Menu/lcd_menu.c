@@ -203,31 +203,42 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 	LCD.Position(3, 1);
 	LCD.DataFlow->SendString("Brightness:    %");
 
+	Pwm.Init();
 	while(1)
 	{
-		Adc.Enable(ENABLE);
 		_delay_ms(100);
-		for (idx = 0; idx < 3; idx++)
+		for (idx = 0; idx < 2; idx++)
 		{
-			adcData[idx] = Adc.MeasVolt(5);
+			Adc.Enable(ENABLE);
+			adcData[idx] = Adc.MeasVolt(4+idx);
+
 			LCD.Position(4, 4 + (idx * 7));
 			LCD.DataFlow->SendNumber(adcData[idx]);
 
-//			if (adcData[idx] > 10 && adcData[idx] < 100)
-//			{
-//				LCD.DataFlow->SendString(" ");
-//			}
-//			else if (adcData[idx] < 10)
-//			{
-//				LCD.DataFlow->SendString("  ");
-//			}
+			Pwm.SetIntensity(idx, adcData[idx]);
+
+			if (adcData[idx] > 10 && adcData[idx] < 100)
+				LCD.DataFlow->SendString(" ");
+			else if (adcData[idx] < 10)
+				LCD.DataFlow->SendString("  ");
+
+			_delay_ms(20);
 		}
-		// TODO: add adc measuring function
+
 		LCD.Position(3, 13);
 		LCD.DataFlow->SendNumber(0);
 
+		if (adcData[idx] > 10 && adcData[idx] < 100)
+			LCD.DataFlow->SendString(" ");
+		else if (adcData[idx] < 10)
+			LCD.DataFlow->SendString("  ");
+
 		if (Menu.getOpt() == B_RETURN)
+		{
+			Pwm.Enable(DISABLE);
+			Adc.Enable(DISABLE);
 			return SUCC;
+		}
 
 		if (Menu.getOpt() == B_SELECT)
 			break;
@@ -239,6 +250,9 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 	else {
 		// send data
 	}
+
+	Pwm.Enable(DISABLE);
+	Adc.Enable(DISABLE);
 	return SUCC;
 
 //	return FAIL;
@@ -385,16 +399,11 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 				LCD.DataFlow->SendString(names[pos]);
 			}
 
-			if (Pwm.initSUCC)
+			if (Pwm.enable)
 			{
 				Pwm.SetIntensity(Red, Color_TABLE[pos_color][0]);
 				Pwm.SetIntensity(Green, Color_TABLE[pos_color][1]);
 				Pwm.SetIntensity(Blue, Color_TABLE[pos_color][2]);
-
-				if (pos_color == 7)
-					pos_color=0;
-				else
-					pos_color++;
 			}
 
 			if (Menu.pos == 0)
@@ -419,24 +428,22 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 		switch (Menu.getOpt())
 		{
 			case B_NEXT:
-				if (Menu.pos < lim-1)
-					Menu.pos++;
-				else
-					Menu.pos = 0;
+				Menu.pos = (Menu.pos < lim-1) ? Menu.pos+1 : 0;
+				if (Pwm.enable)
+					pos_color = (pos_color == NUM_OF_COLORS-1) ? 0 : pos_color+1;
 			break;
 
 			case B_PREV:
-				if (Menu.pos > 0)
-					Menu.pos--;
-				else
-					Menu.pos = lim-1;
+				Menu.pos = (Menu.pos > 0) ? Menu.pos-1 : lim-1;
+				if (Pwm.enable)
+					pos_color = (pos_color == 0) ? NUM_OF_COLORS-1 : pos_color-1;
 			break;
 
 			case B_SELECT:
 				LCD.DataFlow->SendCommand(8, 0x01);
 				Menu.setOpt(B_VOID);
 
-				if(Pwm.initSUCC)
+				if(Pwm.enable)
 					return pos_color;
 
 				return Menu.pos;

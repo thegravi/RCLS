@@ -7,7 +7,7 @@
 
 #include "ADC.h"
 
-Adc_t Adc = {
+const Adc_t Adc = {
 		ADC_Init,
 		ADC_Enable,
 		ADC_MeasVolt,
