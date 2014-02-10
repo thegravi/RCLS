@@ -8,20 +8,21 @@
 #include "pwm.h"
 
 const uint8_t Color_TABLE[8][3] = {
-		{255, 0, 0},
-		{255, 165, 0},
-		{255, 255, 0},
-		{0, 255, 0},
-		{0, 0, 255},
-		{75, 0, 130},
-		{143, 0, 255},
-		{255, 255, 255}
+		{255,   0,   0},	// Red    *
+		{255, 165,   0},	// Orange
+		{255, 215,   0},	// Yellow
+		{  0, 255,   0},	// Green  *
+		{  0,   0, 255},	// Blue   *
+		{ 75,   0, 130},	// Indigo
+		{143,   0, 255},	// Violet
+		{255, 255, 255}		// White
 };
 
 Pwm_t Pwm = {
 		PWM_Init,
 		PWM_Enable,
 		PWM_SetIntensity,
+		FALSE,
 		FALSE
 };
 
@@ -57,8 +58,9 @@ void PWM_Init()
 //--------------- Brightness channel --------------//
 
 
-	LED_RGB_DDR |= 1<<LED_R_PIN | 1<<LED_B_PIN | 1<<LED_G_PIN;
-	Pwm.initSUCC = SUCC;
+	LED_RGB_DDR  |= 1<<LED_R_PIN | 1<<LED_B_PIN | 1<<LED_G_PIN;
+	Pwm.initSUCC  = SUCC;
+	Pwm.enable    = TRUE;
 
 //	PWM_Enable(DISABLE);
 }

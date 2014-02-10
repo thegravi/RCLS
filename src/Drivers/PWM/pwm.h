@@ -40,6 +40,7 @@ typedef struct {
 	void (*SetIntensity)(uint8_t obj, uint8_t value);
 
 	uint8_t initSUCC;
+	uint8_t enable;
 
 }Pwm_t;
 
