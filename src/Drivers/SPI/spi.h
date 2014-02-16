@@ -11,6 +11,14 @@
 #include <avr/io.h>
 #include "../../common.h"
 
+#define IS_MASTER TRUE
+
+#define DDR_SPI	   DDRB
+#define DD_MISO    PB4
+#define DD_MOSI    PB3
+#define DD_SCK     PB5
+#define DD_CS      PB2
+
 typedef struct {
 	void (*init)(void);
 	uint8_t (*transmit)(uint8_t data, uint8_t *ok);
