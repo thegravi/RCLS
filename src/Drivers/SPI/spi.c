@@ -13,15 +13,12 @@ const SPI_Interface_t Spi = {
 		SPI_MISOStatus
 };
 
-
 void SPI_Init()
 {
 	#if IS_MASTER
 		DDR_SPI |= 1<<DD_MOSI | 1<<DD_SCK;
 		DDR_SPI &= ~(1<<DD_MISO);
-
-		// prescaler Fclk/64 = 125 kHz
-		SPCR |= 1<<MSTR | 1<<SPR1;
+		SPCR |= 1<<MSTR | 1<<SPR1; // prescaler Fclk/64 = 125 kHz
 	#else
 		DDR_SPI |= 1<<DD_MISO;
 		DDR_SPI &= ~(1<<DD_MOSI) & ~(1<<DD_SCK);
@@ -35,6 +32,7 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 {
 	uint16_t timeout = 10000;
 
+	*ok = SUCC;
 	SPDR = data;
 
 	while (!(SPSR & (1<<SPIF)) && timeout)
