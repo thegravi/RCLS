@@ -2,57 +2,54 @@
  * uart.c
  *
  *  Created on: 2013.11.23
- *      Author: Graþvidas
+ *      Author: GraÅ¾vidas
  */
 
 #include "uart.h"
 
-static void uart_init(void)
+static void UART_Init(void)
 {
-  UCSR0B  |= 1<<TXEN0; 	//Enable  Transmit
-  UCSR0C |= 1<<UCSZ01 | 1<<UCSZ00; //8 bit data character size
-  UBRR0H = 0;
-  UBRR0L = 12; 					// 38400 baud rate for a 8MHz Clock
+  UCSR0B  |= 1<<TXEN0; 		      // Enable  Transmit
+  UCSR0C  |= 1<<UCSZ01 | 1<<UCSZ00;   // 8 bit data character size
+  UBRR0H   = 0;
+  UBRR0L   = 12; 		      // 38400 baud rate for a 8MHz Clock
 }
 
-static void send_uart_char(char c)
+static void UART_SendChar(char c)
 {
 	uint16_t timeout = 10000;
 
 	while (!(UCSR0A & (1<<UDRE0)) && timeout--);
 	UDR0 = c;
-
 }
 
-static void send_uart_byte(uint8_t byte)
+static void UART_SendByte(uint8_t byte)
 {
-	char* convByte = NULL;
-	uint16_t timeout = 10000;
+	char*    convByte = NULL;
+	uint16_t timeout  = 10000;
 
 	itoa(byte, convByte, 10);
 
-	while (!(UCSR0A & (1<<UDRE0)) && timeout--) { }
+	while (!(UCSR0A & (1 << UDRE0)) && timeout--);
 	UDR0 = *convByte;
 }
 
-
-static void send_uart_string(char* buffer, uint8_t len)
+static void UART_SendString(char* buffer, uint8_t len)
 {
-	while(len > 0) {
-			send_uart_char(*buffer++);
-			len--;
-	}
+	while (len-- > 0)
+		UART_SendChar(*buffer++);
 }
 
-static void send_uart_data(uint8_t* buffer, uint8_t bytes)
+static void UART_SendData(uint8_t* buffer, uint8_t bytes)
 {
 	for (;bytes > 0; bytes--)
-		send_uart_byte(*buffer++);
+		UART_SendByte(*buffer++);
 }
 
-
-UART_t UART = {uart_init,
-			   send_uart_byte,
-			   send_uart_char,
-			   send_uart_data,
-			   send_uart_string};
+const UART_t UART = {
+	UART_Init,
+	UART_SendByte,
+	UART_SendChar,
+	UART_SendData,
+	UART_SendString
+};
