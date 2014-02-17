@@ -8,6 +8,10 @@
 #ifndef CC1101_H_
 #define CC1101_H_
 
+typedef struct {
 
+}RF_Interface_t;
+
+extern RF_Interface_t RF;
 
 #endif /* CC1101_H_ */
