@@ -13,8 +13,11 @@
 #define SUCC		1
 #define FAIL		0
 #define ERR			-1
-#define ENABLE		TRUE
-#define DISABLE		FALSE
+
+enum {
+	Disable=0,
+	Enable
+};
 
 #define LED_ON() 	DDRC |= 1<<PC5; PORTC |= 1<<PC5;
 #define LED_OFF() 	DDRC &= ~(1<<PC5); PORTC &= ~(1<<PC5);
