@@ -46,7 +46,7 @@ static void UART_SendData(uint8_t* buffer, uint8_t bytes)
 		UART_SendByte(*buffer++);
 }
 
-const UART_t UART = {
+const UART_Interface_t UART = {
 	UART_Init,
 	UART_SendByte,
 	UART_SendChar,

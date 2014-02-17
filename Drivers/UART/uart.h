@@ -18,8 +18,8 @@ typedef struct {
 	void (*sendData)(uint8_t* buffer, uint8_t bytes);
 	void (*sendString)(char* buffer, uint8_t len);
 
-}UART_t;
+}UART_Interface_t;
 
-extern const UART_t UART;
+extern const UART_Interface_t UART;
 
 #endif /* UART_H_ */
