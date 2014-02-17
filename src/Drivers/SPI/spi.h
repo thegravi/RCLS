@@ -14,10 +14,12 @@
 #define IS_MASTER TRUE
 
 #define DDR_SPI	   DDRB
-#define DD_MISO    PB4
-#define DD_MOSI    PB3
-#define DD_SCK     PB5
-#define DD_CS      PB2
+#define PORT_SPI   PORTB
+#define PIN_SPI		PINB
+#define PIN_MISO    PB4
+#define PIN_MOSI    PB3
+#define PIN_SCK     PB5
+#define PIN_CS      PB2
 
 typedef struct {
 	void (*init)(void);

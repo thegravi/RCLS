@@ -16,12 +16,12 @@ const SPI_Interface_t Spi = {
 void SPI_Init()
 {
 	#if IS_MASTER
-		DDR_SPI |= 1<<DD_MOSI | 1<<DD_SCK;
-		DDR_SPI &= ~(1<<DD_MISO);
+		DDR_SPI |= 1<<PIN_MOSI | 1<<PIN_SCK;
+		DDR_SPI &= ~(1<<PIN_MISO);
 		SPCR |= 1<<MSTR | 1<<SPR1; // prescaler Fclk/64 = 125 kHz
 	#else
-		DDR_SPI |= 1<<DD_MISO;
-		DDR_SPI &= ~(1<<DD_MOSI) & ~(1<<DD_SCK);
+		DDR_SPI |= 1<<PIN_MISO;
+		DDR_SPI &= ~(1<<PIN_MOSI) & ~(1<<PIN_SCK);
 		SPCR &= ~(1<<MSTR);
 	#endif
 
@@ -50,7 +50,9 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 
 uint8_t SPI_MISOStatus(void)
 {
+	DDR_SPI  &= ~(1<<PIN_MISO);
+	PORT_SPI &= ~(1<<PIN_MISO);
 
-	return SUCC;
+	return (PINB & (1<<PIN_MISO)) ? TRUE : FALSE;
 }
 
