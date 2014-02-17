@@ -18,10 +18,10 @@ int16_t ADC_MeasVolt(uint8_t ch);
 int16_t ADC_MeasTemp(void);
 
 typedef struct {
-	void (*Init)(void);
-	void (*Enable)(uint8_t state);
-	int16_t (*MeasVolt)(uint8_t ch);
-	int16_t (*MeasTemp)(void);
+	void (*init)(void);
+	void (*enable)(uint8_t state);
+	int16_t (*measVolt)(uint8_t ch);
+	int16_t (*measTemp)(void);
 
 }Adc_Interface_t;
 

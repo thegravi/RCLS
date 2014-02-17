@@ -166,7 +166,7 @@ void LCD_Menu_Init()
 
 uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 {
-	Pwm.Init();
+	Pwm.init();
 	while(1)
 	{
 		LCD.Position(1, 1);
@@ -175,7 +175,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
 		{
-			Pwm.Enable(DISABLE);
+			Pwm.enable(DISABLE);
 			return SUCC;
 		}
 
@@ -183,7 +183,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 
 		}
 
-		Pwm.Enable(DISABLE);
+		Pwm.enable(DISABLE);
 		return SUCC;
 	}
 
@@ -203,19 +203,19 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 	LCD.Position(3, 1);
 	LCD.DataFlow->SendString("Brightness:    %");
 
-	Pwm.Init();
+	Pwm.init();
 	while(1)
 	{
 		_delay_ms(100);
 		for (idx = 0; idx < 2; idx++)
 		{
-			Adc.Enable(ENABLE);
-			adcData[idx] = Adc.MeasVolt(4+idx);
+			Adc.enable(ENABLE);
+			adcData[idx] = Adc.measVolt(4+idx);
 
 			LCD.Position(4, 4 + (idx * 7));
 			LCD.DataFlow->SendNumber(adcData[idx]);
 
-			Pwm.SetIntensity(idx, adcData[idx]);
+			Pwm.setIntensity(idx, adcData[idx]);
 
 			if (adcData[idx] > 10 && adcData[idx] < 100)
 				LCD.DataFlow->SendString(" ");
@@ -235,8 +235,8 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 
 		if (Menu.getOpt() == B_RETURN)
 		{
-			Pwm.Enable(DISABLE);
-			Adc.Enable(DISABLE);
+			Pwm.enable(DISABLE);
+			Adc.enable(DISABLE);
 			return SUCC;
 		}
 
@@ -251,8 +251,8 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 		// send data
 	}
 
-	Pwm.Enable(DISABLE);
-	Adc.Enable(DISABLE);
+	Pwm.enable(DISABLE);
+	Adc.enable(DISABLE);
 	return SUCC;
 
 //	return FAIL;
@@ -401,9 +401,9 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 
 			if (Pwm.enable)
 			{
-				Pwm.SetIntensity(Red, Color_TABLE[pos_color][0]);
-				Pwm.SetIntensity(Green, Color_TABLE[pos_color][1]);
-				Pwm.SetIntensity(Blue, Color_TABLE[pos_color][2]);
+				Pwm.setIntensity(Red, Color_TABLE[pos_color][0]);
+				Pwm.setIntensity(Green, Color_TABLE[pos_color][1]);
+				Pwm.setIntensity(Blue, Color_TABLE[pos_color][2]);
 			}
 
 			if (Menu.pos == 0)

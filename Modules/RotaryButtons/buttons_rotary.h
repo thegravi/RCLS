@@ -17,7 +17,7 @@
 #define ROT_CH_BRIGH	PC5
 
 typedef struct {
-	void (*Init)(void);
+	void (*init)(void);
 
 }Rotary_Interface_t;
 

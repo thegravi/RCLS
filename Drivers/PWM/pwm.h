@@ -35,12 +35,12 @@ typedef enum {
 extern const uint8_t Color_TABLE[8][3];
 
 typedef struct {
-	void (*Init)(void);
-	void (*Enable)(uint8_t state);
-	void (*SetIntensity)(uint8_t obj, uint8_t value);
+	void (*init)(void);
+	void (*enable)(uint8_t state);
+	void (*setIntensity)(uint8_t obj, uint8_t value);
 
 	uint8_t initSUCC;
-	uint8_t enable;
+	uint8_t f_enable;
 
 }Pwm_Interface_t;
 

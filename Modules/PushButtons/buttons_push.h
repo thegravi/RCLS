@@ -26,7 +26,7 @@
 void (BUTTONS_Init)(void);
 
 typedef struct {
-	void (*Init)(void);
+	void (*init)(void);
 
 	uint8_t readStates;
 

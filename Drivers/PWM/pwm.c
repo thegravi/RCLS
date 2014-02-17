@@ -60,7 +60,7 @@ void PWM_Init()
 
 	LED_RGB_DDR  |= 1<<LED_R_PIN | 1<<LED_B_PIN | 1<<LED_G_PIN;
 	Pwm.initSUCC  = SUCC;
-	Pwm.enable    = TRUE;
+	Pwm.f_enable  = TRUE;
 
 //	PWM_Enable(DISABLE);
 }

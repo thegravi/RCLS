@@ -30,8 +30,8 @@ void Init()
 	Init_GPIO();
 	LCD.Init();
 	Menu.Init();
-	Buttons.Init();
-	Rotary.Init();
+	Buttons.init();
+	Rotary.init();
 	sei();
 }
 

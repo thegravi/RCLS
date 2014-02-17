@@ -67,7 +67,7 @@ extern CC1101_Config_t RFCfgDefault;
 
 typedef struct {
 	SPI_Interface_t *spi;
-	void (*Init)(void);
+	void (*init)(void);
 	void (*loadConfig)(CC1101_Config_t *cfg, uint8_t *ok);
 
 }CC1101_Interface_t;
