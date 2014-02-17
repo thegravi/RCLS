@@ -21,7 +21,7 @@ typedef struct {
 
 }Rotary_Interface_t;
 
-extern Rotary_Interface_t Rotary;
+extern const Rotary_Interface_t Rotary;
 
 void ROTARY_Init(void);
 

@@ -7,7 +7,7 @@
 
 #include "buttons_rotary.h"
 
-Rotary_Interface_t Rotary = {
+const Rotary_Interface_t Rotary = {
 		ROTARY_Init
 };
 
