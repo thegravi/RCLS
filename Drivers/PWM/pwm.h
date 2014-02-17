@@ -42,8 +42,8 @@ typedef struct {
 	uint8_t initSUCC;
 	uint8_t enable;
 
-}Pwm_t;
+}Pwm_Interface_t;
 
-extern Pwm_t Pwm;
+extern Pwm_Interface_t Pwm;
 
 #endif /* PWM_H_ */

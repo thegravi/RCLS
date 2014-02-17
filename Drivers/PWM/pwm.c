@@ -18,7 +18,7 @@ const uint8_t Color_TABLE[8][3] = {
 		{255, 255, 255}		// White
 };
 
-Pwm_t Pwm = {
+Pwm_Interface_t Pwm = {
 		PWM_Init,
 		PWM_Enable,
 		PWM_SetIntensity,
