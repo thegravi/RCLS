@@ -14,7 +14,6 @@
 #define IS_MASTER TRUE
 
 #define DDR_SPI	   DDRB
-#define PORT_SPI   PORTB
 #define PIN_SPI		PINB
 #define PIN_MISO    PB4
 #define PIN_MOSI    PB3
