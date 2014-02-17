@@ -32,7 +32,8 @@ void Init()
 	Menu.Init();
 	Buttons.init();
 	Rotary.init();
-	sei();
+//	WDG.init();
+	__asm__ __volatile__ ("sei");
 }
 
 void Init_GPIO()

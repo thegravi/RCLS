@@ -175,7 +175,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
 		{
-			Pwm.enable(DISABLE);
+			Pwm.enable(Disable);
 			return SUCC;
 		}
 
@@ -183,7 +183,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 
 		}
 
-		Pwm.enable(DISABLE);
+		Pwm.enable(Disable);
 		return SUCC;
 	}
 
@@ -209,7 +209,7 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 		_delay_ms(100);
 		for (idx = 0; idx < 2; idx++)
 		{
-			Adc.enable(ENABLE);
+			Adc.enable(Enable);
 			adcData[idx] = Adc.measVolt(4+idx);
 
 			LCD.Position(4, 4 + (idx * 7));
@@ -235,8 +235,8 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 
 		if (Menu.getOpt() == B_RETURN)
 		{
-			Pwm.enable(DISABLE);
-			Adc.enable(DISABLE);
+			Pwm.enable(Disable);
+			Adc.enable(Disable);
 			return SUCC;
 		}
 
@@ -251,8 +251,8 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 		// send data
 	}
 
-	Pwm.enable(DISABLE);
-	Adc.enable(DISABLE);
+	Pwm.enable(Disable);
+	Adc.enable(Disable);
 	return SUCC;
 
 //	return FAIL;

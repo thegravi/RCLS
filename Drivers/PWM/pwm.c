@@ -70,7 +70,7 @@ void PWM_Enable(uint8_t state)
 	if (!Pwm.initSUCC)
 		return;
 
-	if (state == ENABLE)
+	if (state == Enable)
 	{
 		// For Red, Green channels
 		TCCR0B |= 1<<CS02;
@@ -81,7 +81,7 @@ void PWM_Enable(uint8_t state)
 		TCCR2A |= 1<<COM2B1 | 1<<WGM21 | 1<<WGM20;
 		//For Brightness channel
 	}
-	else
+	else if (state == Disable)
 	{
 		// For Red, Green channels
 		TCCR0B &= ~(1<<CS02);
@@ -92,7 +92,7 @@ void PWM_Enable(uint8_t state)
 		TCCR2A &= ~(1<<COM2B1) & ~(1<<WGM21) & ~(1<<WGM20);
 		//For Brightness channel
 
-		Pwm.initSUCC = DISABLE;
+		Pwm.initSUCC = Disable;
 	}
 }
 
