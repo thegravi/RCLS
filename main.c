@@ -5,41 +5,13 @@
  *      Author: Gražvidas
  */
 
-#include <avr/io.h>
-#include "Drivers/LCD/lcd.h"
-#include "Drivers/UART/uart.h"
-#include "Drivers/ADC/ADC.h"
-#include "Drivers/PWM/pwm.h"
-#include "Modules/Menu/lcd_menu.h"
-#include "Modules/PushButtons/buttons_push.h"
-#include "Modules/RotaryButtons/buttons_rotary.h"
-#include "common.h"
+#include "main.h"
 
-#define F_CPU 8000000UL
+int8_t status;
 
-void Init(void);
-
-int8_t status = -1;
-int i = 0, j = 0;
 int main()
 {
-	DDRC |= 1<<PC5;
-
 	Init();
-
-//	while(1)
-//	{
-//		for (i=0;i<256;i++)
-//		{
-//			Pwm.SetIntensity(j, i);
-//			_delay_ms(50);
-//		}
-//
-//		if (j==2)
-//			j=0;
-//		else
-//			j++;
-//	}
 
 	while(1)
 	{
@@ -55,12 +27,21 @@ int main()
 
 void Init()
 {
-	cli();
-//	UART.Init();
+	Init_GPIO();
 	LCD.Init();
-	Adc.Init();
-//	Pwm.Init();
 	Menu.Init();
 	Buttons.Init();
+	Rotary.Init();
 	sei();
+}
+
+void Init_GPIO()
+{
+	DDRB = 0;
+	DDRC = 0;
+	DDRD = 0;
+
+	PORTB = 0;
+	PORTC = 0;
+	PORTD = 0;
 }
