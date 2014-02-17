@@ -48,11 +48,13 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 	return SPDR;
 }
 
+#if IS_MASTER
 uint8_t SPI_MISOStatus(void)
 {
-	DDR_SPI  &= ~(1<<PIN_MISO);
-	PORT_SPI &= ~(1<<PIN_MISO);
+	DDR_SPI &= ~(1<<PIN_MISO);
+	uint8_t status = (PINB & (1<<PIN_MISO)) ? TRUE : FALSE;
+	DDR_SPI |= 1<<PIN_MISO;
 
-	return (PINB & (1<<PIN_MISO)) ? TRUE : FALSE;
+	return status;
 }
-
+#endif
