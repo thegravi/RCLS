@@ -125,8 +125,8 @@ typedef struct {
 	uint8_t optSelected;
 	uint8_t pos;
 
-}LCD_Menu_t;
+}LCD_Menu_Interface_t;
 
-extern LCD_Menu_t Menu;
+extern LCD_Menu_Interface_t Menu;
 
 #endif /* LCD_MENIU_H_ */

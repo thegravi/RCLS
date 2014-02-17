@@ -83,7 +83,7 @@ Profiles_t Prof = {
 
 };
 
-LCD_Menu_t Menu = {
+LCD_Menu_Interface_t Menu = {
 		&LEDs,
 		&Set,
 		&Prof,
