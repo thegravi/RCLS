@@ -27,7 +27,7 @@ typedef struct {
 
 }SPI_Interface_t;
 
-extern const SPI_Interface_t Spi;
+extern SPI_Interface_t Spi;
 
 void SPI_Init(void);
 uint8_t SPI_Transmit(uint8_t data, uint8_t *ok);

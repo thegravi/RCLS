@@ -7,7 +7,7 @@
 
 #include "spi.h"
 
-const SPI_Interface_t Spi = {
+SPI_Interface_t Spi = {
 		SPI_Init,
 		SPI_Transmit,
 		SPI_MISOStatus
