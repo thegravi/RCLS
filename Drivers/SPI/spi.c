@@ -32,7 +32,6 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 {
 	uint16_t timeout = 10000;
 
-	*ok = SUCC;
 	SPDR = data;
 
 	while (!(SPSR & (1<<SPIF)) && timeout)
@@ -40,12 +39,21 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 
 	if (timeout <= 0)
 	{
-		if (ok != ((void *)0))
+		if (ok != NULL)
 			*ok = FAIL;
 		return 0;
 	}
 
 	return SPDR;
+}
+
+void SPI_CSLine(uint8_t state)
+{
+	DDR_SPI |= 1<<PIN_CS;
+	if (state)
+		PORT_SPI |= 1<<PIN_CS;
+	else
+		PORT_SPI &= ~(1<<PIN_CS);
 }
 
 #if IS_MASTER
