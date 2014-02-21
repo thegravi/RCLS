@@ -10,48 +10,72 @@
 
 #include "../SPI/SPI.h"
 
+#define CC_PIN_SI
+#define CC_PIN_SO
+#define CC_PIN_CS
+#define CC_PIN_SCK
+#define CC_PIN_GDO0
+#define CC_PIN_GDO1
+#define CC_DDR
+#define CC_PORT
+
+//Define command strobes
+#define CC_CMD_RESET        0x30
+#define CC_CMD_FSTXON       0x31
+#define CC_CMD_SXOFF        0x32
+#define CC_CMD_SCAL     	0x33
+#define CC_CMD_SRX      	0x34
+#define CC_CMD_STX      	0x35
+#define CC_CMD_SIDLE        0x36
+#define CC_CMD_SWOR     	0x38
+#define CC_CMD_SPWD     	0x39
+#define CC_CMD_SFRX     	0x3A
+#define CC_CMD_SFTX     	0x3B
+#define CC_CMD_SWORRST      0x3C
+#define CC_CMD_SNOP         0x3D
+
 enum {
-    CC_REG_IOCFG2,      //0x00
-    CC_REG_IOCFG1,      //0x01
-    CC_REG_IOCFG0,      //0x02
-    CC_REG_FIFOTHR,     //0x03
-    CC_REG_SYNC1,       //0x04
-    CC_REG_SYNC0,       //0x05
-    CC_REG_PKTLEN,      //0x06
-    CC_REG_PKTCTRL1,    //0x07
-    CC_REG_PKTCTRL0,    //0x08
-    CC_REG_ADDR,        //0x09
-    CC_REG_CHANNR,      //0x0A
-    CC_REG_FSCTRL1,     //0x0B
-    CC_REG_FSCTRL0,     //0x0C
-    CC_REG_FREQ2,       //0x0D
-    CC_REG_FREQ1,       //0x0E
-    CC_REG_FREQ0,       //0x0F
-    CC_REG_MDMCFG4,     //0x10
-    CC_REG_MDMCFG3,     //0x11
-    CC_REG_MDMCFG2,     //0x12
-    CC_REG_MDMCFG1,     //0x13
-    CC_REG_MDMCFG0,     //0x14
-    CC_REG_DEVIATN,     //0x15
-    CC_REG_MCSM2,       //0x16
-    CC_REG_MCSM1,       //0x17
-    CC_REG_MCSM0,       //0x18
-    CC_REG_FOCCFG,      //0x19
-    CC_REG_BSCFG,       //0x1A
-    CC_REG_AGCRL2,      //0x1B
-    CC_REG_AGCRL1,      //0x1C
-    CC_REG_AGCRL0,      //0x1D
-    CC_REG_WOREVT1,     //0x1E
-    CC_REG_WOREVT0,     //0x1F
-    CC_REG_WORCTRL,     //0x20
-    CC_REG_FREND1,      //0x21
-    CC_REG_FREND0,      //0x22
-    CC_REG_FSCAL3,      //0x23
-    CC_REG_FSCAL2,      //0x24
-    CC_REG_FSCAL1,      //0x25
-    CC_REG_FSCAL0,      //0x26
-    CC_REG_RCCTRL1,     //0x27
-    CC_REG_RCCTRL0,     //0x28
+    CC_REG_IOCFG2=0,    // GDO2 Output Pin Configuration
+    CC_REG_IOCFG1,      // GDO1 Output Pin Configuration
+    CC_REG_IOCFG0,      // GDO0 Output Pin Configuration
+    CC_REG_FIFOTHR,     // RX FIFO and TX FIFO Thresholds
+    CC_REG_SYNC1,       // Sync Word, High Byte
+    CC_REG_SYNC0,       // Sync Word, Low Byte
+    CC_REG_PKTLEN,      // Packet Length
+    CC_REG_PKTCTRL1,    // Packet Automation Control
+    CC_REG_PKTCTRL0,    // Packet Automation Control
+    CC_REG_ADDR,        // Device Address
+    CC_REG_CHANNR,      // Channel Number
+    CC_REG_FSCTRL1,     // Frequency Synthesizer Control
+    CC_REG_FSCTRL0,     // Frequency Synthesizer Control
+    CC_REG_FREQ2,       // Frequency Control Word, High Byte
+    CC_REG_FREQ1,       // Frequency Control Word, Middle Byte
+    CC_REG_FREQ0,        // Frequency Control Word, Low Byte
+    CC_REG_MDMCFG4,     // Modem Configuration
+    CC_REG_MDMCFG3,     // Modem Configuration
+    CC_REG_MDMCFG2,     // Modem Configuration
+    CC_REG_MDMCFG1,     // Modem Configuration
+    CC_REG_MDMCFG0,     // Modem Configuration
+    CC_REG_DEVIATN,     // Modem Deviation Setting
+    CC_REG_MCSM2,       // Main Radio Control State Machine Configuration
+    CC_REG_MCSM1,       // Main Radio Control State Machine Configuration
+    CC_REG_MCSM0,       // Main Radio Control State Machine Configuration
+    CC_REG_FOCCFG,      // Frequency Offset Compensation Configuration
+    CC_REG_BSCFG,       // Bit Synchronization Configuration
+    CC_REG_AGCRL2,      // AGC Control
+    CC_REG_AGCRL1,      // AGC Control
+    CC_REG_AGCRL0,      // AGC Control
+    CC_REG_WOREVT1,     // High Byte Event0 Timeout
+    CC_REG_WOREVT0,     // Low Byte Event0 Timeout
+    CC_REG_WORCTRL,     // Wake On Radio Control
+    CC_REG_FREND1,      // Front End RX Configuration
+    CC_REG_FREND0,      // Front End TX Configuration
+    CC_REG_FSCAL3,      // Frequency Synthesizer Calibration
+    CC_REG_FSCAL2,      // Frequency Synthesizer Calibration
+    CC_REG_FSCAL1,      // Frequency Synthesizer Calibration
+    CC_REG_FSCAL0,      // Frequency Synthesizer Calibration
+    CC_REG_RCCTRL1,     // RC Oscillator Configuration
+    CC_REG_RCCTRL0,     // RC Oscillator Configuration
 
     CC_REG_CNT,
 
@@ -69,6 +93,8 @@ typedef struct {
 	SPI_Interface_t *spi;
 	void (*init)(void);
 	void (*loadConfig)(CC1101_Config_t *cfg, uint8_t *ok);
+
+	uint8_t initSucc;
 
 }CC1101_Interface_t;
 extern CC1101_Interface_t RF;
