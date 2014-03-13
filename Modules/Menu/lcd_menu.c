@@ -1,4 +1,4 @@
-/*
+ /*
  * lcd_meniu.c
  *
  *  Created on: 2013.09.29
@@ -109,7 +109,7 @@ ColorTable_t ColorTable = RED;
 
 void LCD_Menu_branch_LEDs(void)
 {
-	Menu.pos = 0;
+//	Menu.pos = 0;
 	while(1)
 	{
 		LCD.Position(1, 1);
@@ -126,26 +126,30 @@ void LCD_Menu_branch_Set(void)
 {
 	LCD.Position(1, 1);
 	LCD.DataFlow->SendString("----- Settings -----");
-	while (1)
-	{
-		_delay_ms(10);
 
-		if (Menu.getOpt() == B_RETURN)
-			break;
+	while (Menu.getOpt() != B_RETURN)
+	{
+			_delay_ms(10);
+
+			if (Menu.getOpt() == B_RETURN)
+				break;
 	}
+	Menu.setOpt(B_VOID);
 }
 
 void LCD_Menu_branch_Profs(void)
 {
 	LCD.Position(1, 1);
 	LCD.DataFlow->SendString("----- Profiles -----");
-	while (1)
+
+	while (Menu.getOpt() != B_RETURN)
 	{
 		_delay_ms(10);
 
 		if (Menu.getOpt() == B_RETURN)
 			break;
 	}
+	Menu.setOpt(B_VOID);
 }
 
 uint8_t LCD_Menu_getOpt(void)
@@ -387,19 +391,19 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 	{
 			for (idx = 0; idx < numOfRecords; idx++)
 			{
-				LCD.Position(idx+2, 1);
+				LCD.Position(idx + 2, 1);
 				LCD.DataFlow->SendString("                  ");
-				LCD.Position(idx+2, 3);
+				LCD.Position(idx + 2, 3);
 
 				if (Menu.pos <=2 )
 					pos = idx;
 				else
-					pos = Menu.pos-2+idx;
+					pos = Menu.pos-2 + idx;
 
 				LCD.DataFlow->SendString(names[pos]);
 			}
 
-			if (Pwm.enable)
+			if (Pwm.f_enable)
 			{
 				Pwm.setIntensity(Red, Color_TABLE[pos_color][0]);
 				Pwm.setIntensity(Green, Color_TABLE[pos_color][1]);
@@ -420,6 +424,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 		while (!Menu.getOpt())
 		{
 			_delay_ms(10);
+			WDG_RESET();
 
 			if (Menu.getOpt() != B_VOID)
 				break;
@@ -429,13 +434,14 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 		{
 			case B_NEXT:
 				Menu.pos = (Menu.pos < lim-1) ? Menu.pos+1 : 0;
-				if (Pwm.enable)
+				if (Pwm.f_enable)
 					pos_color = (pos_color == NUM_OF_COLORS-1) ? 0 : pos_color+1;
 			break;
 
 			case B_PREV:
-				Menu.pos = (Menu.pos > 0) ? Menu.pos-1 : lim-1;
-				if (Pwm.enable)
+				Menu.pos = (Menu.pos > 0) ? Menu.pos-1 : (lim - 1);
+
+				if (Pwm.f_enable)
 					pos_color = (pos_color == 0) ? NUM_OF_COLORS-1 : pos_color-1;
 			break;
 
@@ -443,10 +449,10 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 				LCD.DataFlow->SendCommand(8, 0x01);
 				Menu.setOpt(B_VOID);
 
-				if(Pwm.enable)
+				if (Pwm.f_enable)
 					return pos_color;
 
-				return Menu.pos;
+				return (uint8_t)Menu.pos;
 			break;
 
 			case B_RETURN:

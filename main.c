@@ -8,16 +8,25 @@
 #include "main.h"
 
 int8_t status;
-
+//#include "Drivers/SPI/spi.h"
 int main()
 {
 	Init();
-
+//	Spi.init();
+//	int data = 5;
+//	while(1)
+//	{
+//		LCD.Position(1, 1);
+//		LCD.DataFlow->SendNumber(Spi.transmit(data++, NULL));
+//		_delay_ms(200);
+//
+//	}
 	while(1)
 	{
 		LCD.DataFlow->SendString("------- Menu -------");
 
 		status = Menu.choice(3, Menu.funcNames);
+
 		if (status > -1)
 			Menu.branch[status]();
 	}
@@ -46,3 +55,5 @@ void Init_GPIO()
 	PORTC = 0;
 	PORTD = 0;
 }
+
+// TODO: repair wdg

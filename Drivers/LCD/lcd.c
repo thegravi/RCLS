@@ -62,34 +62,6 @@ static void LCD_ExecuteCMD()
 	LCD_PORT_E(RESET);
 }
 
-/*static void LCD_WaitIfBusy()
-{
-	volatile uint8_t data;
-	uint8_t busy_f = SET;
-
-	LCD.Regs->PORT_RW(SET);
-	DATA_DIR &= ~(1<<LCD_DATA0) | ~(1<<LCD_DATA1) | ~(1<<LCD_DATA2) | ~(1<<LCD_DATA3);
-
-	while (busy_f)
-	{
-		LCD.Regs->PORT_E(SET);
-		_delay_us(1);
-		data = DATA_PIN  << 4;
-		LCD.Regs->PORT_E(RESET);
-		_delay_us(1);
-		LCD.Regs->PORT_E(SET);
-		_delay_us(1);
-		data |= (DATA_PIN & 0x0F);
-		LCD.Regs->PORT_E(RESET);
-		_delay_us(1);
-
-		if (!(data & 0x80))
-				busy_f = RESET;
-	}
-	DATA_DIR |= (1<<LCD_DATA0) | (1<<LCD_DATA1) | (1<<LCD_DATA2) | (1<<LCD_DATA3);
-	LCD.Regs->PORT_RW(RESET);
-}*/
-
 static void LCD_ProcessData(int8_t data)
 {
 	if (data & 0x01)
@@ -120,9 +92,7 @@ void LCD_SendCommand(uint8_t size, uint8_t cmd)
 		LCD_ExecuteCMD();
 	}
 	else if (size == 8)	{
-	// temporary delay, until "WaitIfBusy" function is completed
 		_delay_ms(2);
-	//	LCD_Interface.Comm.WaitIfBusy();
 		LCD_ProcessData(cmd >> 4);
 		LCD_ExecuteCMD();
 		LCD_ProcessData(cmd & 0x0F);

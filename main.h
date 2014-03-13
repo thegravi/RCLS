@@ -13,7 +13,7 @@
 #include "Drivers/UART/uart.h"
 #include "Drivers/ADC/ADC.h"
 #include "Drivers/PWM/pwm.h"
-#include "Drivers/WDG/wdg.h"
+//#include "Drivers/WDG/wdg.h"
 #include "Modules/Menu/lcd_menu.h"
 #include "Modules/PushButtons/buttons_push.h"
 #include "Modules/RotaryButtons/buttons_rotary.h"

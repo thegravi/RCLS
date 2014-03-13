@@ -17,6 +17,7 @@
 #include "../../Drivers/LCD/lcd.h"
 #include "../../Drivers/PWM/pwm.h"
 #include "../../Drivers/ADC/ADC.h"
+#include "../../Drivers/WDG/wdg.h"
 #include "../../common.h"
 
 void LCD_Menu_Init(void);

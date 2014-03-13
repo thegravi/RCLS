@@ -15,10 +15,11 @@ const WDG_Interface_t WDG = {
 
 void WDG_Init()
 {
-	uint8_t prescaler = ms2000;
+	uint8_t prescaler = ms8000;
 
-	WDTCSR |= 1<<WDIE | 1<<WDE;
 	WDTCSR = (WDTCSR & 0xD8) | prescaler;
+	WDTCSR |= 1<<WDIE | 1<<WDE;
+	WDG_RESET();
 }
 
 void WDG_Disable(uint8_t newState)
