@@ -19,6 +19,11 @@ enum {
 	Enable
 };
 
+enum {
+	Low=0,
+	High
+};
+
 #define LED_ON() 	DDRC |= 1<<PC5; PORTC |= 1<<PC5;
 #define LED_OFF() 	DDRC &= ~(1<<PC5); PORTC &= ~(1<<PC5);
 
