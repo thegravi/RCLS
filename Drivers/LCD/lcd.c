@@ -22,13 +22,13 @@ static void LCD_DDR_RS(uint8_t sc)
 	else
 		CMD_DIR &= ~(1<<LCD_RS);
 }
-static void LCD_DDR_RW(uint8_t sc)
-{
-	if (sc)
-		CMD_DIR |= (1<<LCD_RW);
-	else
-		CMD_DIR &= ~(1<<LCD_RW);
-}
+//static void LCD_DDR_RW(uint8_t sc)
+//{
+//	if (sc)
+//		CMD_DIR |= (1<<LCD_RW);
+//	else
+//		CMD_DIR &= ~(1<<LCD_RW);
+//}
 
 static void LCD_PORT_E(uint8_t sc)
 {
@@ -128,10 +128,10 @@ void LCD_Init()
 
 	LCD_DDR_E(SET);
 	LCD_DDR_RS(SET);
-	LCD_DDR_RW(SET);
+//	LCD_DDR_RW(SET);
 	LCD_PORT_E(RESET);
 	LCD_PORT_RS(RESET);
-	LCD_PORT_RW(RESET);
+//	LCD_PORT_RW(RESET);
 
 	_delay_ms(20);
 	LCD_SendCommand(4, 0x03);	_delay_ms(5);
