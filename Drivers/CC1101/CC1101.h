@@ -9,15 +9,16 @@
 #define CC1101_H_
 
 #include "../SPI/SPI.h"
+#include "../../common.h"
 
-#define CC_PIN_SI
-#define CC_PIN_SO
-#define CC_PIN_CS
-#define CC_PIN_SCK
+#define CC_PIN_SI			PB3
+#define CC_PIN_SO			PB4
+#define CC_PIN_CS			PB2
+#define CC_PIN_SCK			PB5
 #define CC_PIN_GDO0
 #define CC_PIN_GDO1
-#define CC_DDR
-#define CC_PORT
+#define CC_DDR				DDRB
+#define CC_PORT				PORTB
 
 //Define command strobes
 #define CC_CMD_RESET        0x30
@@ -84,6 +85,7 @@ enum {
 };
 
 typedef struct {
+	uint8_t SPtr;
 	uint16_t data[CC_REG_CNT];
 
 }CC1101_Config_t;
@@ -101,5 +103,7 @@ extern CC1101_Interface_t RF;
 
 void CC_Init(void);
 void CC_LoadConfig(CC1101_Config_t *cfg, uint8_t *ok);
+void CC_WriteRegister(uint8_t adr, uint8_t data, uint8_t *ok);
+uint8_t CC_ReadRegister(uint8_t adr, uint8_t *ok);
 
 #endif /* CC1101_H_ */
