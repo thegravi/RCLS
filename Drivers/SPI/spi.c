@@ -10,22 +10,22 @@
 SPI_Interface_t Spi = {
 		SPI_Init,
 		SPI_Transmit,
-		SPI_MISOStatus
+		SPI_MISOStatus,
+		SPI_CSLine
 };
 
 void SPI_Init()
 {
-	#if IS_MASTER
-		DDR_SPI |= 1<<PIN_MOSI | 1<<PIN_SCK;
-		DDR_SPI &= ~(1<<PIN_MISO);
-		SPCR |= 1<<MSTR | 1<<SPR1; // prescaler Fclk/64 = 125 kHz
-	#else
-		DDR_SPI |= 1<<PIN_MISO;
-		DDR_SPI &= ~(1<<PIN_MOSI) & ~(1<<PIN_SCK);
-		SPCR &= ~(1<<MSTR);
-	#endif
+//	DDRC |= 1 <<PC5;
 
-	SPCR |= 1<<SPE;
+	DDR_SPI |= 1<<PIN_MOSI | 1<<PIN_SCK | 1<<PIN_CS;
+	SPI_CSLine(Enable);
+	DDR_SPI &= ~(1<<PIN_MISO);
+	SPCR |= 1<<SPE | 1<<MSTR | 1<<SPR0 | 1<<CPOL | 1<<CPHA;; // prescaler Fclk/64 = 125 kHz
+
+//	PORT_SPI &= ~(1<<PIN_SCK);
+	PORT_SPI |= 1 <<PIN_MISO;
+
 }
 
 uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
@@ -44,25 +44,19 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 		return 0;
 	}
 
+	*ok = SUCC;
 	return SPDR;
 }
 
 void SPI_CSLine(uint8_t state)
 {
-	DDR_SPI |= 1<<PIN_CS;
 	if (state)
 		PORT_SPI |= 1<<PIN_CS;
 	else
 		PORT_SPI &= ~(1<<PIN_CS);
 }
 
-#if IS_MASTER
 uint8_t SPI_MISOStatus(void)
 {
-	DDR_SPI &= ~(1<<PIN_MISO);
-	uint8_t status = (PINB & (1<<PIN_MISO)) ? TRUE : FALSE;
-	DDR_SPI |= 1<<PIN_MISO;
-
-	return status;
+	return (PINB & (1<<PIN_MISO)) ? TRUE : FALSE;
 }
-#endif

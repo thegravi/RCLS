@@ -11,10 +11,8 @@
 #include <avr/io.h>
 #include "../../common.h"
 
-#define IS_MASTER TRUE
-
-#define DDR_SPI	    DDRB
-#define PIN_SPI		PINB
+#define DDR_SPI     DDRB
+#define PIN_SPI     PINB
 #define PORT_SPI    PORTB
 #define PIN_MISO    PB4
 #define PIN_MOSI    PB3
