@@ -50,23 +50,15 @@ void LCD_SendNumber(int16_t number);
 //_________________________________________________________________________________________________/
 
 typedef struct {
+	void (*Init)(void);
+	void (*Position)(uint8_t pos_x, uint8_t pos_y);
 	void (*SendCommand)(uint8_t size, uint8_t cmd);
 	void (*SendCharacter)(uint8_t character);
 	void (*SendString)(char* charString);
 	void (*SendNumber)(int16_t number);
 
-}DataFlow_t;
-
-DataFlow_t DataFlow;
-
-typedef struct {
-	void (*Init)(void);
-	void (*Position)(uint8_t pos_x, uint8_t pos_y);
-
-	DataFlow_t* DataFlow;
-
 }LCD_Interface_t;
 
-extern LCD_Interface_t LCD;
+extern const LCD_Interface_t LCD;
 
 #endif /* LCD_H_ */

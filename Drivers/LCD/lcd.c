@@ -22,13 +22,6 @@ static void LCD_DDR_RS(uint8_t sc)
 	else
 		CMD_DIR &= ~(1<<LCD_RS);
 }
-//static void LCD_DDR_RW(uint8_t sc)
-//{
-//	if (sc)
-//		CMD_DIR |= (1<<LCD_RW);
-//	else
-//		CMD_DIR &= ~(1<<LCD_RW);
-//}
 
 static void LCD_PORT_E(uint8_t sc)
 {
@@ -44,14 +37,6 @@ static void LCD_PORT_RS(uint8_t sc)
 		CMD_PORT |= (1<<LCD_RS);
 	else
 		CMD_PORT &= ~(1<<LCD_RS);
-}
-
-static void LCD_PORT_RW(uint8_t sc)
-{
-	if (sc)
-		CMD_PORT |= (1<<LCD_RW);
-	else
-		CMD_PORT &= ~(1<<LCD_RW);
 }
 
 static void LCD_ExecuteCMD()
@@ -128,10 +113,8 @@ void LCD_Init()
 
 	LCD_DDR_E(SET);
 	LCD_DDR_RS(SET);
-//	LCD_DDR_RW(SET);
 	LCD_PORT_E(RESET);
 	LCD_PORT_RS(RESET);
-//	LCD_PORT_RW(RESET);
 
 	_delay_ms(20);
 	LCD_SendCommand(4, 0x03);	_delay_ms(5);
@@ -161,13 +144,9 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 	LCD_SendCommand(8, pos);
 }
 
-LCD_Interface_t LCD = {
+const LCD_Interface_t LCD = {
 		LCD_Init,
 		LCD_Position,
-		&DataFlow
-};
-
-DataFlow_t DataFlow = {
 		LCD_SendCommand,
 		LCD_SendCharacter,
 		LCD_SendString,
