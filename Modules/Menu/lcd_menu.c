@@ -113,7 +113,7 @@ void LCD_Menu_branch_LEDs(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("------- LEDs -------");
+		LCD.SendString("------- LEDs -------");
 
 		status = Menu.choice(2, Menu.leds->funcNames);
 		if (status < 0)
@@ -125,7 +125,7 @@ void LCD_Menu_branch_LEDs(void)
 void LCD_Menu_branch_Set(void)
 {
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("----- Settings -----");
+	LCD.SendString("----- Settings -----");
 
 	while (Menu.getOpt() != B_RETURN)
 	{
@@ -140,7 +140,7 @@ void LCD_Menu_branch_Set(void)
 void LCD_Menu_branch_Profs(void)
 {
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("----- Profiles -----");
+	LCD.SendString("----- Profiles -----");
 
 	while (Menu.getOpt() != B_RETURN)
 	{
@@ -164,7 +164,7 @@ void LCD_Menu_setOpt(uint8_t opt)
 
 void LCD_Menu_Init()
 {
-	LCD.DataFlow->SendCommand(8, 0x01);
+	LCD.SendCommand(8, 0x01);
 	_delay_ms(300);
 }
 
@@ -174,7 +174,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("Choose color:");
+		LCD.SendString("Choose color:");
 
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
@@ -201,11 +201,11 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 	memset(adcData, 0, 4);
 
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("Adjust color:");
+	LCD.SendString("Adjust color:");
 	LCD.Position(4, 1);
-	LCD.DataFlow->SendString("R:     G:     B:");
+	LCD.SendString("R:     G:     B:");
 	LCD.Position(3, 1);
-	LCD.DataFlow->SendString("Brightness:    %");
+	LCD.SendString("Brightness:    %");
 
 	Pwm.init();
 	while(1)
@@ -217,25 +217,25 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 			adcData[idx] = Adc.measVolt(4+idx);
 
 			LCD.Position(4, 4 + (idx * 7));
-			LCD.DataFlow->SendNumber(adcData[idx]);
+			LCD.SendNumber(adcData[idx]);
 
 			Pwm.setIntensity(idx, adcData[idx]);
 
 			if (adcData[idx] > 10 && adcData[idx] < 100)
-				LCD.DataFlow->SendString(" ");
+				LCD.SendString(" ");
 			else if (adcData[idx] < 10)
-				LCD.DataFlow->SendString("  ");
+				LCD.SendString("  ");
 
 			_delay_ms(20);
 		}
 
 		LCD.Position(3, 13);
-		LCD.DataFlow->SendNumber(0);
+		LCD.SendNumber(0);
 
 		if (adcData[idx] > 10 && adcData[idx] < 100)
-			LCD.DataFlow->SendString(" ");
+			LCD.SendString(" ");
 		else if (adcData[idx] < 10)
-			LCD.DataFlow->SendString("  ");
+			LCD.SendString("  ");
 
 		if (Menu.getOpt() == B_RETURN)
 		{
@@ -267,10 +267,10 @@ uint8_t LCD_Menu_SelectCh(uint8_t* ok)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("Select channel:");
+		LCD.SendString("Select channel:");
 
 		status = Menu.choice(16, Menu.leds->ch->chList);
-		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.SendCommand(8, 0x01);
 
 		if (status < 0) {
 			*ok = FAIL;
@@ -298,22 +298,22 @@ uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok)
 		return FAIL;
 
 	LCD.Position(1, 1);
-	LCD.DataFlow->SendString("Channel ");
-	LCD.DataFlow->SendNumber(ch);
-	LCD.DataFlow->SendString(" info:");
+	LCD.SendString("Channel ");
+	LCD.SendNumber(ch);
+	LCD.SendString(" info:");
 	LCD.Position(4, 1);
-	LCD.DataFlow->SendString("R:     G:     B:");
+	LCD.SendString("R:     G:     B:");
 	LCD.Position(3, 1);
-	LCD.DataFlow->SendString("Brightness:    %");
+	LCD.SendString("Brightness:    %");
 
 	_delay_ms(5);
 	for (idx = 0; idx < 3; idx++) {
 			LCD.Position(4, 4 + (idx * 7));
-			LCD.DataFlow->SendNumber(data[idx]);
+			LCD.SendNumber(data[idx]);
 	}
 
 	LCD.Position(3, 13);
-	LCD.DataFlow->SendNumber(data[3]);
+	LCD.SendNumber(data[3]);
 
 	while(Menu.getOpt() != B_RETURN);
 
@@ -330,14 +330,14 @@ uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("------ Colors ------");
+		LCD.SendString("------ Colors ------");
 
 		status = Menu.choice(2, Menu.leds->colors->funcNames);
 		if (status < 0)
 			return FAIL;
 
 		Menu.leds->colors->branch[status](1, data);
-		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.SendCommand(8, 0x01);
 	}
 
 	return SUCC;
@@ -348,14 +348,14 @@ void LCD_Menu_Colors(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("------ Colors ------");
+		LCD.SendString("------ Colors ------");
 
 		status = Menu.choice(2, Menu.leds->colors->funcNames);
 		if (status < 0)
 			return;
 
 		Menu.leds->colors->branch[status](0, NULL);
-		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.SendCommand(8, 0x01);
 	}
 }
 
@@ -367,14 +367,14 @@ void LCD_Menu_Channels(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.DataFlow->SendString("----- Channels -----");
+		LCD.SendString("----- Channels -----");
 
 		status = Menu.choice(2, Menu.leds->ch->funcNames);
 		if (status < 0)
 			return;
 
 		Menu.leds->ch->branch[status](data, &ok);
-		LCD.DataFlow->SendCommand(8, 0x01);
+		LCD.SendCommand(8, 0x01);
 	}
 }
 
@@ -392,7 +392,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 			for (idx = 0; idx < numOfRecords; idx++)
 			{
 				LCD.Position(idx + 2, 1);
-				LCD.DataFlow->SendString("                  ");
+				LCD.SendString("                  ");
 				LCD.Position(idx + 2, 3);
 
 				if (Menu.pos <=2 )
@@ -400,7 +400,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 				else
 					pos = Menu.pos-2 + idx;
 
-				LCD.DataFlow->SendString(names[pos]);
+				LCD.SendString(names[pos]);
 			}
 
 			if (Pwm.f_enable)
@@ -419,7 +419,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 
 			LCD.Position(pos, 1);
 
-		LCD.DataFlow->SendCharacter(S_ARROW_RIGHT);
+		LCD.SendCharacter(S_ARROW_RIGHT);
 
 		while (!Menu.getOpt())
 		{
@@ -446,7 +446,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 			break;
 
 			case B_SELECT:
-				LCD.DataFlow->SendCommand(8, 0x01);
+				LCD.SendCommand(8, 0x01);
 				Menu.setOpt(B_VOID);
 
 				if (Pwm.f_enable)
@@ -456,7 +456,7 @@ int8_t LCD_Menu_Choice(uint8_t lim, char** names)
 			break;
 
 			case B_RETURN:
-				LCD.DataFlow->SendCommand(8, 0x01);
+				LCD.SendCommand(8, 0x01);
 				Menu.pos = 0;
 				Menu.setOpt(B_VOID);
 				return -1;
