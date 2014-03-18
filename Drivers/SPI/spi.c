@@ -23,7 +23,6 @@ void SPI_Init()
 	DDR_SPI &= ~(1<<PIN_MISO);
 	SPCR |= 1<<SPE | 1<<MSTR | 1<<SPR0 | 1<<CPOL | 1<<CPHA;; // prescaler Fclk/64 = 125 kHz
 
-//	PORT_SPI &= ~(1<<PIN_SCK);
 	PORT_SPI |= 1 <<PIN_MISO;
 
 }
@@ -32,19 +31,16 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 {
 	uint16_t timeout = 10000;
 
+	if (ok != NULL) *ok = FAIL;
 	SPDR = data;
 
 	while (!(SPSR & (1<<SPIF)) && timeout)
 		timeout--;
 
 	if (timeout <= 0)
-	{
-		if (ok != NULL)
-			*ok = FAIL;
 		return 0;
-	}
 
-	*ok = SUCC;
+	if (ok != NULL) *ok = SUCC;
 	return SPDR;
 }
 
