@@ -10,6 +10,10 @@
 
 #include "../SPI/SPI.h"
 #include "../../common.h"
+#include <util/delay.h>
+#include "../UART/uart.h"
+
+#define CC_LOG	1
 
 #define CC_PIN_SI			PB3
 #define CC_PIN_SO			PB4
@@ -94,7 +98,7 @@ extern CC1101_Config_t RFCfgDefault;
 typedef struct {
 	SPI_Interface_t *spi;
 	void (*init)(void);
-	void (*loadConfig)(CC1101_Config_t *cfg, uint8_t *ok);
+	void (*sendData)(void *data, uint8_t size, uint8_t *funcOK);
 
 	uint8_t initSucc;
 
@@ -102,8 +106,6 @@ typedef struct {
 extern CC1101_Interface_t RF;
 
 void CC_Init(void);
-void CC_LoadConfig(CC1101_Config_t *cfg, uint8_t *ok);
-void CC_WriteRegister(uint8_t adr, uint8_t data, uint8_t *ok);
-uint8_t CC_ReadRegister(uint8_t adr, uint8_t *ok);
+void CC_SendData(void *data, uint8_t size, uint8_t *funcOK);
 
 #endif /* CC1101_H_ */

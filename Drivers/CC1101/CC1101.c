@@ -7,13 +7,6 @@
 
 #include "CC1101.h"
 
-CC1101_Interface_t RF = {
-		&Spi,
-		CC_Init,
-		CC_LoadConfig,
-		FALSE
-};
-
 CC1101_Config_t RFCfgDefault = {
 		17,
 		{
@@ -78,77 +71,10 @@ static uint8_t CC_PowerOnWait(void)
 	if (CC_StartTransmission() != SUCC)
 		return FAIL;
 
-//	RF.spi->CSLine(Disable);
-//	while (RF.spi->MISOStatus() && timeout > 0)
-//		timeout--;
-
-//	if (timeout <= 0) {
-//		RF.spi->CSLine(High);
-//		return FAIL;
-//	}
-
 	return SUCC;
 }
 
-void CC_Init()
-{
-	uint8_t ok = SUCC;
-	int timeout = 10000;
-
-	RF.initSucc = FALSE;
-
-	if (CC_PowerOnWait() != SUCC)
-		return;
-
-//	RF.spi->CSLine(Disable);
-//	while (Spi.MISOStatus() && timeout > 0)
-//		timeout--;
-
-	RF.spi->transmit(CC_CMD_RESET, &ok);
-	if (ok != SUCC)
-		return;
-
-//	RF.spi->CSLine(Enable);
-//	while (RF.spi->MISOStatus() && timeout > 0)
-//		timeout--;
-	CC_EndTransmission();
-//	RF.spi->CSLine(High);
-
-//	if (timeout <= 0)
-//		return;
-
-	RF.initSucc = TRUE;
-
-	CC_LoadConfig(&RFCfgDefault, &ok);
-	if (ok != SUCC) {
-		RF.initSucc = FAIL;
-		return;
-	}
-}
-
-void CC_LoadConfig(CC1101_Config_t *cfg, uint8_t *ok)
-{
-	uint8_t idx;
-	uint8_t data;
-
-	if (ok != NULL) *ok = FAIL;
-
-	for (idx = 0; idx < cfg->SPtr; idx++)
-	{
-		CC_WriteRegister((cfg->data[idx] >> 8) & 0xFF, cfg->data[idx] & 0xFF, NULL);
-		data = CC_ReadRegister((cfg->data[idx] >> 8) & 0xFF, NULL);
-
-		if (data != (cfg->data[idx] & 0xFF)) {
-			*ok = FAIL;
-			return;
-		}
-	}
-
-	if (ok != NULL) *ok = SUCC;
-	return;
-}
-
-uint8_t CC_ReadRegister(uint8_t adr, uint8_t *ok)
+static uint8_t CC_ReadRegister(uint8_t adr, uint8_t *ok)
 {
 	if (ok != NULL) *ok = FAIL;
 
@@ -171,7 +97,7 @@ uint8_t CC_ReadRegister(uint8_t adr, uint8_t *ok)
 	return data;
 }
 
-void CC_WriteRegister(uint8_t adr, uint8_t data, uint8_t *ok)
+static void CC_WriteRegister(uint8_t adr, uint8_t data, uint8_t *ok)
 {
 	if (ok != NULL) *ok = FAIL;
 
@@ -194,3 +120,363 @@ void CC_WriteRegister(uint8_t adr, uint8_t data, uint8_t *ok)
 	if (ok != NULL) *ok = SUCC;
 	return;
 }
+
+static void CC_LoadConfig(CC1101_Config_t *cfg, uint8_t *ok)
+{
+	uint8_t idx;
+	uint8_t data;
+
+	if (ok != NULL) *ok = FAIL;
+
+	for (idx = 0; idx < cfg->SPtr; idx++)
+	{
+		CC_WriteRegister((cfg->data[idx] >> 8) & 0xFF, cfg->data[idx] & 0xFF, NULL);
+		data = CC_ReadRegister((cfg->data[idx] >> 8) & 0xFF, NULL);
+
+		if (data != (cfg->data[idx] & 0xFF)) {
+			*ok = FAIL;
+			return;
+		}
+	}
+
+	if (ok != NULL) *ok = SUCC;
+	return;
+}
+
+static uint8_t CC_ReadStatus(uint8_t rw, uint8_t *ok)
+{
+	if(ok != NULL) *ok = FAIL;
+
+	if (RF.initSucc != TRUE) {
+		CC_EndTransmission();
+		return 0;
+	}
+
+	if (CC_StartTransmission() != TRUE) {
+		CC_EndTransmission();
+		return 0;
+	}
+
+	uint8_t data;
+	if (rw)
+		data = RF.spi->transmit(0x80, NULL);
+	else
+		data = RF.spi->transmit(0x00, NULL);
+
+	CC_EndTransmission();
+	if (ok != NULL) *ok = SUCC;
+	return data;
+}
+
+static void CC_WriteCmd(uint8_t cmd, uint8_t *ok)
+{
+	if (ok != NULL) *ok = FAIL;
+
+	if (RF.initSucc != TRUE && cmd != CC_CMD_RESET) {
+		CC_EndTransmission();
+		return;
+	}
+
+	if (cmd < 0x30 || cmd >= 0x3D || cmd == 0x37) {
+		CC_EndTransmission();
+		return;
+	}
+
+	if (CC_StartTransmission() != TRUE) {
+		CC_EndTransmission();
+		return;
+	}
+
+	RF.spi->transmit(cmd, NULL);
+
+	CC_EndTransmission();
+	if (ok != NULL) *ok = SUCC;
+	return;
+}
+
+static void CC_WritePATable(uint8_t *PAValues, uint8_t *ok)
+{
+	if (ok != NULL) *ok = FAIL;
+
+	if (CC_StartTransmission() != TRUE) {
+		CC_EndTransmission();
+		return;
+	}
+
+	RF.spi->transmit(0x7E, NULL);
+
+	uint8_t idx;
+	for (idx = 0; idx < 8; idx++)
+		RF.spi->transmit(PAValues[idx], NULL);
+
+	CC_EndTransmission();
+	_delay_us(10);
+
+	if (CC_StartTransmission() != SUCC) {
+		CC_EndTransmission();
+		return;
+	}
+
+	RF.spi->transmit(0xFE, NULL);
+	for (idx = 0; idx < 8; idx++)
+		if (PAValues[idx] != RF.spi->transmit(0, NULL)) {
+			CC_EndTransmission();
+			return;
+		}
+
+	CC_EndTransmission();
+	if (ok != NULL) *ok = SUCC;
+	return;
+}
+
+static uint8_t CC_WriteFIFO(void *data, uint8_t size, uint8_t *ok)
+{
+	uint8_t idx = 0;
+
+	if (ok != NULL) *ok = FAIL;
+
+	if (size < 0 || size > 64) {
+		#if CC_LOG
+		UART.sendString("Could not fit in FIFO\n");
+		#endif
+		CC_EndTransmission();
+		return idx;
+	}
+
+	if (RF.initSucc != TRUE) {
+		#if CC_LOG
+		UART.sendString("Did not initiate successfully\n");
+		#endif
+		CC_EndTransmission();
+		return idx;
+	}
+
+	if (CC_StartTransmission() != SUCC) {
+		CC_EndTransmission();
+		return idx;
+	}
+
+	uint8_t sOK, status;
+	status = RF.spi->transmit(0x3F | 0x40, &sOK);
+	if (sOK != SUCC) {
+		#if CC_LOG
+		UART.sendString("Spi failure\n");
+		#endif
+		CC_EndTransmission();
+		return idx;
+	}
+
+	if ((status & 0x0F) <= 0) {
+		#if CC_LOG
+		UART.sendString("FIFO is full\n");
+		#endif
+		CC_EndTransmission();
+		return idx;
+	}
+
+	for (idx = 0; idx < size; idx++)
+	{
+		status = RF.spi->transmit(((uint8_t *)data)[idx], NULL);
+		if ((status & 0x0F) <= 1) {
+			#if CC_LOG
+			UART.sendString("Could not fit all of the data\n");
+			#endif
+			idx++;
+			CC_EndTransmission();
+			return idx;
+		}
+
+	}
+
+	CC_EndTransmission();
+	if (ok != NULL) *ok = SUCC;
+	return size;
+}
+
+static uint8_t CC_ReadFIFO(void *data, uint8_t size, uint8_t *ok)
+{
+	uint8_t idx = 0;
+
+	if (ok != NULL) *ok = FAIL;
+
+	if (size <= 0) {
+		CC_EndTransmission();
+		return idx;
+	}
+
+	uint8_t regOK = SUCC;
+	uint8_t FIFODataCnt = CC_ReadRegister(0xFB, &regOK) & 0x7F;
+	if (regOK != SUCC) {
+		CC_EndTransmission();
+		return idx;
+	}
+
+	if (CC_StartTransmission() != SUCC) {
+		CC_EndTransmission();
+		return idx;
+	}
+
+	RF.spi->transmit(0xFF, NULL);
+
+	for (idx = 0; idx <FIFODataCnt; idx++)
+		((uint8_t *)data)[idx] = RF.spi->transmit(0x00, NULL);
+
+	CC_EndTransmission();
+
+	if (ok != NULL) *ok = SUCC;
+	return idx;
+}
+
+void CC_Init()
+{
+	uint8_t ok;
+	int timeout = 10000;
+
+	RF.initSucc = FALSE;
+
+	if (CC_PowerOnWait() != SUCC)
+		return;
+
+	RF.spi->transmit(CC_CMD_RESET, &ok);
+	if (ok != SUCC)
+		return;
+
+	CC_EndTransmission();
+
+	RF.initSucc = TRUE;
+
+	CC_LoadConfig(&RFCfgDefault, &ok);
+	if (ok != SUCC) {
+		RF.initSucc = FAIL;
+		return;
+	}
+
+	uint8_t PATable[] = {0xC1, 0x83, 0x60, 0x3D, 0x65, 0x24, 0x19, 0x30};
+	CC_WritePATable(PATable, &ok);
+	if (ok != SUCC) {
+		RF.initSucc = FALSE;
+		return;
+	}
+
+	CC_WriteCmd(CC_CMD_SIDLE, NULL);
+
+	uint8_t idx;
+	_delay_us(10);
+
+	// flush FIFO`s
+	CC_WriteCmd(CC_CMD_SFTX, NULL);
+	CC_WriteCmd(CC_CMD_SFRX, NULL);
+
+	// Enter RX
+	CC_WriteCmd(CC_CMD_SRX, NULL);
+
+	return;
+}
+
+void CC_SendData(void *data, uint8_t size, uint8_t *funcOK)
+{
+	if (funcOK != NULL) *funcOK = FAIL;
+
+	// check packet size
+	if (size < 0 || size >= 63) {
+		#if CC_LOG
+		UART.sendString("Size parameter is juts stupid\n");
+		#endif
+		return;
+	}
+
+	uint8_t ok;
+	uint8_t fifoBytes;
+	uint16_t timeout = 10000;
+
+	do {
+		fifoBytes = CC_ReadRegister(0xFA, &ok) * 0x7F;
+		if (ok != SUCC) {
+			#if CC_LOG
+			UART.sendString("Could not read fifo bytes\n");
+			#endif
+			return;
+		}
+
+		if ((CC_ReadStatus(0x01, NULL) & 0x03) != 0x02)
+			CC_WriteCmd(CC_CMD_STX, NULL);
+
+		timeout--;
+	} while ((63 - fifoBytes < size + 1) && timeout > 0);
+
+	if (timeout <= 0) {
+		#if CC_LOG
+		UART.sendString("Send FIFO Timeout\n");
+		#endif
+		return;
+	}
+
+	// Write header info
+	CC_WriteFIFO(&size, 1, &ok);
+	if (ok != SUCC) {
+		#if CC_LOG
+		UART.sendString("Could not write header\n");
+		#endif
+		CC_WriteCmd(CC_CMD_SFTX, NULL);
+		return;
+	}
+
+	// Write data
+	CC_WriteFIFO(data, size, &ok);
+	if (ok != SUCC) {
+		#if CC_LOG
+		UART.sendString("Could not write FIFO\n");
+		#endif
+		CC_WriteCmd(CC_CMD_SFTX, NULL);
+		return;
+	}
+
+	// Write TX strobe
+	CC_WriteCmd(CC_CMD_STX, &ok);
+	if (ok != SUCC) {
+		#if CC_LOG
+		UART.sendString("Could not issue TX strobe\n");
+		#endif
+		return;
+	}
+
+	if (funcOK != NULL) *funcOK = SUCC;
+	return;
+}
+
+
+CC1101_Interface_t RF = {
+		&Spi,
+		CC_Init,
+		CC_SendData,
+		FALSE
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
