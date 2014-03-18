@@ -2,7 +2,7 @@
  * uart.c
  *
  *  Created on: 2013.11.23
- *      Author: GraÅ¾vidas
+ *      Author: Gražvidas
  */
 
 #include "uart.h"
@@ -34,8 +34,10 @@ static void UART_SendByte(uint8_t byte)
 	UDR0 = *convByte;
 }
 
-static void UART_SendString(char* buffer, uint8_t len)
+static void UART_SendString(const char* buffer)
 {
+	uint8_t len = strlen(buffer);
+
 	while (len-- > 0)
 		UART_SendChar(*buffer++);
 }

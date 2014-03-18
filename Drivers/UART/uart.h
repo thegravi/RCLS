@@ -10,13 +10,15 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <string.h>
+//#include <avr/pgmspace.h>
 
 typedef struct {
 	void (*init)(void);
 	void (*sendByte)(uint8_t data);
 	void (*sendChar)(char c);
 	void (*sendData)(uint8_t* buffer, uint8_t bytes);
-	void (*sendString)(char* buffer, uint8_t len);
+	void (*sendString)(const char* buffer);
 
 }UART_Interface_t;
 
