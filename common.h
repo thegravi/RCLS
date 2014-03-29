@@ -14,6 +14,9 @@
 #define FAIL		0
 #define ERR			-1
 
+#define send 0
+#define recv 1 - send
+
 enum {
 	Disable=0,
 	Enable
