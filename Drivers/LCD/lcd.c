@@ -113,6 +113,10 @@ void LCD_SendCharacter(uint8_t character)
 				character = U_nosine;
 				break;
 
+			case 'a':
+				character = A_nosine;
+				break;
+
 			default:
 				break;
 		}
@@ -133,21 +137,25 @@ void LCD_SendNumber(int16_t number)
 	LCD_SendString(convNum);
 }
 
-void LCD_SendString(char* charString)
+void LCD_SendString(char* word)
 {
-	while(*charString > 0)
-		LCD_SendCharacter(*charString++);
+	uint8_t len = strlen(word);
+
+	while(len-- > 0)
+		LCD_SendCharacter(*word++);
 }
 
 static void LCD_BuildCustomCharacters()
 {
 	// add progmem support
 	uint8_t letters[Raides_cnt][8] = {
-										{0x0A, 0x04, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x00},
-										{0x0A, 0x04, 0x0F, 0x10, 0x0E, 0x01, 0x1E, 0x00},
-										{0x04, 0x00, 0x0E, 0x11, 0x1F, 0x10, 0x0E, 0x00},
-										{0x00, 0x00, 0x11, 0x11, 0x11, 0x11, 0x0E, 0x03}
-									};
+		{0x0A, 0x04, 0x1F, 0x02, 0x04, 0x08, 0x1F, 0x00},
+		{0x0A, 0x04, 0x0F, 0x10, 0x0E, 0x01, 0x1E, 0x00},
+		{0x04, 0x00, 0x0E, 0x11, 0x1F, 0x10, 0x0E, 0x00},
+		{0x00, 0x00, 0x11, 0x11, 0x11, 0x11, 0x0E, 0x03},
+		{0x00, 0x00, 0x0E, 0x01, 0x0F, 0x11, 0x0E, 0x03}
+	};
+
 	uint8_t idx_letter, idx_pos;
 
 	for (idx_letter = 0; idx_letter < Raides_cnt; idx_letter++)
@@ -192,10 +200,8 @@ void LCD_Position(uint8_t pos_y, uint8_t pos_x) {
 	uint8_t pos;
 	uint8_t LCD_Rows[4] = {0x80+0, 0x80+0x40, 0x80+0x14, 0x80+0x54};
 
-	if ((!pos_y || pos_y > 4) || (!pos_x || pos_x > LCD_LINE_LENGTH)) {
-			pos_y = 1;
-			pos_x = 1;
-	}
+	if (pos_y < 1 || pos_y > 4 || pos_x < 1 || pos_x > LCD_LINE_LENGTH)
+		return;
 
 	pos = LCD_Rows[pos_y-1] + (pos_x - 1);
 	LCD_SendCommand(8, pos);

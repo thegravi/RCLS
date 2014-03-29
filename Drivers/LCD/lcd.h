@@ -4,13 +4,15 @@
  *  Created on: 2013.09.24
  *      Author: Graþvidas
  */
-#include <avr/io.h>
-#include <util/delay.h>
-#include <stdlib.h>
-#include <avr/pgmspace.h>
 
 #ifndef LCD_H_
 #define LCD_H_
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdlib.h>
+#include <string.h>
+#include <avr/pgmspace.h>
 
 #define SET					1
 #define RESET				0
@@ -36,6 +38,7 @@ enum {
 	S_pauksciukas,
 	E_taskas,
 	U_nosine,
+	A_nosine,
 
 	Raides_cnt
 };
