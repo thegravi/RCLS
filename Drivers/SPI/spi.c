@@ -37,8 +37,10 @@ uint8_t SPI_Transmit(uint8_t data, uint8_t *ok)
 	while (!(SPSR & (1<<SPIF)) && timeout)
 		timeout--;
 
-	if (timeout <= 0)
+	if (timeout <= 0) {
+		UART.sendString("Spi timed out\n");
 		return 0;
+	}
 
 	if (ok != NULL) *ok = SUCC;
 	return SPDR;

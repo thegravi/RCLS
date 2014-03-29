@@ -10,6 +10,7 @@
 
 #include <avr/io.h>
 #include "../../common.h"
+#include "../UART/uart.h"
 
 #define DDR_SPI     DDRB
 #define PIN_SPI     PINB
