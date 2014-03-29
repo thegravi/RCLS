@@ -12,6 +12,7 @@
 #include "../../common.h"
 #include <util/delay.h>
 #include "../UART/uart.h"
+#include "../LCD/lcd.h"
 
 #define CC_LOG	1
 
@@ -38,6 +39,29 @@
 #define CC_CMD_SFTX     	0x3B
 #define CC_CMD_SWORRST      0x3C
 #define CC_CMD_SNOP         0x3D
+
+#define CC_READ_BURST		0xC0
+#define CC_READ_SINGLE		0x80
+#define CC_WRITE_BURST		0x40
+
+#define CC_READ_STATUS		0xC0
+#define CC_READ_CONFIG		0x80
+
+// Status registers
+#define CC_PARTNUM           0x30        // Chip ID
+#define CC_VERSION           0x31        // Chip ID
+#define CC_FREQEST           0x32        // Frequency Offset Estimate from Demodulator
+#define CC_LQI               0x33        // Demodulator Estimate for Link Quality
+#define CC_RSSI              0x34        // Received Signal Strength Indication
+#define CC_MARCSTATE         0x35        // Main Radio Control State Machine State
+#define CC_WORTIME1          0x36        // High Byte of WOR Time
+#define CC_WORTIME0          0x37        // Low Byte of WOR Time
+#define CC_PKTSTATUS         0x38        // Current GDOx Status and Packet Status
+#define CC_VCO_VC_DAC        0x39        // Current Setting from PLL Calibration Module
+#define CC_TXBYTES           0x3A        // Underflow and Number of Bytes
+#define CC_RXBYTES           0x3B        // Overflow and Number of Bytes
+#define CC_RCCTRL1_STATUS    0x3C        // Last RC Oscillator Calibration Result
+#define CC_RCCTRL0_STATUS    0x3D        // Last RC Oscillator Calibration Result
 
 enum {
     CC_REG_IOCFG2=0,    // GDO2 Output Pin Configuration
@@ -67,9 +91,9 @@ enum {
     CC_REG_MCSM0,       // Main Radio Control State Machine Configuration
     CC_REG_FOCCFG,      // Frequency Offset Compensation Configuration
     CC_REG_BSCFG,       // Bit Synchronization Configuration
-    CC_REG_AGCRL2,      // AGC Control
-    CC_REG_AGCRL1,      // AGC Control
-    CC_REG_AGCRL0,      // AGC Control
+    CC_REG_AGCCTRL2,    // AGC Control
+    CC_REG_AGCCTRL1,    // AGC Control
+    CC_REG_AGCCTRL0,    // AGC Control
     CC_REG_WOREVT1,     // High Byte Event0 Timeout
     CC_REG_WOREVT0,     // Low Byte Event0 Timeout
     CC_REG_WORCTRL,     // Wake On Radio Control
@@ -98,7 +122,8 @@ extern CC1101_Config_t RFCfgDefault;
 typedef struct {
 	SPI_Interface_t *spi;
 	void (*init)(void);
-	void (*sendData)(void *data, uint8_t size, uint8_t *funcOK);
+	void (*sendData)(uint8_t *data, uint8_t size, uint8_t *funcOK);
+	uint8_t (*receivePacket)(uint8_t *buffer, uint8_t *len, uint8_t *ok);
 
 	uint8_t initSucc;
 
@@ -106,6 +131,8 @@ typedef struct {
 extern CC1101_Interface_t RF;
 
 void CC_Init(void);
-void CC_SendData(void *data, uint8_t size, uint8_t *funcOK);
+void CC_SendData(uint8_t *data, uint8_t size, uint8_t *funcOK);
+uint8_t CC_ReceivePacket(uint8_t *buffer, uint8_t *len, uint8_t *ok);
+uint8_t CC_ReadFIFO(uint8_t *data, uint8_t size, uint8_t *ok);
 
 #endif /* CC1101_H_ */
