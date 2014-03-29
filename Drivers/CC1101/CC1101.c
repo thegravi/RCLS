@@ -392,6 +392,8 @@ void CC_Init()
 {
 	uint8_t ok;
 
+	memcpy(&RF.data, 0, sizeof(RF.data));
+
 	RF.initSucc = FALSE;
 
 	if (CC_PowerOnWait() != SUCC)
@@ -437,7 +439,7 @@ void CC_Init()
 
 void CC_SendData(uint8_t *data, uint8_t size, uint8_t *funcOK)
 {
-#if send
+#if send == send
 	if (funcOK != NULL) *funcOK = FAIL;
 
 	// check packet size
@@ -542,7 +544,7 @@ void CC_SendData(uint8_t *data, uint8_t size, uint8_t *funcOK)
 
 uint8_t CC_ReceivePacket(uint8_t *buffer, uint8_t *len, uint8_t *ok)
 {
-#if recv
+#if recv==recv
 	CC_WriteCmd(CC_CMD_SRX, NULL);
 	_delay_ms(1);
 

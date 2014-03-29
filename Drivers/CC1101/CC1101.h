@@ -14,7 +14,7 @@
 #include "../UART/uart.h"
 #include "../LCD/lcd.h"
 
-#define CC_LOG	1
+#define CC_LOG	0
 
 #define CC_PIN_SI			PB3
 #define CC_PIN_SO			PB4
@@ -120,6 +120,11 @@ typedef struct {
 extern CC1101_Config_t RFCfgDefault;
 
 typedef struct {
+	uint8_t cmd;
+	uint8_t data;
+}CC1101_data_t;
+
+typedef struct {
 	SPI_Interface_t *spi;
 	void (*init)(void);
 	void (*sendData)(uint8_t *data, uint8_t size, uint8_t *funcOK);
@@ -127,6 +132,7 @@ typedef struct {
 
 	uint8_t initSucc;
 
+	 CC1101_data_t data;
 }CC1101_Interface_t;
 extern CC1101_Interface_t RF;
 
