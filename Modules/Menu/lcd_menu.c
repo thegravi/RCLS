@@ -15,18 +15,18 @@ Colors_t Colors = {
 			LCD_Menu_PresetColors
 		},
 		{
-			"Custom color",
-			"Preset Colors"
+			"sukurti spalv_a",
+			"pasirinkti spalv_a"
 		},
 		{
-			"Red",
-			"Orange",
-			"Yellow",
-			"Green",
-			"Blue",
-			"Indigo",
-			"Violet",
-			"White"
+			"raudona",
+			"oran_zin_e",
+			"geltona",
+			"_zalia",
+			"m_elyna",
+			"indigo",
+			"violetin_e",
+			"balta"
 		}
 };
 
@@ -39,8 +39,8 @@ Channels_t Ch = {
 			LCD_Menu_ChSetData
 		},
 		{
-			"Get Data",
-			"Set Data"
+			"gauti duomenis",
+			"si_usti duomenis"
 		},
 		{
 			"0",
@@ -70,8 +70,8 @@ LEDs_t LEDs = {
 			LCD_Menu_Colors,
 		},
 		{
-			"Channels",
-			"Colors"
+			"kanalai",
+			"spalvos"
 		}
 };
 
@@ -97,9 +97,9 @@ LCD_Menu_Interface_t Menu = {
 			LCD_Menu_branch_Profs,
 		},
 		{
-			"LEDs",
-			"Settings",
-			"Profiles"
+			"_sviesa",
+			"nustatymai",
+			"profiliai"
 		},
 		0xFF,
 		0
@@ -113,7 +113,7 @@ void LCD_Menu_branch_LEDs(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("------- LEDs -------");
+		LCD.SendString("------ _sviesa ------");
 
 		status = Menu.choice(2, Menu.leds->funcNames);
 		if (status < 0)
@@ -125,7 +125,7 @@ void LCD_Menu_branch_LEDs(void)
 void LCD_Menu_branch_Set(void)
 {
 	LCD.Position(1, 1);
-	LCD.SendString("----- Settings -----");
+	LCD.SendString("-- nustatymai --");
 
 	while (Menu.getOpt() != B_RETURN)
 	{
@@ -140,7 +140,7 @@ void LCD_Menu_branch_Set(void)
 void LCD_Menu_branch_Profs(void)
 {
 	LCD.Position(1, 1);
-	LCD.SendString("----- Profiles -----");
+	LCD.SendString("--- profiliai --");
 
 	while (Menu.getOpt() != B_RETURN)
 	{
@@ -174,7 +174,7 @@ uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("Choose color:");
+		LCD.SendString("pasirinkti spalv_a:");
 
 		status = Menu.choice(NUM_OF_COLORS, Menu.leds->colors->colorNames);
 		if (status < 0)
@@ -201,11 +201,11 @@ uint8_t LCD_Menu_CustomColor(uint8_t io, uint8_t* data)
 	memset(adcData, 0, 4);
 
 	LCD.Position(1, 1);
-	LCD.SendString("Adjust color:");
+	LCD.SendString("nustatyti spalv_a:");
 	LCD.Position(4, 1);
 	LCD.SendString("R:     G:     B:");
 	LCD.Position(3, 1);
-	LCD.SendString("Brightness:    %");
+	LCD.SendString("ry_skumas:    %");
 
 	Pwm.init();
 	while(1)
@@ -267,7 +267,7 @@ uint8_t LCD_Menu_SelectCh(uint8_t* ok)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("Select channel:");
+		LCD.SendString("pasirinkti kanal_a:");
 
 		status = Menu.choice(16, Menu.leds->ch->chList);
 		LCD.SendCommand(8, 0x01);
@@ -298,13 +298,13 @@ uint8_t LCD_Menu_ChGetData(uint8_t* data, uint8_t* ok)
 		return FAIL;
 
 	LCD.Position(1, 1);
-	LCD.SendString("Channel ");
+	LCD.SendString("kanalas ");
 	LCD.SendNumber(ch);
 	LCD.SendString(" info:");
 	LCD.Position(4, 1);
-	LCD.SendString("R:     G:     B:");
+	LCD.SendString("r:     _z:     b:");
 	LCD.Position(3, 1);
-	LCD.SendString("Brightness:    %");
+	LCD.SendString("ry_skumas:    %");
 
 	_delay_ms(5);
 	for (idx = 0; idx < 3; idx++) {
@@ -330,7 +330,7 @@ uint8_t LCD_Menu_ChSetData(uint8_t* data, uint8_t* ok)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("------ Colors ------");
+		LCD.SendString("------ spalvos -----");
 
 		status = Menu.choice(2, Menu.leds->colors->funcNames);
 		if (status < 0)
@@ -348,7 +348,7 @@ void LCD_Menu_Colors(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("------ Colors ------");
+		LCD.SendString("------ spalvos -----");
 
 		status = Menu.choice(2, Menu.leds->colors->funcNames);
 		if (status < 0)
@@ -367,7 +367,7 @@ void LCD_Menu_Channels(void)
 	while(1)
 	{
 		LCD.Position(1, 1);
-		LCD.SendString("----- Channels -----");
+		LCD.SendString("------ kanalai -----");
 
 		status = Menu.choice(2, Menu.leds->ch->funcNames);
 		if (status < 0)

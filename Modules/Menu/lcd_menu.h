@@ -18,7 +18,9 @@
 #include "../../Drivers/PWM/pwm.h"
 #include "../../Drivers/ADC/ADC.h"
 #include "../../Drivers/WDG/wdg.h"
+#include "../../Drivers/CC1101/CC1101.h"
 #include "../../common.h"
+
 
 void LCD_Menu_Init(void);
 uint8_t LCD_Menu_PresetColors(uint8_t io, uint8_t* data);
